@@ -59,7 +59,6 @@
                 <div class="navbar-collapse collapse">
                     <ul class="nav navbar-nav">
                         <li><a runat="server" href="~/Reports/ReportList">Звіти</a></li>
-                        <li><a runat="server" href="~/Apps/Warehaus.aspx">Залишки на складі</a></li>
                         <li><a runat="server" href="~/Apps/MyOrders.aspx">Замовлення</a></li>
                         <li><a runat="server" href="~/About">Про нас</a></li>
                         <li><a runat="server" href="~/Contact">Контакти</a></li>

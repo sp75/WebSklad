@@ -1,6 +1,10 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="ReportForm.aspx.cs" Inherits="WebSklad.Apps.ReportForm" %>
+﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="rep7.aspx.cs" Inherits="WebSklad.Reports.rep7" %>
+<%@ Page Title="" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="rep7.aspx.cs" Inherits="WebSklad.Reports.rep7" %>
 <%@ Register assembly="DevExpress.Web.v15.2, Version=15.2.16.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" namespace="DevExpress.Web" tagprefix="dx" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
+    <br />
+    <asp:Label ID="Label1" runat="server" Text="Label" Font-Size="Large"></asp:Label>
+     <br />
     <br />
     <dx:ASPxLabel ID="ASPxLabel1" runat="server" Text="На дату" Font-Bold="True" Font-Size="Medium" Theme="Youthful">
     </dx:ASPxLabel>

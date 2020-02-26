@@ -30,9 +30,7 @@ namespace WebSklad.Reports
                     Num = s.Num,
                     Name = db.RepLng.FirstOrDefault(w => w.LangId == 2 && w.RepId == s.RepId).Name,
                     HasChilds = false
-                }).ToList();
-
-                var sss = list.Concat(db.UserTreeAccess.Where(w => w.UserId == 0 && w.PId == 34).ToList().Select(s => new
+                }).Concat(db.UserTreeAccess.Where(w => w.UserId == 0 && w.PId == 34).ToList().Select(s => new
                 {
                     Id = s.Id,
                     ParentID = 0,
@@ -42,7 +40,7 @@ namespace WebSklad.Reports
                 }));
 
 
-                foreach (var item in sss)
+                foreach (var item in list)
                 {
                     string parentName = e.NodeName != null ? e.NodeName.ToString() : "0";
                     if (item.ParentID.ToString() == parentName)
@@ -51,7 +49,7 @@ namespace WebSklad.Reports
                         if (item.Num.HasValue)
                         {
                             child.Text = item.Num.ToString() + ". " + item.Name;
-                            child.NavigateUrl = "~/Reports/rep_" + item.Num.ToString() + ".aspx";
+                            child.NavigateUrl = "~/Reports/rep" + item.Num.ToString() + ".aspx";
                         }
                         children.Add(child);
                         child.IsLeaf = !item.HasChilds;

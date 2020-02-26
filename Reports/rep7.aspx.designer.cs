@@ -7,10 +7,19 @@
 // </автоматически создаваемое>
 //------------------------------------------------------------------------------
 
-namespace WebSklad.Apps {
+namespace WebSklad.Reports {
     
     
-    public partial class ReportForm {
+    public partial class rep7 {
+        
+        /// <summary>
+        /// Label1 элемент управления.
+        /// </summary>
+        /// <remarks>
+        /// Автоматически создаваемое поле.
+        /// Для изменения переместите объявление поля из файла конструктора в файл кода программной части.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label Label1;
         
         /// <summary>
         /// ASPxLabel1 элемент управления.
