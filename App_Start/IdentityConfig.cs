@@ -6,12 +6,12 @@ using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin;
 using Microsoft.Owin.Security;
-using WebApplication1.Models;
+using WebSklad.Models;
 using System.Net.Mail;
 using System.Net.Configuration;
 using System.Configuration;
 
-namespace WebApplication1
+namespace WebSklad
 {
     public class EmailService : IIdentityMessageService
     {

@@ -1,4 +1,4 @@
-﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="Site.master.cs" Inherits="WebApplication1.SiteMaster" %>
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="Site.master.cs" Inherits="WebSklad.SiteMaster" %>
 
 <!DOCTYPE html>
 
@@ -6,7 +6,7 @@
 <head runat="server">
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title><%: Page.Title %> - WEB-Sklad Application</title>
+    <title><%: Page.Title %> - WEB-Sklad</title>
 
     <asp:PlaceHolder runat="server">
         <%: Scripts.Render("~/bundles/modernizr") %>
@@ -53,7 +53,7 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                   <a href="~/" runat="server"> <img alt="Web-Sklad" class="auto-style1"  runat="server" src="Img/logo_short.png" />    </a>
+                   <a href="~/" runat="server"> <img alt="Web-Sklad" class="auto-style1"  runat="server" src="~/Img/logo_short.png" />    </a>
                     <a class="navbar-brand" runat="server" href="~/"></a>
                 </div>
                 <div class="navbar-collapse collapse">

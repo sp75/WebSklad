@@ -1,6 +1,6 @@
 ﻿using System.Web.UI;
 
-namespace WebApplication1.Account
+namespace WebSklad.Account
 {
     public partial class ResetPasswordConfirmation : Page
     {

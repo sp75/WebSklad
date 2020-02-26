@@ -254,6 +254,10 @@
     <Content Include="Apps\Web.config">
       <SubType>Designer</SubType>
     </Content>
+    <Content Include="Reports\rep_7.aspx" />
+    <Content Include="Reports\Web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Img\logo.png" />
     <Content Include="Img\logo_short.png" />
@@ -476,6 +480,13 @@
     </Compile>
     <Compile Include="Reports\ReportList.aspx.designer.cs">
       <DependentUpon>ReportList.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Reports\rep_7.aspx.cs">
+      <DependentUpon>rep_7.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Reports\rep_7.aspx.designer.cs">
+      <DependentUpon>rep_7.aspx</DependentUpon>
     </Compile>
     <Compile Include="Site.Master.cs">
       <DependentUpon>Site.Master</DependentUpon>

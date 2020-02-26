@@ -7,9 +7,9 @@ using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security.DataProtection;
 using Microsoft.Owin.Security.Google;
 using Owin;
-using WebApplication1.Models;
+using WebSklad.Models;
 
-namespace WebApplication1
+namespace WebSklad
 {
     public partial class Startup {
 

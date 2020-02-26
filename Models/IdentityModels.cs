@@ -6,9 +6,9 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
-using WebApplication1.Models;
+using WebSklad.Models;
 
-namespace WebApplication1.Models
+namespace WebSklad.Models
 {
     // You can add User data for the user by adding more properties to your User class, please visit https://go.microsoft.com/fwlink/?LinkID=317594 to learn more.
     public class ApplicationUser : IdentityUser
@@ -30,7 +30,7 @@ namespace WebApplication1.Models
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         public ApplicationDbContext()
-            : base("sp_sklad", throwIfV1Schema: false)
+            : base("SPBaseModel", throwIfV1Schema: false)
         {
         }
 
@@ -42,7 +42,7 @@ namespace WebApplication1.Models
 }
 
 #region Helpers
-namespace WebApplication1
+namespace WebSklad
 {
     public static class IdentityHelper
     {

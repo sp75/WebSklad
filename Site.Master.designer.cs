@@ -7,7 +7,7 @@
 // </автоматически создаваемое>
 //------------------------------------------------------------------------------
 
-namespace WebApplication1 {
+namespace WebSklad {
     
     
     public partial class SiteMaster {

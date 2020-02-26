@@ -7,7 +7,7 @@
 // </автоматически создаваемое>
 //------------------------------------------------------------------------------
 
-namespace WebApplication1.Reports {
+namespace WebSklad.Reports {
     
     
     public partial class ReportList {

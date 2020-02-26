@@ -8,7 +8,7 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using Microsoft.AspNet.Identity;
 
-namespace WebApplication1
+namespace WebSklad
 {
     public partial class SiteMaster : MasterPage
     {

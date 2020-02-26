@@ -8,7 +8,7 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 
-namespace WebApplication1.Reports
+namespace WebSklad.Reports
 {
     public partial class ReportList : System.Web.UI.Page
     {
@@ -50,7 +50,8 @@ namespace WebApplication1.Reports
                         TreeViewVirtualNode child = new TreeViewVirtualNode( item.Id.ToString(), item.Name);
                         if (item.Num.HasValue)
                         {
-                            child.NavigateUrl = "~/Reports/" + item.Num.ToString() + ".aspx";
+                            child.Text = item.Num.ToString() + ". " + item.Name;
+                            child.NavigateUrl = "~/Reports/rep_" + item.Num.ToString() + ".aspx";
                         }
                         children.Add(child);
                         child.IsLeaf = !item.HasChilds;

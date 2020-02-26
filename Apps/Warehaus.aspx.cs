@@ -9,7 +9,7 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 
 
-namespace WebApplication1.Apps
+namespace WebSklad.Apps
 {
     public partial class Warehaus : System.Web.UI.Page
     {

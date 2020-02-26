@@ -9,9 +9,9 @@ using System.Web;
 using System.Web.Hosting;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using WebApplication1.Models;
+using WebSklad.Models;
 
-namespace WebApplication1.Apps
+namespace WebSklad.Apps
 {
     public partial class ReportForm : System.Web.UI.Page
     {

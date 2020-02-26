@@ -5,9 +5,9 @@ using System.Web.UI;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Owin;
-using WebApplication1.Models;
+using WebSklad.Models;
 
-namespace WebApplication1.Account
+namespace WebSklad.Account
 {
     public partial class Register : Page
     {

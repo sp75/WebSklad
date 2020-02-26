@@ -7,7 +7,7 @@
 // </автоматически создаваемое>
 //------------------------------------------------------------------------------
 
-namespace WebApplication1.Account {
+namespace WebSklad.Account {
     
     
     public partial class ResetPassword {

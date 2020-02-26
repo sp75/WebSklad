@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace WebApplication1.Apps
+namespace WebSklad.Apps
 {
     public partial class GetWayBillList_Result
     {

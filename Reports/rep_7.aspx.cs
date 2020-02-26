@@ -5,9 +5,9 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 
-namespace WebSklad
+namespace WebSklad.Reports
 {
-    public partial class _Default : Page
+    public partial class rep_7 : System.Web.UI.Page
     {
         protected void Page_Load(object sender, EventArgs e)
         {
