@@ -19,7 +19,7 @@ namespace WebSklad.Reports
         {
             using (var db = Database.SPBase())
             {
-                Label1.Text = db.RepLng.First(w => w.RepId == 3 && w.LangId == 2).Name;
+                Label1.Text = db.RepLng.First(w => w.RepId == 7 && w.LangId == 2).Name;
 
                 var wh = db.Warehouse.Where(w => w.UserAccessWh.Any(a => a.UserId == 0)).Select(s => new { WId = s.WId.ToString(), s.Name, s.Def }).ToList();
 

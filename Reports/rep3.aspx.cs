@@ -93,7 +93,7 @@ namespace WebSklad.Reports
                     if (report_data != null)
                     {
                         //     Excel.RespondExcel(report_data, "RepMatRest.xlsx");
-                        Pdf.RespondPdf(report_data, TEMPLATE);
+                        Pdf.RespondPdf(report_data, Path.GetFileNameWithoutExtension(TEMPLATE));
                     }
                     else
                     {

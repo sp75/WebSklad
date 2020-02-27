@@ -66,8 +66,8 @@ namespace WebSklad.Reports
                     var report_data = pr2.CreateReport(template_file, "pdf");  //xlsx , pdf
                     if (report_data != null)
                     {
-                        //     Excel.RespondExcel(report_data, "RepMatRest.xlsx");
-                        Pdf.RespondPdf(report_data, TEMPLATE);
+                        //     Excel.RespondExcel(report_data, TEMPLATE);
+                        Pdf.RespondPdf(report_data, Path.GetFileNameWithoutExtension(TEMPLATE));
                     }
                     else
                     {
