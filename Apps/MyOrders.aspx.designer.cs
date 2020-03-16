@@ -13,30 +13,30 @@ namespace WebSklad.Apps {
     public partial class MyOrders {
         
         /// <summary>
-        /// ASPxGridView1 элемент управления.
+        /// MyOrdersGridView элемент управления.
         /// </summary>
         /// <remarks>
         /// Автоматически создаваемое поле.
         /// Для изменения переместите объявление поля из файла конструктора в файл кода программной части.
         /// </remarks>
-        protected global::DevExpress.Web.ASPxGridView ASPxGridView1;
+        protected global::DevExpress.Web.ASPxGridView MyOrdersGridView;
         
         /// <summary>
-        /// DropDownList1 элемент управления.
+        /// WaybillListDS элемент управления.
         /// </summary>
         /// <remarks>
         /// Автоматически создаваемое поле.
         /// Для изменения переместите объявление поля из файла конструктора в файл кода программной части.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList DropDownList1;
+        protected global::DevExpress.Data.Linq.EntityServerModeDataSource WaybillListDS;
         
         /// <summary>
-        /// Button1 элемент управления.
+        /// WaybillDetDS элемент управления.
         /// </summary>
         /// <remarks>
         /// Автоматически создаваемое поле.
         /// Для изменения переместите объявление поля из файла конструктора в файл кода программной части.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button Button1;
+        protected global::Microsoft.AspNet.EntityDataSource.EntityDataSource WaybillDetDS;
     }
 }

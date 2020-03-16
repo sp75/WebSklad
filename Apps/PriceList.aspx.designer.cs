@@ -13,12 +13,21 @@ namespace WebSklad.Apps {
     public partial class PriceList {
         
         /// <summary>
-        /// ASPxGridView1 элемент управления.
+        /// PriceListGrid элемент управления.
         /// </summary>
         /// <remarks>
         /// Автоматически создаваемое поле.
         /// Для изменения переместите объявление поля из файла конструктора в файл кода программной части.
         /// </remarks>
-        protected global::DevExpress.Web.ASPxGridView ASPxGridView1;
+        protected global::DevExpress.Web.ASPxGridView PriceListGrid;
+        
+        /// <summary>
+        /// PriceListDetDS элемент управления.
+        /// </summary>
+        /// <remarks>
+        /// Автоматически создаваемое поле.
+        /// Для изменения переместите объявление поля из файла конструктора в файл кода программной части.
+        /// </remarks>
+        protected global::DevExpress.Data.Linq.EntityServerModeDataSource PriceListDetDS;
     }
 }

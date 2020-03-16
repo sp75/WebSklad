@@ -9,35 +9,56 @@ using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-
+using WebSklad.Models;
 
 namespace WebSklad.Apps
 {
-    public partial class MyPurchases : System.Web.UI.Page
+    public partial class MyPurchases : CustomerPage
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-            GridViewDataComboBoxColumn column = ASPxGridView1.Columns["ColChecked"] as GridViewDataComboBoxColumn;
-            column.PropertiesComboBox.DataSource = new List<object>() { new { Id = 0, Name = "Не проведений" }, new { Id = 1, Name = "Виконаний" } };
-
-            using (var db = Database.SPBase())
-            {
-                var uid = db.AspNetUsers.FirstOrDefault(w => w.UserName == User.Identity.Name).Id;
-                var kagent = db.Kagent.FirstOrDefault(w => w.AspNetUserId == uid);
-
-                ASPxGridView1.DataSource = WhMatGet(DateTime.Now.AddYears(-100), DateTime.Now.Date.AddDays(1), -1, -1, kagent.KaId, 1, "*", 1028);
-                ASPxGridView1.DataBind();
-            }
+      
         }
 
-        public List<GetWayBillList_Result> WhMatGet(DateTime satrt_date, DateTime end_dated, int wtyp, int status, int? ka_id, int show_null_balance, string wh, int? user_id)
+        protected void detailGrid_DataSelect(object sender, EventArgs e)
         {
-            using (var db = Database.SPBase())
+            var WbillId = Convert.ToInt32((sender as ASPxGridView).GetMasterRowKeyValue());
+
+            ((ASPxGridView)sender).DataSource = _db.WaybillDet.Where(w => w.WbillId == WbillId).Select(s => new
             {
-                return db.Database.SqlQuery<GetWayBillList_Result>("select * from GetWayBillList({0}, {1}, {2}, {3} , {4}, {5}, {6}, {7})", satrt_date, end_dated, wtyp, status, ka_id, show_null_balance, wh, user_id).OrderByDescending(o => o.OnDate).ToList();
-            }
+                s.PosId,
+                s.Num,
+                s.Price,
+                s.Total,
+                MatName = s.Materials.Name,
+                s.Amount
+            }).ToList();
+        }
+        protected void WaybillListDS_Selecting(object sender, DevExpress.Data.Linq.LinqServerModeDataSourceSelectEventArgs e)
+        {
+            e.QueryableSource = _db.WaybillList.Where(w => w.WType == -1 && w.KaId == _ka_id).Select(s => new 
+            {
+               s.WbillId,
+                 s.Checked,
+                s.Num,
+                s.OnDate,
+                s.SummAll,
+                s.Reason,
+                s.Notes,
+                PersonName = s.Kagent.Name
+            });
+
+            e.KeyExpression = "WbillId";
         }
 
-
+        protected void detailGrid_CustomUnboundColumnData(object sender, ASPxGridViewColumnDataEventArgs e)
+        {
+            if (e.Column.FieldName == "Total")
+            {
+                decimal price = (decimal)e.GetListSourceFieldValue("UnitPrice");
+                int quantity = Convert.ToInt32(e.GetListSourceFieldValue("Quantity"));
+                e.Value = price * quantity;
+            }
+        }
     }
 }

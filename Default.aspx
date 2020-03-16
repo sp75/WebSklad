@@ -5,7 +5,7 @@
     <div class="jumbotron">
         <h1>WEB-Sklad</h1>
         <p class="lead">Вас вітає інформаційний ресурс для клієнтів ТОВ "Брусилвські ковбаси".</p>
-        <p><a href="/" class="btn btn-primary btn-lg">Прайс лист &raquo;</a></p>
+        <p><a href="Apps/PriceList.aspx" class="btn btn-primary btn-lg">Прайс лист &raquo;</a></p>
     </div>
 
     <div class="row">

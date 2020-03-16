@@ -64,6 +64,9 @@
     <Reference Include="DocumentFormat.OpenXml.ReportBuilder">
       <HintPath>Lib\DocumentFormat.OpenXml.ReportBuilder.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.AspNet.EntityDataSource, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.EntityDataSource.6.0.0\lib\net40\Microsoft.AspNet.EntityDataSource.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=1.0.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.7\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
     </Reference>
@@ -234,12 +237,17 @@
     <Content Include="Apps\MyOrders.aspx" />
     <Content Include="Apps\MyPurchases.aspx" />
     <Content Include="Apps\PriceList.aspx" />
+    <Content Include="Img\delete.png" />
+    <Content Include="Img\edit-11-16.png" />
+    <Content Include="Img\execute.png" />
+    <Content Include="Img\new_order.bmp" />
+    <Content Include="Img\save-as-16.png" />
+    <Content Include="Img\Частково оброблений.bmp" />
     <Content Include="Reports\rep4.aspx" />
     <Content Include="Reports\rep3.aspx" />
     <Content Include="Reports\rep6.aspx" />
     <Content Include="Reports\rep5.aspx" />
     <Content Include="Reports\rep7.aspx" />
-    <Content Include="Apps\Warehaus.aspx" />
     <Content Include="Contact.aspx" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
@@ -405,7 +413,6 @@
     <Compile Include="Account\VerifyPhoneNumber.aspx.designer.cs">
       <DependentUpon>VerifyPhoneNumber.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Apps\GetWayBillList_Result.cs" />
     <Compile Include="Apps\MyOrders.aspx.cs">
       <DependentUpon>MyOrders.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -426,6 +433,10 @@
     </Compile>
     <Compile Include="Apps\PriceList.aspx.designer.cs">
       <DependentUpon>PriceList.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Apps\Views\MyOrdersView.cs" />
+    <Compile Include="Models\CustomerPage.cs">
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Reports\rep4.aspx.cs">
       <DependentUpon>rep4.aspx</DependentUpon>
@@ -462,14 +473,6 @@
     <Compile Include="Reports\rep7.aspx.designer.cs">
       <DependentUpon>rep7.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Apps\Warehaus.aspx.cs">
-      <DependentUpon>Warehaus.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Apps\Warehaus.aspx.designer.cs">
-      <DependentUpon>Warehaus.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Apps\WhMatGet_Result.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="About.aspx.cs">
       <DependentUpon>About.aspx</DependentUpon>

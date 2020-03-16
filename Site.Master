@@ -16,8 +16,9 @@
 
     <style type="text/css">
         .auto-style1 {
-            width: 93px;
-            height: 51px;
+            width: 80px;
+            height: 45px;
+            padding-top: 5px;
         }
     </style>
 
@@ -60,6 +61,7 @@
                     <ul class="nav navbar-nav">
                         <li><a runat="server" href="~/Reports/ReportList">Звіти</a></li>
                         <li><a runat="server" href="~/Apps/MyOrders.aspx">Замовлення</a></li>
+                        <li><a runat="server" href="~/Apps/MyPurchases.aspx">Видаткові накладні</a></li>
                         <li><a runat="server" href="~/About">Про нас</a></li>
                         <li><a runat="server" href="~/Contact">Контакти</a></li>
                     </ul>
