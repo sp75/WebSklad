@@ -38,7 +38,7 @@ namespace WebSklad.Reports
                     Num = (int?)null,
                     Name = s.Name,
                     HasChilds = true
-                }));
+                })).ToList();
 
 
                 foreach (var item in list)
