@@ -17,6 +17,7 @@ namespace WebApi.Controllers
         public IHttpActionResult ImportService()
         {
             SyncCompany();
+            SyncProducts();
 
             using (var db = new Tranzit_Waybills_OSEntities())
             {
@@ -25,7 +26,7 @@ namespace WebApi.Controllers
 
                 using (var sp_base = Database.SPBase())
                 {
-                    var dt_from = DateTime.Now.Date.AddDays(-10);
+                    var dt_from = DateTime.Now.Date.AddDays(-30);
                     var dt_to = DateTime.Now.Date.AddDays(1);
 
                     var wb_det = sp_base.WaybillDet
@@ -115,6 +116,28 @@ namespace WebApi.Controllers
                 }
             }
         }
+
+        private void SyncProducts()
+        {
+            using (var sp_base = Database.SPBase())
+            {
+                var mat_list = sp_base.Materials.ToList();
+                using (var db = new Tranzit_Waybills_OSEntities())
+                {
+                    foreach(var item in db.Product)
+                    {
+                        var p = mat_list.FirstOrDefault(w => w.MatId == item.Id);
+                        if (p != null)
+                        {
+                            item.Name = p.Name;
+                            item.Artikul = p.Artikul;
+                        }
+                    }
+                    db.SaveChanges();
+                }
+            }
+        }
+
 
         [HttpGet, Route("products")]
         public IHttpActionResult GetProduct()
