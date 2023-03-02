@@ -9,7 +9,7 @@
             <SettingsPager NumericButtonCount="5" PageSize="11"/>
             <SettingsDataSecurity AllowInsert="false" AllowDelete="false" />
             <SettingsAdaptivity AdaptivityMode="HideDataCells" AllowOnlyOneAdaptiveDetailExpanded="true" />
-            <Settings  UseFixedTableLayout="true" ShowGroupPanel="True" />
+            <Settings  UseFixedTableLayout="true" />
             <SettingsBehavior AllowSelectByRowClick="True" EnableRowHotTrack="True"  />
 
 <SettingsPopup>
@@ -44,6 +44,8 @@
 
                 <dx:GridViewDataTextColumn Caption="Група товарів" FieldName="GroupName" VisibleIndex="4"  Width="25%">
                        <Settings AllowAutoFilter="True" AllowHeaderFilter="True" ShowFilterRowMenu="True" ShowFilterRowMenuLikeItem="True" ShowInFilterControl="True" />
+                       <SettingsHeaderFilter Mode="CheckedList">
+                       </SettingsHeaderFilter>
                 </dx:GridViewDataTextColumn>
 
 
