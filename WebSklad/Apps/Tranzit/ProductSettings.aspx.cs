@@ -28,7 +28,8 @@ namespace WebSklad.Apps.Tranzit
                     Name = s.Name,
                     is_exist = st.Contains(s.MatId),
                     GroupName = s.MatGroup.Name,
-                    Archived = s.Archived == 1
+                    Archived = s.Archived == 1,
+                    Artikul = s.Artikul
                 });
 
                 e.KeyExpression = "MatId";
@@ -42,6 +43,7 @@ namespace WebSklad.Apps.Tranzit
             public bool is_exist { get; set; }
             public string GroupName { get; set; }
             public bool Archived { get; set; }
+            public string Artikul { get; set; }
         }
 
 

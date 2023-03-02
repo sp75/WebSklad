@@ -9,8 +9,13 @@
             <SettingsPager NumericButtonCount="5" PageSize="11"/>
             <SettingsDataSecurity AllowInsert="false" AllowDelete="false" />
             <SettingsAdaptivity AdaptivityMode="HideDataCells" AllowOnlyOneAdaptiveDetailExpanded="true" />
-            <Settings  UseFixedTableLayout="true" />
+            <Settings  UseFixedTableLayout="true" ShowGroupPanel="True" />
             <SettingsBehavior AllowSelectByRowClick="True" EnableRowHotTrack="True"  />
+
+<SettingsPopup>
+<FilterControl AutoUpdatePosition="False"></FilterControl>
+</SettingsPopup>
+
             <SettingsSearchPanel Visible="true" />
             <SettingsLoadingPanel Mode="ShowOnStatusBar" />
             <Columns>
@@ -22,11 +27,11 @@
 
 
 
-                <dx:GridViewDataCheckColumn FieldName="is_exist" VisibleIndex="4" Caption="Імпорт" Width="10%">
+                <dx:GridViewDataCheckColumn FieldName="is_exist" VisibleIndex="5" Caption="Імпорт" Width="10%">
                     <Settings AllowAutoFilter="True" AllowHeaderFilter="True" ShowFilterRowMenu="True" ShowFilterRowMenuLikeItem="True" ShowInFilterControl="True" />
                 </dx:GridViewDataCheckColumn>
 
-                  <dx:GridViewDataCheckColumn FieldName="Archived" VisibleIndex="5" Caption="В архіві" Width="10%">
+                  <dx:GridViewDataCheckColumn FieldName="Archived" VisibleIndex="6" Caption="В архіві" Width="10%">
                     <Settings AllowAutoFilter="True" AllowHeaderFilter="True" ShowFilterRowMenu="True" ShowFilterRowMenuLikeItem="True" ShowInFilterControl="True" />
                 </dx:GridViewDataCheckColumn>
 
@@ -37,8 +42,13 @@
 
 
 
-                <dx:GridViewDataTextColumn Caption="Група товарів" FieldName="GroupName" VisibleIndex="3"  Width="25%">
+                <dx:GridViewDataTextColumn Caption="Група товарів" FieldName="GroupName" VisibleIndex="4"  Width="25%">
                        <Settings AllowAutoFilter="True" AllowHeaderFilter="True" ShowFilterRowMenu="True" ShowFilterRowMenuLikeItem="True" ShowInFilterControl="True" />
+                </dx:GridViewDataTextColumn>
+
+
+
+                <dx:GridViewDataTextColumn Caption="Артикул" FieldName="Artikul" VisibleIndex="3" ReadOnly="True" Width="10%">
                 </dx:GridViewDataTextColumn>
 
 
@@ -52,7 +62,7 @@
 
         </dx:ASPxGridView>
 
-       <dx:EntityServerModeDataSource ID="WaybillListDS" runat="server" ContextTypeName="SP.Base.Models.SPBaseModel" TableName="Kagent" OnSelecting="WaybillListDS_Selecting" EnableUpdate="True"             />
+       <dx:EntityServerModeDataSource ID="WaybillListDS" runat="server" ContextTypeName="SP.Base.Models.SPBaseModel" TableName="Materials" OnSelecting="WaybillListDS_Selecting" EnableUpdate="True"             />
   
     </p>
 </asp:Content>
