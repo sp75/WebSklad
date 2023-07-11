@@ -9,6 +9,7 @@
         <EntityTypeShape EntityType="Tranzit_Waybills_OSModel.Shop" Width="1.5" PointX="2.75" PointY="0.75" IsExpanded="true" />
         <EntityTypeShape EntityType="Tranzit_Waybills_OSModel.WaybillDet" Width="1.5" PointX="0.75" PointY="3.75" />
         <EntityTypeShape EntityType="Tranzit_Waybills_OSModel.Company" Width="1.5" PointX="3.25" PointY="3.375" />
+        <EntityTypeShape EntityType="Tranzit_Waybills_OSModel.PriceList" Width="1.5" PointX="5.375" PointY="0.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

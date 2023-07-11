@@ -52,6 +52,9 @@
     <Compile Include="Company.cs">
       <DependentUpon>Tranzit_Waybills_OS_Model.tt</DependentUpon>
     </Compile>
+    <Compile Include="PriceList.cs">
+      <DependentUpon>Tranzit_Waybills_OS_Model.tt</DependentUpon>
+    </Compile>
     <Compile Include="Product.cs">
       <DependentUpon>Tranzit_Waybills_OS_Model.tt</DependentUpon>
     </Compile>

@@ -31,6 +31,7 @@ namespace Tranzit_Waybills_OS_DB
         public virtual DbSet<Shop> Shop { get; set; }
         public virtual DbSet<WaybillDet> WaybillDet { get; set; }
         public virtual DbSet<Company> Company { get; set; }
+        public virtual DbSet<PriceList> PriceList { get; set; }
     
         public virtual int SetWaybillDet()
         {

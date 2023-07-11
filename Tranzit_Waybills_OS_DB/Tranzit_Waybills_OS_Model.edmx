@@ -14,6 +14,15 @@
           <Property Name="EDRPOU" Type="nvarchar" MaxLength="50" />
           <Property Name="FullName" Type="nvarchar" MaxLength="250" />
         </EntityType>
+        <EntityType Name="PriceList">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="ShopId" Type="int" />
+          <Property Name="ProductId" Type="int" />
+          <Property Name="Price" Type="numeric" Precision="15" Scale="2" />
+        </EntityType>
         <EntityType Name="Product">
           <Key>
             <PropertyRef Name="Id" />
@@ -52,6 +61,7 @@
         <Function Name="SetWaybillDet" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
         <EntityContainer Name="Tranzit_Waybills_OSModelStoreContainer">
           <EntitySet Name="Company" EntityType="Self.Company" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PriceList" EntityType="Self.PriceList" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Product" EntityType="Self.Product" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Shop" EntityType="Self.Shop" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="WaybillDet" EntityType="Self.WaybillDet" Schema="dbo" store:Type="Tables" />
@@ -83,6 +93,7 @@
           <EntitySet Name="WaybillDet" EntityType="Tranzit_Waybills_OSModel.WaybillDet" />
           <FunctionImport Name="SetWaybillDet" />
           <EntitySet Name="Company" EntityType="Tranzit_Waybills_OSModel.Company" />
+          <EntitySet Name="PriceList" EntityType="Tranzit_Waybills_OSModel.PriceList" />
         </EntityContainer>
         <EntityType Name="WaybillDet">
           <Key>
@@ -110,6 +121,15 @@
           <Property Name="Name" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="EDRPOU" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="FullName" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="PriceList">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Guid" Nullable="false" />
+          <Property Name="ShopId" Type="Int32" />
+          <Property Name="ProductId" Type="Int32" />
+          <Property Name="Price" Type="Decimal" Precision="15" Scale="2" />
         </EntityType>
       </Schema>
     </edmx:ConceptualModels>
@@ -162,6 +182,16 @@
                 <ScalarProperty Name="FullName" ColumnName="FullName" />
                 <ScalarProperty Name="EDRPOU" ColumnName="EDRPOU" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PriceList">
+            <EntityTypeMapping TypeName="Tranzit_Waybills_OSModel.PriceList">
+              <MappingFragment StoreEntitySet="PriceList">
+                <ScalarProperty Name="Price" ColumnName="Price" />
+                <ScalarProperty Name="ProductId" ColumnName="ProductId" />
+                <ScalarProperty Name="ShopId" ColumnName="ShopId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

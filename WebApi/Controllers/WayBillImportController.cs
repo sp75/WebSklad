@@ -80,10 +80,39 @@ namespace WebApi.Controllers
 
                     db.Database.ExecuteSqlCommand("exec SetReturnWaybillDet @list", param2);
 
-                    return Ok(wb_det);
+                    return Ok(true);
                 }
             }
         }
+
+        [HttpGet, Route("import-price")]
+        public IHttpActionResult ImportPrices()
+        {
+            using (var db = new Tranzit_Waybills_OSEntities())
+            {
+                var shop_list = db.Shop.Select(s => s.Id).ToList();
+                var product_list = db.Product.Select(s => s.Id).ToList();
+
+                using (var sp_base = Database.SPBase())
+                {
+                    var prices = sp_base.v_KagentMaterilPrices.Where(w=> shop_list.Contains( w.KaId) && product_list.Contains(w.MatId)).Select(s=> new
+                    {
+                        s.MatId,
+                        s.KaId,
+                        s.Price,
+                        s.Discount
+                    }).ToList();
+
+                    var param2 = new SqlParameter("@list", SqlDbType.Structured);
+                    param2.TypeName = "dbo.KagentMaterilPrices";
+                    param2.Value = (DataTable)JsonConvert.DeserializeObject(JsonConvert.SerializeObject(prices, Formatting.Indented), (typeof(DataTable))); ;
+
+                    db.Database.ExecuteSqlCommand("exec SetPriceList @list", param2);
+                }
+            }
+            return Ok(true);
+        }
+
         private void SyncCompany()
         {
             using (var sp_base = Database.SPBase())

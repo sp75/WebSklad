@@ -30,7 +30,7 @@ namespace WebSklad.Reports
                 }).ToList());
                 WhComboBox.DataBind();
              
-                GrpComboBox.DataSource = new List<GrpComboBoxItem>() { new GrpComboBoxItem { GrpId = 0, Name = "Усі" } }.Concat(db.MatGroup.Where(w => w.Deleted == 0).Select(s => new GrpComboBoxItem { GrpId = s.GrpId, Name = s.Name }).ToList());
+                GrpComboBox.DataSource = new List<MatGrpComboBoxItem>() { new MatGrpComboBoxItem { GrpId = 0, Name = "Усі" } }.Concat(db.MatGroup.Where(w => w.Deleted == 0).Select(s => new MatGrpComboBoxItem { GrpId = s.GrpId, Name = s.Name }).ToList());
                 GrpComboBox.DataBind();
                
             }
@@ -58,7 +58,7 @@ namespace WebSklad.Reports
                     OnDate = OnDateDBEdit.Date,
                     //    StartDate = StartDateEdit.DateTime,
                     //     EndDate = EndDateEdit.DateTime,
-                    MatGroup = new GrpComboBoxItem { GrpId = Convert.ToInt32(GrpComboBox.SelectedItem.GetValue("GrpId")), Name = GrpComboBox.SelectedItem.GetValue("Name").ToString() },
+                    MatGroup = new MatGrpComboBoxItem { GrpId = Convert.ToInt32(GrpComboBox.SelectedItem.GetValue("GrpId")), Name = GrpComboBox.SelectedItem.GetValue("Name").ToString() },
                     // Kagent = KagentComboBox.GetSelectedDataRow(), 
                     Warehouse = new WhComboBoxItem { WId = WhComboBox.SelectedItem.GetValue("WId").ToString(), Name = WhComboBox.SelectedItem.GetValue("Name").ToString() },
                     //       Material = MatComboBox.GetSelectedDataRow(),

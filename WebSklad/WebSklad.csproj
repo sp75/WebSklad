@@ -252,6 +252,7 @@
     <Content Include="Img\execute.png" />
     <Content Include="Img\save-as-16.png" />
     <Content Include="Img\Частково оброблений.bmp" />
+    <Content Include="Reports\CustomPrintDoc.aspx" />
     <Content Include="Reports\PrintDoc.aspx" />
     <Content Include="Reports\rep4.aspx" />
     <Content Include="Reports\rep3.aspx" />
@@ -313,6 +314,7 @@
     <Content Include="Scripts\WebForms\WebParts.js" />
     <Content Include="Scripts\WebForms\WebUIValidation.js" />
     <Content Include="Site.Master" />
+    <Content Include="TempLate\FontsForBilling\FREE3OF9.TXT" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -466,6 +468,13 @@
     <Compile Include="Models\CustomerPage.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
+    <Compile Include="Reports\CustomPrintDoc.aspx.cs">
+      <DependentUpon>CustomPrintDoc.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Reports\CustomPrintDoc.aspx.designer.cs">
+      <DependentUpon>CustomPrintDoc.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Reports\PrintDoc.aspx.cs">
       <DependentUpon>PrintDoc.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -566,6 +575,81 @@
   <ItemGroup>
     <None Include="packages.config" />
     <Content Include="Scripts\jquery-1.10.2.min.map" />
+    <Content Include="TempLate\AnalizPlan_fact.xlsx" />
+    <Content Include="TempLate\AnalizPlan_fact0.xlsx" />
+    <Content Include="TempLate\AnalizPlan_fac_kopchenosty.xlsx" />
+    <Content Include="TempLate\CheckingRecipes.xlsx" />
+    <Content Include="TempLate\CheckingRecipes_old1.xlsx" />
+    <Content Include="TempLate\Contract.xls" />
+    <Content Include="TempLate\Creditors.xlsx" />
+    <Content Include="TempLate\Debtors.xlsx" />
+    <Content Include="TempLate\DynamicsSsales.xlsx" />
+    <Content Include="TempLate\FinResult%2817%29.xlsx" />
+    <Content Include="TempLate\FontsForBilling\FRE3OF9X%28Full ASCII%29.TTF" />
+    <Content Include="TempLate\FontsForBilling\FREE3OF9%28Standart%29.TTF" />
+    <Content Include="TempLate\InventoryAct.xlsx" />
+    <Content Include="TempLate\Invoice.xlsx" />
+    <Content Include="TempLate\KABalance.xlsx" />
+    <Content Include="TempLate\kss_book.xlsx" />
+    <Content Include="TempLate\LossesByInventoryAct.xlsx" />
+    <Content Include="TempLate\MakedProduct.xlsx" />
+    <Content Include="TempLate\MakedProductShort%2829%29.xlsx" />
+    <Content Include="TempLate\MatIn.xlsx" />
+    <Content Include="TempLate\MatInShort%281%29.xlsx" />
+    <Content Include="TempLate\MatMove.xlsx" />
+    <Content Include="TempLate\MatOut - копия.xlsx" />
+    <Content Include="TempLate\MatOut.xlsx" />
+    <Content Include="TempLate\MatOutByMonth%2841%29.xlsx" />
+    <Content Include="TempLate\MatOutShort%282%29.xlsx" />
+    <Content Include="TempLate\MatOutShort.xlsx" />
+    <Content Include="TempLate\MatTurn%2819%29.xlsx" />
+    <Content Include="TempLate\nakladnaDeboning.xlsx" />
+    <Content Include="TempLate\nakladnaMaked.xlsx" />
+    <Content Include="TempLate\nakladnaMove.xlsx" />
+    <Content Include="TempLate\nakladnaMove_old.xlsx" />
+    <Content Include="TempLate\Oborotka.xlsx" />
+    <Content Include="TempLate\OperLog.xls" />
+    <Content Include="TempLate\OrderedIn.xlsx" />
+    <Content Include="TempLate\OrderedMat%2828%29.xlsx" />
+    <Content Include="TempLate\OrderedOut.xlsx" />
+    <Content Include="TempLate\PlannedCalculation.xlsx" />
+    <Content Include="TempLate\podatkova.xls" />
+    <Content Include="TempLate\podatkova1.xls" />
+    <Content Include="TempLate\PriceList2.xlsx" />
+    <Content Include="TempLate\PrihOr.xlsx" />
+    <Content Include="TempLate\ProductionPlans.xlsx" />
+    <Content Include="TempLate\rami.xlsx" />
+    <Content Include="TempLate\RashOr.xlsx" />
+    <Content Include="TempLate\RawMatOut%2842%29.xlsx" />
+    <Content Include="TempLate\ReestrDocs.xlsx" />
+    <Content Include="TempLate\RepByEmployees.xlsx" />
+    <Content Include="TempLate\RepMatRest.xlsx" />
+    <Content Include="TempLate\RepMatSelPr.xlsx" />
+    <Content Include="TempLate\RepMatSelPr.zip" />
+    <Content Include="TempLate\RepMinMatRest.xlsx" />
+    <Content Include="TempLate\RepOnExpenditure.xlsx" />
+    <Content Include="TempLate\RepOrdKAID.xlsx" />
+    <Content Include="TempLate\RepOrdMat.xlsx" />
+    <Content Include="TempLate\ReturnCustomer.xlsx" />
+    <Content Include="TempLate\ReturnSupplier.xlsx" />
+    <Content Include="TempLate\RouteList.xlsx" />
+    <Content Include="TempLate\Shahmatka.xlsx" />
+    <Content Include="TempLate\SvcOutShort%2820%29.xlsx" />
+    <Content Include="TempLate\tmc.xlsx" />
+    <Content Include="TempLate\TurnMoney%2823%29.xlsx" />
+    <Content Include="TempLate\vidgruzka.xlsx" />
+    <Content Include="TempLate\WayBill_In.xlsx" />
+    <Content Include="TempLate\WayBill_Out.xlsx" />
+    <Content Include="TempLate\WayBill_Out_1.xlsx" />
+    <Content Include="TempLate\WayBill_Out_2.xlsx" />
+    <Content Include="TempLate\WayBill_Out_3.xlsx" />
+    <Content Include="TempLate\WayBill_Out_4.xlsx" />
+    <Content Include="TempLate\WayBill_Out_5.xlsx" />
+    <Content Include="TempLate\WayBill_Out_6.xlsx" />
+    <Content Include="TempLate\WayBill_Out_7.xlsx" />
+    <Content Include="TempLate\WayBill_Out_Print.xlsx" />
+    <Content Include="TempLate\WriteOff.xlsx" />
+    <Content Include="TempLate\WriteOn.xlsx" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
