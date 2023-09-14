@@ -39,6 +39,7 @@
           <Property Name="Id" Type="int" Nullable="false" />
           <Property Name="Name" Type="nvarchar" MaxLength="100" />
           <Property Name="Archived" Type="int" />
+          <Property Name="EDRPOU" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="WaybillDet">
           <Key>
@@ -86,6 +87,7 @@
           <Property Name="Id" Type="Int32" Nullable="false" />
           <Property Name="Name" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="Archived" Type="Int32" />
+          <Property Name="EDRPOU" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityContainer Name="Tranzit_Waybills_OSEntities" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="Product" EntityType="Self.Product" />
@@ -150,6 +152,7 @@
           <EntitySetMapping Name="Shop">
             <EntityTypeMapping TypeName="Tranzit_Waybills_OSModel.Shop">
               <MappingFragment StoreEntitySet="Shop">
+                <ScalarProperty Name="EDRPOU" ColumnName="EDRPOU" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="Archived" ColumnName="Archived" />

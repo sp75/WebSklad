@@ -17,5 +17,6 @@ namespace Tranzit_Waybills_OS_DB
         public int Id { get; set; }
         public string Name { get; set; }
         public Nullable<int> Archived { get; set; }
+        public string EDRPOU { get; set; }
     }
 }

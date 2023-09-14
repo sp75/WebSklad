@@ -54,10 +54,10 @@ namespace WebSklad.Apps
             }
 
             GridViewDataComboBoxColumn column = (sender as ASPxGridView).Columns["MatNameCol"] as GridViewDataComboBoxColumn;
-            column.PropertiesComboBox.DataSource =  _db.PriceList.Where(w=> w.Kagent.Any(a=> a.KaId == _ka_id)).SelectMany(sm=> sm.PriceListDet).Select(s=> new
+            column.PropertiesComboBox.DataSource = _db.Materials.Where(w=> w.TypeId == 1 || w.TypeId == 5).Select(s => new
             {
                 s.MatId,
-                Name = _db.Materials.FirstOrDefault(w => w.MatId == s.MatId).Name
+                s.Name
             }).ToList();
         }
 

@@ -116,7 +116,7 @@ namespace WebSklad.Apps
                         //   PtypeId = db.Kagent.Find(_wb.KaId).PTypeId,
                         WayBillDetAddProps = new WayBillDetAddProps(),
                         BasePrice = pld.Price,
-                        Price = DiscountPrice * 100 / (100 + wb.Nds),
+                        Price = DiscountPrice ,
                         WId = _db.Materials.Find(pld.MatId).WId,
                         MatId = pld.MatId.Value
                     });

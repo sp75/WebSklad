@@ -17,7 +17,7 @@ namespace WebSklad.Reports
         {
             var WbillId = int.Parse(HttpContext.Current.Request.Params["id"]);
             var price_name = HttpContext.Current.Request.Params["price"];
-           
+            var template = HttpContext.Current.Request.Params["template"];
 
             using (var db = Database.SPBase())
             {
@@ -27,7 +27,7 @@ namespace WebSklad.Reports
 
                 var pl_id = db.PriceList.FirstOrDefault(w => w.Name == price_name)?.PlId;
 
-               var TEMPLATE = "WayBill_Out_Custom.xlsx";// db.DocType.FirstOrDefault(w => w.Id == -1).TemlateName;
+               var TEMPLATE = string.IsNullOrEmpty(template) ? "WayBill_Out_Custom.xlsx" : template+ ".xlsx";// db.DocType.FirstOrDefault(w => w.Id == -1).TemlateName;
 
                 var print = new SP.Reports.PrintDoc();
 

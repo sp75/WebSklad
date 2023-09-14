@@ -17,6 +17,7 @@ namespace WebApi.Controllers
         public IHttpActionResult ImportService()
         {
             SyncCompany();
+            SyncShops();
             SyncProducts();
 
             using (var db = new Tranzit_Waybills_OSEntities())
@@ -143,6 +144,30 @@ namespace WebApi.Controllers
                     }
                     db.SaveChanges();
                 }
+            }
+        }
+
+        private void SyncShops()
+        {
+            using (var db = new Tranzit_Waybills_OSEntities())
+            {
+                var shop_list = db.Shop.Where(w => w.Archived == null || w.Archived == 0).ToList();
+                using (var sp_base = Database.SPBase())
+                {
+                    foreach (var item in sp_base.Kagent.Where(w => w.Kagent2 != null).ToList())
+                    {
+                        var s = shop_list.FirstOrDefault(w => w.Id == item.KaId);
+                        if (s != null)
+                        {
+                            s.Name = item.Name;
+                            s.EDRPOU = item.Kagent2.OKPO;
+                        }
+
+                    }
+
+                }
+
+                db.SaveChanges();
             }
         }
 
