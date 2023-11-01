@@ -1,30 +1,34 @@
-﻿using System;
+﻿using SP.Base;
+using System;
 using System.Net.Http;
 using System.Web;
+using System.Linq;
 
 namespace WebApi.Core
 {
-    public class TranzitContext : HttpRequestContext
+    public class ApiTokenContext : HttpRequestContext
     {
         
         public Guid? Token { get; private set; }
 
-        public TranzitContext(HttpContextBase context)
+        public ApiTokenContext(HttpContextBase context)
             : base(context)
         {
             var token = GetRequestToken();
             if (token.HasValue)
             {
-                var kay = token.Value ==  new Guid("E9ECD622-7F68-44C3-9075-00009304BD35");
-              //  CurrentDriver = driver_repo.FindByToken(token.Value);
-                if (kay)
+                using (var sp_base = Database.SPBase())
                 {
-                    Token = token;
+                    if (sp_base.Kagent.Any(w => w.Id == token.Value))
+                    {
+                        Token = token;
+                    }
                 }
+
             }
         }
 
-        public TranzitContext(HttpRequestMessage request) 
+        public ApiTokenContext(HttpRequestMessage request) 
             : this( GetContextFromRequest( request ) )
         {
         }

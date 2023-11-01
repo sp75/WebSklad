@@ -190,11 +190,12 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\SampleDirection.cs" />
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
-    <Compile Include="Controllers\TranzitBaseController.cs" />
+    <Compile Include="Controllers\OrdersSellersController.cs" />
+    <Compile Include="Controllers\BaseApiController.cs" />
     <Compile Include="Core\ApiKeyAttribute.cs" />
     <Compile Include="Controllers\WayBillImportController.cs" />
     <Compile Include="Core\HttpRequestContext.cs" />
-    <Compile Include="Core\TranzitContext.cs" />
+    <Compile Include="Core\ApiTokenContext.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>

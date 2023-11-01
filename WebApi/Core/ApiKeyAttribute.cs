@@ -8,16 +8,13 @@ using WebApi.Controllers;
 
 namespace WebApi.Core
 {
-    public class MyAuthorizeAttribute : AuthorizeAttribute
+    public class ApiTokenAuthorizeAttribute : AuthorizeAttribute
     {
         protected override bool IsAuthorized(HttpActionContext action_context)
         {
-            var controller = action_context.ControllerContext.Controller as TranzitBaseController;
-            var driver = controller != null && controller.Context != null ? controller.Context.Token : null;
-            return driver != null;
-
-
-            //return true;
+            var controller = action_context.ControllerContext.Controller as BaseApiController;
+            var token = controller != null && controller.Context != null ? controller.Context.Token : null;
+            return token != null;
         }
     }
 }

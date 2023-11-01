@@ -11,8 +11,9 @@ using WebApi.Core;
 namespace WebApi.Controllers
 {
     [RoutePrefix("api/waybill")]
-    public class WayBillImportController : TranzitBaseController
+    public class WayBillImportController : BaseApiController
     {
+       
         [HttpGet, Route("import-order")]
         public IHttpActionResult ImportService()
         {
