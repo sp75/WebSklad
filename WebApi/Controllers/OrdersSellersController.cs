@@ -28,6 +28,7 @@ namespace WebApi.Controllers
         {
             var from_dt = DateTime.Now.Date;
             var to_dt = from_dt.AddDays(1);
+            var prev_dt = from_dt.AddDays(-7);
             using (var sp_base = Database.SPBase())
             {
                 return Ok(sp_base.v_WaybillDet.Where(w => w.WType == -16 && w.KagentId == Context.Token && w.WbOnDate >= from_dt && w.WbOnDate < to_dt && w.WbChecked == 0).OrderBy(o => o.Num).Select(s => new
@@ -45,14 +46,16 @@ namespace WebApi.Controllers
                     s.Total,
                     s.Checked,
                     s.WbOnDate,
-                    s.Notes
+                    s.Notes,
+                    s.WbNotes,
+                    PrevAmount = sp_base.v_WaybillDet.Where(ww=> ww.KagentId == s.KagentId && ww.MatId == s.MatId  && ww.WbChecked == 1 && ww.WType == -16 && ww.WbOnDate>= prev_dt).OrderByDescending(or=> or.OnDate).Select(s3=> s3.Amount).FirstOrDefault()
                 }).ToList());
             }
         }
 
         [ApiTokenAuthorize]
         [HttpPost, Route("current-orders")]
-        public IHttpActionResult SetAmount(SetPosAmountRequest In)
+        public IHttpActionResult SetWaybillDet(SetPosAmountRequest In)
         {
             using (var sp_base = Database.SPBase())
             {
@@ -60,14 +63,24 @@ namespace WebApi.Controllers
                 if (pos.WaybillList.Checked == 0)
                 {
                     pos.Amount = In.Amount;
-                    pos.Checked = 1;
+                    if (In.Amount > 0)
+                    {
+                        pos.Checked = 1;
+                    }
+                    else
+                    {
+                        pos.Checked = 0;
+                    }
                     pos.WaybillList.UpdatedAt = DateTime.Now;
+                    pos.Notes = In.Notes;
 
                     sp_base.SaveChanges();
                 }
                 else
                 {
-                    return Ok(new ErrorMessage { message = "Замовлення вже закрито !" });
+
+
+                    return BadRequest("Замовлення вже закрито !"); // ResponseMessage(Request.CreateResponse(HttpStatusCode.NotModified, new ErrorMessage { message = "Замовлення вже закрито !" }));
                 }
 
                 return Ok(sp_base.v_WaybillDet.Where(w => w.PosId == In.PosId).Select(s => new
@@ -82,7 +95,8 @@ namespace WebApi.Controllers
                     s.MsrName,
                     s.Price,
                     s.Total,
-                    s.Checked
+                    s.Checked,
+                    s.Notes
                 }).FirstOrDefault());
             }
         }
@@ -125,6 +139,7 @@ namespace WebApi.Controllers
         {
             public int PosId { get; set; }
             public decimal Amount { get; set; }
+            public string Notes { get; set; }
         }
         //Get customer info
 
