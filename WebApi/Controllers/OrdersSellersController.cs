@@ -63,23 +63,15 @@ namespace WebApi.Controllers
                 if (pos.WaybillList.Checked == 0)
                 {
                     pos.Amount = In.Amount;
-                    if (In.Amount > 0)
-                    {
-                        pos.Checked = 1;
-                    }
-                    else
-                    {
-                        pos.Checked = 0;
-                    }
+                    pos.Checked = In.Amount > 0 ? 1 : 0;
                     pos.WaybillList.UpdatedAt = DateTime.Now;
+                    pos.WaybillList.UpdatedBy = sp_base.Kagent.FirstOrDefault(w => w.Id == Context.Token)?.KaId;
                     pos.Notes = In.Notes;
 
                     sp_base.SaveChanges();
                 }
                 else
                 {
-
-
                     return BadRequest("Замовлення вже закрито !"); // ResponseMessage(Request.CreateResponse(HttpStatusCode.NotModified, new ErrorMessage { message = "Замовлення вже закрито !" }));
                 }
 
