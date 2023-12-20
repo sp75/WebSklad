@@ -65,8 +65,18 @@ namespace WebApi.Controllers
                     pos.Amount = In.Amount;
                     pos.Checked = In.Amount > 0 ? 1 : 0;
                     pos.WaybillList.UpdatedAt = DateTime.Now;
-                    pos.WaybillList.UpdatedBy = sp_base.Kagent.FirstOrDefault(w => w.Id == Context.Token)?.KaId;
+                    //           pos.WaybillList.UpdatedBy = sp_base.Kagent.FirstOrDefault(w => w.Id == Context.Token)?.KaId;
                     pos.Notes = In.Notes;
+
+                    sp_base.RemoteCustomerOrders.Add(new SP.Base.Models.RemoteCustomerOrders
+                    {
+                        Amount = In.Amount,
+                        CreatedAt = DateTime.Now,
+                        MatId = pos.MatId,
+                        PosId = In.PosId,
+                        WbillId = pos.WbillId,
+                        CustomerId = Context.Token.Value
+                    });
 
                     sp_base.SaveChanges();
                 }
