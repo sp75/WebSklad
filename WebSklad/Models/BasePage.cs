@@ -13,7 +13,7 @@ namespace WebSklad.Models
 
         public BasePage()
         {
-            _db = Database.SPBase();
+            _db = SPDatabase.SPBase();
         }
     }
 }

@@ -5,11 +5,11 @@
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
       <Diagram DiagramId="f394763da4044e7ca16a06c9eda79af0" Name="Diagram1">
-        <EntityTypeShape EntityType="Tranzit_Waybills_OSModel.Product" Width="1.5" PointX="0.75" PointY="0.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="Tranzit_Waybills_OSModel.Shop" Width="1.5" PointX="2.75" PointY="0.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="Tranzit_Waybills_OSModel.WaybillDet" Width="1.5" PointX="0.75" PointY="3.75" />
-        <EntityTypeShape EntityType="Tranzit_Waybills_OSModel.Company" Width="1.5" PointX="3.25" PointY="3.375" />
-        <EntityTypeShape EntityType="Tranzit_Waybills_OSModel.PriceList" Width="1.5" PointX="5.375" PointY="0.75" />
+        <EntityTypeShape EntityType="Tranzit_Waybills_OSModel.WaybillDet" Width="1.5" PointX="0.75" PointY="2.875" />
+        <EntityTypeShape EntityType="Tranzit_Waybills_OSModel.Company" Width="1.5" PointX="2.875" PointY="2.875" />
+        <EntityTypeShape EntityType="Tranzit_Waybills_OSModel.PriceList" Width="1.5" PointX="5" PointY="0.5" />
+        <EntityTypeShape EntityType="Tranzit_Waybills_OSModel.Shop" Width="1.5" PointX="2.875" PointY="0.5" />
+        <EntityTypeShape EntityType="Tranzit_Waybills_OSModel.Product" Width="1.5" PointX="0.75" PointY="0.5" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

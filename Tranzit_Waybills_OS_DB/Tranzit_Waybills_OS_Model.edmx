@@ -31,6 +31,7 @@
           <Property Name="Name" Type="nvarchar" MaxLength="255" />
           <Property Name="Artikul" Type="nvarchar" MaxLength="255" />
           <Property Name="Archived" Type="int" />
+          <Property Name="CreatedAt" Type="datetime" />
         </EntityType>
         <EntityType Name="Shop">
           <Key>
@@ -40,6 +41,7 @@
           <Property Name="Name" Type="nvarchar" MaxLength="100" />
           <Property Name="Archived" Type="int" />
           <Property Name="EDRPOU" Type="nvarchar" MaxLength="50" />
+          <Property Name="CreatedAt" Type="datetime" />
         </EntityType>
         <EntityType Name="WaybillDet">
           <Key>
@@ -71,31 +73,13 @@
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="Tranzit_Waybills_OSModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
-        <EntityType Name="Product">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" />
-          <Property Name="Name" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
-          <Property Name="Artikul" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
-          <Property Name="Archived" Type="Int32" />
-        </EntityType>
-        <EntityType Name="Shop">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" />
-          <Property Name="Name" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="Archived" Type="Int32" />
-          <Property Name="EDRPOU" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-        </EntityType>
         <EntityContainer Name="Tranzit_Waybills_OSEntities" annotation:LazyLoadingEnabled="true">
-          <EntitySet Name="Product" EntityType="Self.Product" />
-          <EntitySet Name="Shop" EntityType="Self.Shop" />
           <EntitySet Name="WaybillDet" EntityType="Tranzit_Waybills_OSModel.WaybillDet" />
           <FunctionImport Name="SetWaybillDet" />
           <EntitySet Name="Company" EntityType="Tranzit_Waybills_OSModel.Company" />
           <EntitySet Name="PriceList" EntityType="Tranzit_Waybills_OSModel.PriceList" />
+          <EntitySet Name="Shop" EntityType="Tranzit_Waybills_OSModel.Shop" />
+          <EntitySet Name="Product" EntityType="Tranzit_Waybills_OSModel.Product" />
         </EntityContainer>
         <EntityType Name="WaybillDet">
           <Key>
@@ -133,32 +117,32 @@
           <Property Name="ProductId" Type="Int32" />
           <Property Name="Price" Type="Decimal" Precision="15" Scale="2" />
         </EntityType>
+        <EntityType Name="Shop">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Archived" Type="Int32" />
+          <Property Name="EDRPOU" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="CreatedAt" Type="DateTime" Precision="3" />
+        </EntityType>
+        <EntityType Name="Product">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="Artikul" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="Archived" Type="Int32" />
+          <Property Name="CreatedAt" Type="DateTime" Precision="3" />
+        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
         <EntityContainerMapping StorageEntityContainer="Tranzit_Waybills_OSModelStoreContainer" CdmEntityContainer="Tranzit_Waybills_OSEntities">
-          <EntitySetMapping Name="Product">
-            <EntityTypeMapping TypeName="Tranzit_Waybills_OSModel.Product">
-              <MappingFragment StoreEntitySet="Product">
-                <ScalarProperty Name="Id" ColumnName="Id" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="Artikul" ColumnName="Artikul" />
-                <ScalarProperty Name="Archived" ColumnName="Archived" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Shop">
-            <EntityTypeMapping TypeName="Tranzit_Waybills_OSModel.Shop">
-              <MappingFragment StoreEntitySet="Shop">
-                <ScalarProperty Name="EDRPOU" ColumnName="EDRPOU" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="Archived" ColumnName="Archived" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="WaybillDet">
             <EntityTypeMapping TypeName="Tranzit_Waybills_OSModel.WaybillDet">
               <MappingFragment StoreEntitySet="WaybillDet">
@@ -195,6 +179,28 @@
                 <ScalarProperty Name="Price" ColumnName="Price" />
                 <ScalarProperty Name="ProductId" ColumnName="ProductId" />
                 <ScalarProperty Name="ShopId" ColumnName="ShopId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Shop">
+            <EntityTypeMapping TypeName="Tranzit_Waybills_OSModel.Shop">
+              <MappingFragment StoreEntitySet="Shop">
+                <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
+                <ScalarProperty Name="EDRPOU" ColumnName="EDRPOU" />
+                <ScalarProperty Name="Archived" ColumnName="Archived" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Product">
+            <EntityTypeMapping TypeName="Tranzit_Waybills_OSModel.Product">
+              <MappingFragment StoreEntitySet="Product">
+                <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
+                <ScalarProperty Name="Archived" ColumnName="Archived" />
+                <ScalarProperty Name="Artikul" ColumnName="Artikul" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

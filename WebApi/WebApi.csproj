@@ -190,6 +190,8 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\SampleDirection.cs" />
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
+    <Compile Include="Controllers\MaterialsController.cs" />
+    <Compile Include="Controllers\Models\CustomerPosOut.cs" />
     <Compile Include="Controllers\OrdersSellersController.cs" />
     <Compile Include="Controllers\BaseApiController.cs" />
     <Compile Include="Core\ApiKeyAttribute.cs" />

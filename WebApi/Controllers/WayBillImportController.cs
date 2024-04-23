@@ -26,7 +26,7 @@ namespace WebApi.Controllers
                 var kg_list = db.Shop.Where(w => w.Archived == null || w.Archived == 0).Select(s => s.Id).ToList();
                 var prod_list = db.Product.Where(w => w.Archived == null || w.Archived == 0).Select(s => s.Id).ToList();
 
-                using (var sp_base = Database.SPBase())
+                using (var sp_base = SPDatabase.SPBase())
                 {
                     var dt_from = DateTime.Now.Date.AddDays(-30);
                     var dt_to = DateTime.Now.Date.AddDays(1);
@@ -95,7 +95,7 @@ namespace WebApi.Controllers
                 var shop_list = db.Shop.Select(s => s.Id).ToList();
                 var product_list = db.Product.Select(s => s.Id).ToList();
 
-                using (var sp_base = Database.SPBase())
+                using (var sp_base = SPDatabase.SPBase())
                 {
                     var prices = sp_base.v_KagentMaterilPrices.Where(w=> shop_list.Contains( w.KaId) && product_list.Contains(w.MatId)).Select(s=> new
                     {
@@ -117,7 +117,7 @@ namespace WebApi.Controllers
 
         private void SyncCompany()
         {
-            using (var sp_base = Database.SPBase())
+            using (var sp_base = SPDatabase.SPBase())
             {
                 var company_list = sp_base.Kagent.Where(w => w.KType == 3).ToList();
                 using (var db = new Tranzit_Waybills_OSEntities())
@@ -152,20 +152,23 @@ namespace WebApi.Controllers
         {
             using (var db = new Tranzit_Waybills_OSEntities())
             {
-                var shop_list = db.Shop.Where(w => w.Archived == null || w.Archived == 0).ToList();
-                using (var sp_base = Database.SPBase())
+                var shop_list = db.Shop.ToList();
+                using (var sp_base = SPDatabase.SPBase())
                 {
-                    foreach (var item in sp_base.Kagent.Where(w => w.Kagent2 != null).ToList())
+                    foreach (var item in sp_base.Kagent.Where(w => w.KType == 4).ToList())
                     {
-                        var s = shop_list.FirstOrDefault(w => w.Id == item.KaId);
-                        if (s != null)
+                        var shop = shop_list.FirstOrDefault(w => w.Id == item.KaId);
+                        if (shop != null)
                         {
-                            s.Name = item.Name;
-                            s.EDRPOU = item.Kagent2.OKPO;
+                            shop.Name = item.Name;
+                            shop.EDRPOU = item.Kagent2?.OKPO;
+                            shop.Archived = (item.Archived == 1 || item.Deleted == 1) ? 1 : 0;
                         }
-
+                        else if (item.Deleted == 0 && (item.Archived == 0 || item.Archived == null))
+                        {
+                            db.Shop.Add(new Shop { Id = item.KaId, Name = item.Name, EDRPOU = item.Kagent2?.OKPO, CreatedAt = DateTime.Now });
+                        }
                     }
-
                 }
 
                 db.SaveChanges();
@@ -174,18 +177,30 @@ namespace WebApi.Controllers
 
         private void SyncProducts()
         {
-            using (var sp_base = Database.SPBase())
+            using (var sp_base = SPDatabase.SPBase())
             {
-                var mat_list = sp_base.Materials.ToList();
                 using (var db = new Tranzit_Waybills_OSEntities())
                 {
-                    foreach(var item in db.Product)
+                    var prod_list = db.Product.ToList();
+
+                    foreach (var item in sp_base.Materials.Where(w => (w.TypeId == 1 || w.TypeId == 5) && w.Artikul.Length > 0).ToList())
                     {
-                        var p = mat_list.FirstOrDefault(w => w.MatId == item.Id);
-                        if (p != null)
+                        var product = prod_list.FirstOrDefault(w => w.Id == item.MatId);
+                        if (product != null)
                         {
-                            item.Name = p.Name;
-                            item.Artikul = p.Artikul;
+                            product.Name = item.Name;
+                            product.Artikul = item.Artikul;
+                            product.Archived = (item.Archived == 1 || item.Deleted == 1) ? 1 : 0;
+                        }
+                        else if (item.Deleted == 0 && (item.Archived == null || item.Archived == 0))
+                        {
+                            db.Product.Add(new Product
+                            {
+                                Id = item.MatId,
+                                Name = item.Name,
+                                Artikul = item.Artikul,
+                                CreatedAt = DateTime.Now
+                            });
                         }
                     }
                     db.SaveChanges();

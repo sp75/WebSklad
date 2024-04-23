@@ -20,7 +20,7 @@ namespace WebSklad.Reports
 
         protected void ASPxTreeView1_VirtualModeCreateChildren(object source, DevExpress.Web.TreeViewVirtualModeCreateChildrenEventArgs e)
         {
-            using (var db = Database.SPBase())
+            using (var db = SPDatabase.SPBase())
             {
                 List<TreeViewVirtualNode> children = new List<TreeViewVirtualNode>();
 

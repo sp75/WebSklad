@@ -17,7 +17,7 @@ namespace WebSklad.Reports
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-            using (var db = Database.SPBase())
+            using (var db = SPDatabase.SPBase())
             {
                 Label1.Text = db.RepLng.First(w => w.RepId == 7 && w.LangId == 2).Name;
 
@@ -48,7 +48,7 @@ namespace WebSklad.Reports
         {
             int _rep_id = 7;
 
-            using (var db = Database.SPBase())
+            using (var db = SPDatabase.SPBase())
             {
                 var uid = db.AspNetUsers.FirstOrDefault(w => w.UserName == User.Identity.Name).Id;
                 var kagent = db.Kagent.FirstOrDefault(w => w.AspNetUserId == uid);

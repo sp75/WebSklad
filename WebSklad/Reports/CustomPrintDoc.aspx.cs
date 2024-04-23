@@ -19,7 +19,7 @@ namespace WebSklad.Reports
             var price_name = HttpContext.Current.Request.Params["price"];
             var template = HttpContext.Current.Request.Params["template"];
 
-            using (var db = Database.SPBase())
+            using (var db = SPDatabase.SPBase())
             {
                 var uid = db.AspNetUsers.FirstOrDefault(w => w.UserName == User.Identity.Name).Id;
                 var kagent = db.Kagent.FirstOrDefault(w => w.AspNetUserId == uid);

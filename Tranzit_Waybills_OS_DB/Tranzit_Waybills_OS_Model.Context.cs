@@ -27,11 +27,11 @@ namespace Tranzit_Waybills_OS_DB
             throw new UnintentionalCodeFirstException();
         }
     
-        public virtual DbSet<Product> Product { get; set; }
-        public virtual DbSet<Shop> Shop { get; set; }
         public virtual DbSet<WaybillDet> WaybillDet { get; set; }
         public virtual DbSet<Company> Company { get; set; }
         public virtual DbSet<PriceList> PriceList { get; set; }
+        public virtual DbSet<Shop> Shop { get; set; }
+        public virtual DbSet<Product> Product { get; set; }
     
         public virtual int SetWaybillDet()
         {

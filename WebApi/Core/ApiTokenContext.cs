@@ -17,7 +17,7 @@ namespace WebApi.Core
             var token = GetRequestToken();
             if (token.HasValue)
             {
-                using (var sp_base = Database.SPBase())
+                using (var sp_base = SPDatabase.SPBase())
                 {
                     if (sp_base.Kagent.Any(w => w.Id == token.Value))
                     {

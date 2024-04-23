@@ -17,7 +17,7 @@ namespace WebSklad.Reports
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-            using (var db = Database.SPBase())
+            using (var db = SPDatabase.SPBase())
             {
                 Label1.Text = db.RepLng.First(w => w.RepId == 5 && w.LangId == 2).Name;
             }
@@ -33,7 +33,7 @@ namespace WebSklad.Reports
         {
             int _rep_id = 5;
 
-            using (var db = Database.SPBase())
+            using (var db = SPDatabase.SPBase())
             {
                 var TEMPLATE = db.Reports.FirstOrDefault(w => w.RepId == _rep_id).TemlateName;
 

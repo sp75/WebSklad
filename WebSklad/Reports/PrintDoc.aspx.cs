@@ -19,7 +19,7 @@ namespace WebSklad.Reports
             var w_type = int.Parse(HttpContext.Current.Request.Params["w_type"]);
 
 
-            using (var db = Database.SPBase())
+            using (var db = SPDatabase.SPBase())
             {
                 var uid = db.AspNetUsers.FirstOrDefault(w => w.UserName == User.Identity.Name).Id;
                 var kagent = db.Kagent.FirstOrDefault(w => w.AspNetUserId == uid);
