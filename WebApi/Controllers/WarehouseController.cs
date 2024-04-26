@@ -30,14 +30,11 @@ namespace WebApi.Controllers
         }
 
         [HttpGet, Route("add-doc/{wbill_id}")]
-        public void AddDocument(int wbill_id)
+        public IHttpActionResult AddDocument(int wbill_id)
         {
             var new_doc = new ExecuteWayBill().MoveToStoreWarehouse(wbill_id, true);
-            if (!new_doc.HasValue)
-            {
-                //"Прибуткова накладана вже стовена!";
-            }
-            
+
+            return Ok(new_doc.HasValue);
         }
 
     }

@@ -13,16 +13,16 @@ using WebApi.Core;
 
 namespace WebApi.Controllers
 {
-    [RoutePrefix("api/waybill-in")]
+    [RoutePrefix("api/waybill-out")]
     [ApiTokenAuthorize]
-    public class WaybillInController : BaseApiController
+    public class WaybillOutController : BaseApiController
     {
         [HttpGet, Route("{wbill_id}")]
         public IHttpActionResult GetWaybill(int wbill_id)
         {
             using (var sp_base = SPDatabase.SPBase())
             {
-                var wb = sp_base.v_WayBillIn.Where(w=> w.WbillId == wbill_id).Select(s=> new
+                var wb = sp_base.v_WayBillOut.Where(w=> w.WbillId == wbill_id && w.KagentId == Context.Token).Select(s=> new
                 {
                     s.WbillId,
                     s.Num,
@@ -34,9 +34,10 @@ namespace WebApi.Controllers
                     s.Id,
                     s.Notes,
                     s.Reason,
-                    Details = sp_base.v_WayBillInDet.Where(w => w.WbillId == s.WbillId).Select(s1 => new
+                    Details = sp_base.v_WayBillOutDet.Where(w => w.WbillId == s.WbillId).Select(s1 => new
                     {
                         s1.PosId,
+                        s1.Num,
                         s1.OnDate,
                         s1.MatName,
                         s1.MatId,
@@ -46,10 +47,10 @@ namespace WebApi.Controllers
                         s1.Price,
                         s1.Discount,
                         s1.Artikul,
-                        s1.GrpName,
+                        s1.GroupName,
                         s1.Notes,
                         s1.WhName,
-                        s1.Wid
+                        s1.Total
                     })
                 }).FirstOrDefault();
 

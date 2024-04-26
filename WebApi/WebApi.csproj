@@ -199,6 +199,7 @@
     <Compile Include="Controllers\OrdersSellersController.cs" />
     <Compile Include="Controllers\BaseApiController.cs" />
     <Compile Include="Controllers\WarehouseController.cs" />
+    <Compile Include="Controllers\WaybillOutController.cs" />
     <Compile Include="Controllers\WaybillInController.cs" />
     <Compile Include="Core\ApiKeyAttribute.cs" />
     <Compile Include="Controllers\WayBillImportController.cs" />
