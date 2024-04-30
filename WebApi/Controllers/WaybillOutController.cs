@@ -17,12 +17,44 @@ namespace WebApi.Controllers
     [ApiTokenAuthorize]
     public class WaybillOutController : BaseApiController
     {
+
+        public class FilterWb
+        {
+            public DateTime start_date { get; set; }
+            public DateTime end_date { get; set; }
+        }
+
+        [HttpPost, Route("list")]
+        public IHttpActionResult GetWaybill(FilterWb req)
+        {
+            using (var sp_base = SPDatabase.SPBase())
+            {
+                var wb = sp_base.v_WayBillBase.Where(w => w.OnDate >= req.start_date && w.OnDate < req.end_date && w.KagentId == Context.Token).Select(s => new
+                {
+                    s.WbillId,
+                    s.Num,
+                    s.OnDate,
+                    s.SummInCurr,
+                    s.KaName,
+                    s.EntName,
+                    s.Checked,
+                    s.Id,
+                    s.Notes,
+                    s.Reason,
+                    s.WType
+                }).ToList();
+
+                return Ok(wb);
+            }
+        }
+
+
         [HttpGet, Route("{wbill_id}")]
         public IHttpActionResult GetWaybill(int wbill_id)
         {
             using (var sp_base = SPDatabase.SPBase())
             {
-                var wb = sp_base.v_WayBillOut.Where(w=> w.WbillId == wbill_id && w.KagentId == Context.Token).Select(s=> new
+                var wb = sp_base.v_WayBillBase.Where(w=> w.WbillId == wbill_id && w.KagentId == Context.Token).Select(s=> new
                 {
                     s.WbillId,
                     s.Num,
