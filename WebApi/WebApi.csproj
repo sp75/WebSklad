@@ -201,6 +201,7 @@
     <Compile Include="Controllers\OrdersSellersController.cs" />
     <Compile Include="Controllers\BaseApiController.cs" />
     <Compile Include="Controllers\ReturnSupplierController.cs" />
+    <Compile Include="Controllers\RegController.cs" />
     <Compile Include="Controllers\WarehouseController.cs" />
     <Compile Include="Controllers\WaybillOutController.cs" />
     <Compile Include="Controllers\WaybillInController.cs" />
