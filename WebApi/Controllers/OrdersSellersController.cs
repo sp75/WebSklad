@@ -184,7 +184,7 @@ namespace WebApi.Controllers
             }
         }
 
-
+/*
         [ApiTokenAuthorize]
         [HttpGet, Route("returned-invoices")]
         public IHttpActionResult GetReturnedInvoices()
@@ -229,8 +229,8 @@ namespace WebApi.Controllers
                     }).OrderBy(o => o.Num).ToList());
             }
         }
-
-        [ApiTokenAuthorize]
+*/
+    /*    [ApiTokenAuthorize]
         [HttpGet, Route("current-returned")]
         public IHttpActionResult GetCurrentReturned()
         {
@@ -254,9 +254,9 @@ namespace WebApi.Controllers
                         OutPosOnDate = s.WaybillDet_OutPosId.OnDate
                     }).ToList());
             }
-        }
+        }*/
 
-        [ApiTokenAuthorize]
+    /*    [ApiTokenAuthorize]
         [HttpPost, Route("current-returned")]
         public IHttpActionResult SetCustomerReturned(CustomerReturnedRequest In)
         {
@@ -275,9 +275,9 @@ namespace WebApi.Controllers
 
                 return Ok(new_item);
             }
-        }
+        }*/
 
-        [ApiTokenAuthorize]
+    /*    [ApiTokenAuthorize]
         [HttpPost, Route("current-returned/{id}/del")]
         public bool DeleteReturned(int id)
         {
@@ -294,7 +294,7 @@ namespace WebApi.Controllers
             }
 
             return false;
-        }
+        }*/
 
 
         [ApiTokenAuthorize]
@@ -348,7 +348,7 @@ namespace WebApi.Controllers
                     WType = 6,
                     OnDate = DateTime.Now,
                     Num = sp_base.GetDocNum("wb(6)").FirstOrDefault(),
-                     KaId = ka.KaId,
+                    KaId = ka.KaId,
                     CurrId = 2,
                     OnValue = 1,
                     Notes = "віддалене повернення",
@@ -425,7 +425,7 @@ namespace WebApi.Controllers
                         Price = sp_base.v_MatRemains.Where(w => w.MatId == tmc.MatId).OrderByDescending(o => o.OnDate).FirstOrDefault()?.AvgPrice
                     });
 
-              //      var rcr = sp_base.RemoteCustomerReturned.Find(tmc.Id);
+                    //      var rcr = sp_base.RemoteCustomerReturned.Find(tmc.Id);
                     tmc.WbillId = _wb.WbillId;
 
                     sp_base.SaveChanges();
@@ -580,6 +580,7 @@ namespace WebApi.Controllers
             public int MatId { get; set; }
             public int? OutPosId { get; set; }
             public decimal Amount { get; set; }
+            public int? InPosId { get; set; }
         }
 
     }

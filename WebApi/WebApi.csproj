@@ -196,9 +196,11 @@
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Controllers\InventoryController.cs" />
     <Compile Include="Controllers\MaterialsController.cs" />
+    <Compile Include="Controllers\Models\CustomerPosIn.cs" />
     <Compile Include="Controllers\Models\CustomerPosOut.cs" />
     <Compile Include="Controllers\OrdersSellersController.cs" />
     <Compile Include="Controllers\BaseApiController.cs" />
+    <Compile Include="Controllers\ReturnSupplierController.cs" />
     <Compile Include="Controllers\WarehouseController.cs" />
     <Compile Include="Controllers\WaybillOutController.cs" />
     <Compile Include="Controllers\WaybillInController.cs" />
@@ -269,6 +271,7 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Models\" />
+    <Folder Include="Views\ReturnSupplier\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
