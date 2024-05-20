@@ -20,5 +20,6 @@ namespace WebApi.Controllers.Models
         public decimal Rsv { get; set; }
         public int KaId { get; set; }
         public int? PosParent { get; set; }
+        public decimal TotalRemain { get; set; }
     }
 }

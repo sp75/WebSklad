@@ -162,6 +162,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Api\CustomerReturns\CustomerReturnsRepository.cs" />
+    <Compile Include="Api\CustomerReturns\GetPosInView.cs" />
+    <Compile Include="Api\CustomerReturns\GetPosOutView.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
@@ -207,6 +210,7 @@
     <Compile Include="Controllers\WaybillInController.cs" />
     <Compile Include="Core\ApiKeyAttribute.cs" />
     <Compile Include="Controllers\WayBillImportController.cs" />
+    <Compile Include="Core\BaseRepository.cs" />
     <Compile Include="Core\HttpRequestContext.cs" />
     <Compile Include="Core\ApiTokenContext.cs" />
     <Compile Include="Global.asax.cs">

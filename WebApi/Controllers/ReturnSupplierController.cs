@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using WebApi.Api.CustomerReturns;
 using WebApi.Controllers.Models;
 using WebApi.Core;
 using static WebApi.Controllers.OrdersSellersController;
@@ -128,6 +129,121 @@ namespace WebApi.Controllers
             return false;
         }
 
+        [ApiTokenAuthorize]
+        [HttpPost, Route("create")]
+        public IHttpActionResult CreateReturned()
+        {
+            using (var sp_base = SPDatabase.SPBase())
+            {
+                var ka = sp_base.Kagent.FirstOrDefault(w => w.Id == Context.Token.Value);
+
+                var _enterprise = sp_base.Kagent.FirstOrDefault(w => w.KType == 3 && w.Deleted == 0 && (w.Archived == null || w.Archived == 0) && w.EnterpriseWorker.Any(a => a.WorkerId == ka.KaId));
+
+                var _wb = sp_base.WaybillList.Add(new WaybillList()
+                {
+                    Id = Guid.NewGuid(),
+                    WType = 6,
+                    OnDate = DateTime.Now,
+                    Num = sp_base.GetDocNum("wb(6)").FirstOrDefault(),
+                    KaId = ka.KaId,
+                    CurrId = 2,
+                    OnValue = 1,
+                    Notes = "віддалене повернення",
+                    EntId = _enterprise?.KaId,
+                    ReportingDate = DateTime.Now
+                });
+                sp_base.SaveChanges();
+
+
+                foreach (var pos_out in new CustomerReturnsRepository().GetPosOut(Context.Token.Value))
+                {
+                    bool stop = false;
+                    int num = 1;
+                    decimal amount = pos_out.RemoteAmount;
+
+                    foreach (var pos_in in new CustomerReturnsRepository().GetPosIn(pos_out.PosId).Where(w => w.Remain > 0))
+                    {
+                        if (!stop)
+                        {
+                            var t_wbd = sp_base.WaybillDet.Add(new WaybillDet
+                            {
+                                WbillId = _wb.WbillId,
+                                Price = pos_out.Price,
+                                BasePrice = pos_out.BasePrice,
+                                Nds = pos_out.Nds,
+                                CurrId = pos_out.CurrId,
+                                OnValue = pos_out.OnValue,
+                                OnDate = pos_out.OnDate,
+                                WId = pos_out.WId,
+                                MatId = pos_out.MatId,
+                                Discount = pos_out.Discount,
+                                Num = ++num
+                            });
+
+                            if (pos_in.Remain >= amount)
+                            {
+                                t_wbd.Amount = amount;
+                                stop = true;
+                            }
+                            else
+                            {
+                                t_wbd.Amount = pos_in.Remain.Value;
+
+                                amount -= pos_in.Remain.Value;
+                            }
+                            sp_base.SaveChanges();
+
+                            sp_base.ReturnRel.Add(new ReturnRel
+                            {
+                                PosId = t_wbd.PosId,
+                                OutPosId = pos_out.PosId,
+                                PPosId = pos_in.PosId
+                            });
+                            sp_base.SaveChanges();
+                        }
+                    }
+
+                    var rcr = sp_base.RemoteCustomerReturned.Find(pos_out.RemoteId);
+                    rcr.WbillId = _wb.WbillId;
+
+                    sp_base.SaveChanges();
+                }
+
+                int tmc_num = sp_base.WaybillDet.Where(w => w.WbillId == _wb.WbillId).Count();
+                foreach (var tmc in sp_base.RemoteCustomerReturned.Where(w => w.CustomerId == Context.Token.Value && w.WbillId == null && w.OutPosId == null).ToList())
+                {
+                    var _wbt = sp_base.WayBillTmc.Add(new WayBillTmc()
+                    {
+                        WbillId = _wb.WbillId,
+                        Amount = tmc.Amount,
+                        TurnType = _wb.WType > 0 ? 1 : -1,
+                        Num = ++tmc_num,
+                        MatId = tmc.MatId,
+                        Price = sp_base.v_MatRemains.Where(w => w.MatId == tmc.MatId).OrderByDescending(o => o.OnDate).FirstOrDefault()?.AvgPrice
+                    });
+
+                    //      var rcr = sp_base.RemoteCustomerReturned.Find(tmc.Id);
+                    tmc.WbillId = _wb.WbillId;
+
+                    sp_base.SaveChanges();
+                }
+
+
+                if (sp_base.WaybillDet.Any(a => a.WbillId == _wb.WbillId) || sp_base.WayBillTmc.Any(a => a.WbillId == _wb.WbillId))
+                {
+                    _wb.UpdatedAt = DateTime.Now;
+                }
+                else
+                {
+                    sp_base.WaybillList.Remove(sp_base.WaybillList.Find(_wb.WbillId));
+                }
+
+                sp_base.SaveChanges();
+            }
+
+            return Ok(true);
+        }
+
         [HttpGet, Route("{mat_id}/pos-in")]
         public IHttpActionResult GetMatPosIn(int mat_id)
         {
@@ -136,31 +252,14 @@ namespace WebApi.Controllers
             using (var sp_base = SPDatabase.SPBase())
             {
                 return Ok(sp_base.Database.SqlQuery<CustomerPosIn>(@"
-select item.* 
+select item.* , (CurRemain - (select coalesce( sum([Amount]), 0 ) from RemoteCustomerReturned where PosId = item.PosId ) ) TotalRemain
 from
 (
     select pr.PosId, (pr.remain-pr.rsv) as CurRemain, pr.Rsv, wbd.OnDate, wbd.Price, 
            wbl.num as DocNum, wbl.OnDate as DocDate, 
-           wbl.WType, wbl.WbillId, wbd.BasePrice, wbl.KaId, pr.Remain,  pr.MatId, pr.WId, wbd.PosParent
+           wbl.WType, wbl.WbillId, wbd.BasePrice, coalesce(wbl.KaId, wblext.KaId) KaId, pr.Remain,  pr.MatId, pr.WId, wbd.PosParent
     from posremains pr
          left outer join serials s on s.posid=pr.posid
-         join waybilldet wbd on wbd.posid=pr.posid
-         join waybilllist wbl on wbl.wbillid=wbd.wbillid
-         join materials mats on mats.matid=pr.matid
-         join measures msr on msr.mid=mats.mid
-    where pr.ondate=(select max(ondate)
-                     from posremains
-                     where posid=pr.posid )
-          and pr.matid = {0}
-          and wbl.wtype not in(4,6,25)
-          and pr.remain > 0 
-
-    union all
-
-    select pr.posid, (pr.remain-pr.rsv) as CURREMAIN, pr.rsv, wbl.ondate,
-           wbd.price,  wbl.num as docnum, wbl.ondate as docdate, 
-           wbl.wtype, wbl.wbillid, wbd.baseprice, wblext.KaId, pr.Remain, pr.matid, pr.wid, wbd.PosParent
-    from posremains pr
          join waybilldet wbd on wbd.posid=pr.posid
          join waybilllist wbl on wbl.wbillid=wbd.wbillid
          join materials mats on mats.matid=pr.matid
@@ -170,10 +269,9 @@ from
          left outer join waybilllist wblext on wblext.wbillid=wbdext.wbillid
     where pr.ondate=(select max(ondate)
                      from posremains
-                     where posid=pr.posid)
+                     where posid=pr.posid )
           and pr.matid = {0}
-          and wbl.wtype in (4,6,25)
-          and pr.remain > 0
+          and pr.remain > 0 
 ) item 
 inner join Kagent k on k.WId = item.WId
 where k.id = {1} and item.DocDate > {2}", mat_id, Context.Token, start_date).ToList());
