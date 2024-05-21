@@ -15,8 +15,10 @@ namespace WebApi.Controllers
 {
     [RoutePrefix("api/customer-return")]
     [ApiTokenAuthorize]
-    public class ReturnSupplierController : BaseApiController
+    public class CustomerReturnsController : BaseApiController
     {
+
+
         [ApiTokenAuthorize]
         [HttpGet, Route("waybills")]
         public IHttpActionResult GetReturnedInvoices()
@@ -130,9 +132,11 @@ namespace WebApi.Controllers
         }
 
         [ApiTokenAuthorize]
-        [HttpPost, Route("create")]
+        [HttpPost, Route("create-documents")]
         public IHttpActionResult CreateReturned()
         {
+            var wb_list = new CustomerReturnsRepository().GreateReturnToSupplier(Context.Token.Value);
+
             using (var sp_base = SPDatabase.SPBase())
             {
                 var ka = sp_base.Kagent.FirstOrDefault(w => w.Id == Context.Token.Value);
@@ -155,7 +159,7 @@ namespace WebApi.Controllers
                 sp_base.SaveChanges();
 
 
-                foreach (var pos_out in new CustomerReturnsRepository().GetPosOut(Context.Token.Value))
+                foreach (var pos_out in new CustomerReturnsRepository().GetReturnetPosOut(Context.Token.Value))
                 {
                     bool stop = false;
                     int num = 1;
@@ -232,6 +236,11 @@ namespace WebApi.Controllers
                 if (sp_base.WaybillDet.Any(a => a.WbillId == _wb.WbillId) || sp_base.WayBillTmc.Any(a => a.WbillId == _wb.WbillId))
                 {
                     _wb.UpdatedAt = DateTime.Now;
+
+                    foreach (var i in wb_list)
+                    {
+                        sp_base.DocRels.Add(new DocRels { OriginatorId = i, RelOriginatorId = _wb.Id });
+                    }
                 }
                 else
                 {
@@ -244,8 +253,8 @@ namespace WebApi.Controllers
             return Ok(true);
         }
 
-        [HttpGet, Route("{mat_id}/pos-in")]
-        public IHttpActionResult GetMatPosIn(int mat_id)
+        [HttpGet, Route("{mat_id}/pos-remain")]
+        public IHttpActionResult GetPosRemain(int mat_id)
         {
             DateTime start_date = DateTime.Now.Date.AddDays(-30);
 
@@ -257,16 +266,11 @@ from
 (
     select pr.PosId, (pr.remain-pr.rsv) as CurRemain, pr.Rsv, wbd.OnDate, wbd.Price, 
            wbl.num as DocNum, wbl.OnDate as DocDate, 
-           wbl.WType, wbl.WbillId, wbd.BasePrice, coalesce(wbl.KaId, wblext.KaId) KaId, pr.Remain,  pr.MatId, pr.WId, wbd.PosParent
+           wbl.WType, wbl.WbillId, wbd.BasePrice, pr.SupplierId KaId, pr.Remain,  pr.MatId, pr.WId, wbd.PosParent
     from posremains pr
          left outer join serials s on s.posid=pr.posid
          join waybilldet wbd on wbd.posid=pr.posid
          join waybilllist wbl on wbl.wbillid=wbd.wbillid
-         join materials mats on mats.matid=pr.matid
-         join measures msr on msr.mid=mats.mid
-         left outer join extrel er on er.intposid=pr.posid
-         left outer join waybilldet wbdext on wbdext.posid=er.extposid
-         left outer join waybilllist wblext on wblext.wbillid=wbdext.wbillid
     where pr.ondate=(select max(ondate)
                      from posremains
                      where posid=pr.posid )

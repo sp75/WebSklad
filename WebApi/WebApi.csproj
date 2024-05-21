@@ -165,6 +165,7 @@
     <Compile Include="Api\CustomerReturns\CustomerReturnsRepository.cs" />
     <Compile Include="Api\CustomerReturns\GetPosInView.cs" />
     <Compile Include="Api\CustomerReturns\GetPosOutView.cs" />
+    <Compile Include="Api\CustomerReturns\ReturnetPosInView.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
@@ -203,7 +204,7 @@
     <Compile Include="Controllers\Models\CustomerPosOut.cs" />
     <Compile Include="Controllers\OrdersSellersController.cs" />
     <Compile Include="Controllers\BaseApiController.cs" />
-    <Compile Include="Controllers\ReturnSupplierController.cs" />
+    <Compile Include="Controllers\CustomerReturnsController.cs" />
     <Compile Include="Controllers\RegController.cs" />
     <Compile Include="Controllers\WarehouseController.cs" />
     <Compile Include="Controllers\WaybillOutController.cs" />
