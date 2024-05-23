@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using WebApi.Api.CustomerReturns;
 using WebApi.Controllers.Models;
 using WebApi.Core;
 
@@ -184,7 +185,7 @@ namespace WebApi.Controllers
             }
         }
 
-/*
+
         [ApiTokenAuthorize]
         [HttpGet, Route("returned-invoices")]
         public IHttpActionResult GetReturnedInvoices()
@@ -215,7 +216,7 @@ namespace WebApi.Controllers
         {
             using (var sp_base = SPDatabase.SPBase())
             {
-                return Ok(sp_base.v_WayBillReturnCustomerDet.Where(w => w.WbillId == WbillId).Join(sp_base.v_WayBillBase.Where(w=> w.KagentId == Context.Token), det => det.WbillId,
+                return Ok(sp_base.v_WayBillReturnCustomerDet.Where(w => w.WbillId == WbillId).Join(sp_base.v_WayBillBase.Where(w => w.KagentId == Context.Token), det => det.WbillId,
                                     wb => wb.WbillId,
                                    (det, wb) => det)
                     .Select(s => new
@@ -229,8 +230,8 @@ namespace WebApi.Controllers
                     }).OrderBy(o => o.Num).ToList());
             }
         }
-*/
-    /*    [ApiTokenAuthorize]
+
+        [ApiTokenAuthorize]
         [HttpGet, Route("current-returned")]
         public IHttpActionResult GetCurrentReturned()
         {
@@ -254,9 +255,9 @@ namespace WebApi.Controllers
                         OutPosOnDate = s.WaybillDet_OutPosId.OnDate
                     }).ToList());
             }
-        }*/
+        }
 
-    /*    [ApiTokenAuthorize]
+        [ApiTokenAuthorize]
         [HttpPost, Route("current-returned")]
         public IHttpActionResult SetCustomerReturned(CustomerReturnedRequest In)
         {
@@ -275,9 +276,9 @@ namespace WebApi.Controllers
 
                 return Ok(new_item);
             }
-        }*/
+        }
 
-    /*    [ApiTokenAuthorize]
+        [ApiTokenAuthorize]
         [HttpPost, Route("current-returned/{id}/del")]
         public bool DeleteReturned(int id)
         {
@@ -294,7 +295,122 @@ namespace WebApi.Controllers
             }
 
             return false;
-        }*/
+        }
+
+        [ApiTokenAuthorize]
+        [HttpPost, Route("create-returned")]
+        public IHttpActionResult CreateReturned()
+        {
+            using (var sp_base = SPDatabase.SPBase())
+            {
+                var ka = sp_base.Kagent.FirstOrDefault(w => w.Id == Context.Token.Value);
+
+                var _enterprise = sp_base.Kagent.FirstOrDefault(w => w.KType == 3 && w.Deleted == 0 && (w.Archived == null || w.Archived == 0) && w.EnterpriseWorker.Any(a => a.WorkerId == ka.KaId));
+
+                var _wb = sp_base.WaybillList.Add(new WaybillList()
+                {
+                    Id = Guid.NewGuid(),
+                    WType = 6,
+                    OnDate = DateTime.Now,
+                    Num = sp_base.GetDocNum("wb(6)").FirstOrDefault(),
+                    KaId = ka.KaId,
+                    CurrId = 2,
+                    OnValue = 1,
+                    Notes = "віддалене повернення",
+                    EntId = _enterprise?.KaId,
+                    ReportingDate = DateTime.Now
+                });
+                sp_base.SaveChanges();
+
+
+                foreach (var pos_out in new CustomerReturnsRepository().GetReturnetPosOut(Context.Token.Value))
+                {
+                    bool stop = false;
+                    int num = 1;
+                    decimal amount = pos_out.RemoteAmount;
+
+                    foreach (var pos_in in new CustomerReturnsRepository().GetPosIn(pos_out.PosId).Where(w => w.Remain > 0))
+                    {
+                        if (!stop)
+                        {
+                            var t_wbd = sp_base.WaybillDet.Add(new WaybillDet
+                            {
+                                WbillId = _wb.WbillId,
+                                Price = pos_out.Price,
+                                BasePrice = pos_out.BasePrice,
+                                Nds = pos_out.Nds,
+                                CurrId = pos_out.CurrId,
+                                OnValue = pos_out.OnValue,
+                                OnDate = pos_out.OnDate,
+                                WId = pos_out.WId,
+                                MatId = pos_out.MatId,
+                                Discount = pos_out.Discount,
+                                Num = ++num
+                            });
+
+                            if (pos_in.Remain >= amount)
+                            {
+                                t_wbd.Amount = amount;
+                                stop = true;
+                            }
+                            else
+                            {
+                                t_wbd.Amount = pos_in.Remain.Value;
+
+                                amount -= pos_in.Remain.Value;
+                            }
+                            sp_base.SaveChanges();
+
+                            sp_base.ReturnRel.Add(new ReturnRel
+                            {
+                                PosId = t_wbd.PosId,
+                                OutPosId = pos_out.PosId,
+                                PPosId = pos_in.PosId
+                            });
+                            sp_base.SaveChanges();
+                        }
+                    }
+
+                    var rcr = sp_base.RemoteCustomerReturned.Find(pos_out.RemoteId);
+                    rcr.WbillId = _wb.WbillId;
+
+                    sp_base.SaveChanges();
+                }
+
+                int tmc_num = sp_base.WaybillDet.Where(w => w.WbillId == _wb.WbillId).Count();
+                foreach (var tmc in sp_base.RemoteCustomerReturned.Where(w => w.CustomerId == Context.Token.Value && w.WbillId == null && w.OutPosId == null).ToList())
+                {
+                    var _wbt = sp_base.WayBillTmc.Add(new WayBillTmc()
+                    {
+                        WbillId = _wb.WbillId,
+                        Amount = tmc.Amount,
+                        TurnType = _wb.WType > 0 ? 1 : -1,
+                        Num = ++tmc_num,
+                        MatId = tmc.MatId,
+                        Price = sp_base.v_MatRemains.Where(w => w.MatId == tmc.MatId).OrderByDescending(o => o.OnDate).FirstOrDefault()?.AvgPrice
+                    });
+
+                    //      var rcr = sp_base.RemoteCustomerReturned.Find(tmc.Id);
+                    tmc.WbillId = _wb.WbillId;
+
+                    sp_base.SaveChanges();
+                }
+
+
+                if (sp_base.WaybillDet.Any(a => a.WbillId == _wb.WbillId) || sp_base.WayBillTmc.Any(a => a.WbillId == _wb.WbillId))
+                {
+                    _wb.UpdatedAt = DateTime.Now;
+                }
+                else
+                {
+                    sp_base.WaybillList.Remove(sp_base.WaybillList.Find(_wb.WbillId));
+                }
+
+                sp_base.SaveChanges();
+            }
+
+            return Ok(true);
+        }
 
 
         [ApiTokenAuthorize]
