@@ -27,6 +27,7 @@ namespace WebApi.Controllers
             public int ARTID { get; set; }
             public decimal Amount { get; set; }
             public decimal Price { get; set; }
+            public DateTime? CreatedAt { get; set; }
         }
 
         [HttpPost, Route("execute")]
@@ -76,20 +77,21 @@ namespace WebApi.Controllers
                             Nds = item.Price,
                             OnDate = new_inventory_wb.OnDate,
                             Num = ++num,
-                            BasePrice = item.Price
-                        });
+                            BasePrice = item.Price,
+                            Notes = item.CreatedAt?.ToString()
+                        }); 
                     }
                 }
                 sp_base.SaveChanges();
 
                 if (sp_base.WaybillDet.Where(w => w.WbillId == new_inventory_wb.WbillId).Any(a => ((a.Discount ?? 0) - a.Amount) > 0))
                 {
-                    var create_write_on = sp_base.ExecuteWayBill(new_inventory_wb.WbillId, 5, null).ToList().FirstOrDefault();
+                    var create_write_on = SPDatabase.SPBase().ExecuteWayBill(new_inventory_wb.WbillId, 5, null).ToList().FirstOrDefault();
 
                     if (create_write_on != null && create_write_on.NewDocId.HasValue)
                     {
                         var wb_write_on = sp_base.WaybillList.FirstOrDefault(w => w.Id == create_write_on.NewDocId);
-                         sp_base.ExecuteWayBill(wb_write_on.WbillId, null, null).ToList().FirstOrDefault();
+                        SPDatabase.SPBase().ExecuteWayBill(wb_write_on.WbillId, null, null).ToList().FirstOrDefault();
                     }
                     else
                     {
@@ -99,7 +101,7 @@ namespace WebApi.Controllers
 
                 if (sp_base.WaybillDet.Where(w => w.WbillId == new_inventory_wb.WbillId).Any(a => ((a.Discount ?? 0) - a.Amount) < 0))
                 {
-                    var create_write_off = sp_base.ExecuteWayBill(new_inventory_wb.WbillId, -5, null).ToList().FirstOrDefault();
+                    var create_write_off = SPDatabase.SPBase().ExecuteWayBill(new_inventory_wb.WbillId, -5, null).ToList().FirstOrDefault();
 
                     if (create_write_off != null && create_write_off.NewDocId.HasValue)
                     {
@@ -107,7 +109,7 @@ namespace WebApi.Controllers
                         var list = new List<string>();
 
                         var r = new ObjectParameter("RSV", typeof(Int32));
-                        var wb_list = sp_base.GetWayBillDetOut(wb_write_off.WbillId).ToList().Where(w => w.Rsv != 1).ToList();
+                        var wb_list = sp_base.v_WayBillOutDet.Where(w => w.WbillId == wb_write_off.WbillId && w.Rsv != 1).Select(s => new { s.PosId, s.MatName }).ToList();//.Where(w => w.Rsv != 1).ToList();
 
                         foreach (var i in wb_list)
                         {
@@ -121,7 +123,7 @@ namespace WebApi.Controllers
 
                         if (!list.Any())
                         {
-                           sp_base.ExecuteWayBill(wb_write_off.WbillId, null, null).ToList().FirstOrDefault();
+                            SPDatabase.SPBase().ExecuteWayBill(wb_write_off.WbillId, null, null).ToList().FirstOrDefault();
                         }
                     }
                     else
