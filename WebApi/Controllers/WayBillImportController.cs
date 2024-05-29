@@ -49,14 +49,18 @@ namespace WebApi.Controllers
                             CompanyId = s.WaybillList.EntId
                         }).ToList();
 
-                    string json = JsonConvert.SerializeObject(wb_det, Formatting.Indented);
-                    var list = (DataTable)JsonConvert.DeserializeObject(json, (typeof(DataTable)));
 
-                    var param = new SqlParameter("@list", SqlDbType.Structured);
-                    param.TypeName = "dbo.WaybillDet_Import";
-                    param.Value = list;
+                    if (wb_det.Any())
+                    {
+                        string json = JsonConvert.SerializeObject(wb_det, Formatting.Indented);
+                        var list = (DataTable)JsonConvert.DeserializeObject(json, (typeof(DataTable)));
 
-                    db.Database.ExecuteSqlCommand("exec SetWaybillDet @list", param);
+                        var param = new SqlParameter("@list", SqlDbType.Structured);
+                        param.TypeName = "dbo.WaybillDet_Import";
+                        param.Value = list;
+
+                        db.Database.ExecuteSqlCommand("exec SetWaybillDet @list", param);
+                    }
 
 
                     var return_wb_det = sp_base.WaybillDet
@@ -75,12 +79,14 @@ namespace WebApi.Controllers
                             WbillId = s.WaybillDet.WbillId
                         }).ToList();
 
+                    if (return_wb_det.Any())
+                    {
+                        var param2 = new SqlParameter("@list", SqlDbType.Structured);
+                        param2.TypeName = "dbo.ReturnWaybillDet_Import";
+                        param2.Value = (DataTable)JsonConvert.DeserializeObject(JsonConvert.SerializeObject(return_wb_det, Formatting.Indented), (typeof(DataTable))); ;
 
-                    var param2 = new SqlParameter("@list", SqlDbType.Structured);
-                    param2.TypeName = "dbo.ReturnWaybillDet_Import";
-                    param2.Value = (DataTable)JsonConvert.DeserializeObject(JsonConvert.SerializeObject(return_wb_det, Formatting.Indented), (typeof(DataTable))); ;
-
-                    db.Database.ExecuteSqlCommand("exec SetReturnWaybillDet @list", param2);
+                        db.Database.ExecuteSqlCommand("exec SetReturnWaybillDet @list", param2);
+                    }
 
                     return Ok(true);
                 }
