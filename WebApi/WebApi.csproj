@@ -199,6 +199,7 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Controllers\InventoryController.cs" />
+    <Compile Include="Controllers\KagentController.cs" />
     <Compile Include="Controllers\MaterialsController.cs" />
     <Compile Include="Controllers\Models\CustomerPosIn.cs" />
     <Compile Include="Controllers\Models\CustomerPosOut.cs" />
@@ -207,6 +208,7 @@
     <Compile Include="Controllers\CustomerReturnsController.cs" />
     <Compile Include="Controllers\RegController.cs" />
     <Compile Include="Controllers\WarehouseController.cs" />
+    <Compile Include="Controllers\WaybillMoveController.cs" />
     <Compile Include="Controllers\WaybillOutController.cs" />
     <Compile Include="Controllers\WaybillInController.cs" />
     <Compile Include="Core\ApiKeyAttribute.cs" />
