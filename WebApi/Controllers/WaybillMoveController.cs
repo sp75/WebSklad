@@ -8,6 +8,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using WebApi.Api.CustomerMove;
 using WebApi.Controllers.Models;
 using WebApi.Core;
 
@@ -44,7 +45,8 @@ namespace WebApi.Controllers
                     s.Id,
                     s.Notes,
                     s.Reason,
-                    s.WType
+                    s.WType,
+                    IsExecuteDocument = (s.FromWId != ka.WId)
                 }).ToList();
 
                 return Ok(wb);
@@ -98,7 +100,8 @@ namespace WebApi.Controllers
                     OnValue = 1,
                     WaybillMove = new WaybillMove { SourceWid = ka.WId.Value, DestWId = dest_wid },
                     EntId = _enterprise?.KaId,
-                    Checked = 0
+                    Checked = 0,
+                    Nds = 0
                 });
 
                 sp_base.SaveChanges();
@@ -127,39 +130,115 @@ namespace WebApi.Controllers
             }
         }
 
-        [HttpGet, Route("{wbill_id}/add-item/{art_id}")]
-        public bool AddItem(int wbill_id, int art_id)
+        [HttpPost, Route("item/add")]
+        public bool AddItem(AddItemRequest req)
         {
             bool result_exe = true;
 
             using (var sp_base = SPDatabase.SPBase())
             {
-                var ka = sp_base.Kagent.FirstOrDefault(w => w.Id == Context.Token);
+                var _wb = sp_base.WaybillList.Find(req.WbillId);
+                var mat = sp_base.Materials.FirstOrDefault(w => w.OpenStoreId == req.ArtId);
+                if (mat != null)
+                {
+                    var pos_in = new WaybillMoveRepository().GetPosIn(Context.Token.Value, mat.MatId);
 
-                var wh = new MaterialRemain(0).GetMaterialsOnWh(ka.WId.Value);
+                    if (pos_in.Sum(s => s.CurRemain) >= req.Amount)
+                    {
+                        int num = 0;
+                        var sum_amount = req.Amount;
+                        bool stop = false;
+                        foreach (var item in pos_in)
+                        {
+                            if (!stop)
+                            {
+                                if (sum_amount <= item.CurRemain)
+                                {
+                                    item.Amount = sum_amount;
+                                    sum_amount -= item.CurRemain;
+                                    stop = true;
+                                }
+                                else
+                                {
+                                    item.Amount = item.CurRemain;
+                                    sum_amount -= item.CurRemain;
+                                }
+                            }
 
+                            if (item.Amount > 0)
+                            {
+                                var wbd = sp_base.WaybillDet.Add(new WaybillDet()
+                                {
+                                    WbillId = _wb.WbillId,
+                                    Price = item.Price * item.OnValue,
+                                    BasePrice = item.BasePrice * item.OnValue,
+                                    Nds = _wb.Nds,
+                                    CurrId = _wb.CurrId,
+                                    OnDate = _wb.OnDate,
+                                    WId = item.WId,
+                                    Num = ++num,
+                                    Amount = item.Amount,
+                                    MatId = item.MatId,
+                                    OnValue = _wb.OnValue
 
+                                });
 
-                sp_base.SaveChanges();
-
-                return result_exe;
+                                wbd.WMatTurn1.Add(new WMatTurn
+                                {
+                                    PosId = item.PosId,
+                                    WId = item.WId,
+                                    MatId = item.MatId,
+                                    OnDate = _wb.OnDate,
+                                    TurnType = 2,
+                                    Amount = Convert.ToDecimal(item.Amount),
+                                    //  SourceId = wbd.PosId
+                                });
+                            }
+                        }
+                        sp_base.SaveChanges();
+                    }
+                    else
+                    {
+                        result_exe = false;
+                    }
+                }
+                else
+                {
+                    result_exe = false;
+                }
             }
+
+            return result_exe;
         }
 
+
+        [HttpGet, Route("item/{pos_id}/delete")]
+        public bool DeleteWbItem(int pos_id)
+        {
+            using (var sp_base = SPDatabase.SPBase())
+            {
+                sp_base.DeleteWhere<WaybillDet>(w => w.PosId == pos_id);
+
+                return true;
+            }
+        }
 
         [HttpGet, Route("{wbill_id}/execute")]
         public IHttpActionResult ExecuteWbMove(int wbill_id)
         {
-            var ex_wb_move = SPDatabase.SPBase().ExecuteWayBill(wbill_id, 4, null).ToList().FirstOrDefault();
+            var wb = db.WaybillList.Find(wbill_id);
 
-            if (ex_wb_move != null)
+            if (wb.Checked == 0)
             {
-                return Ok(true);
+                var ex_wb_move = SPDatabase.SPBase().ExecuteWayBill(wbill_id, 4, null).ToList().FirstOrDefault();
+
+                if (ex_wb_move.ErrorMessage != "False")
+                {
+                    return Ok(false);
+                }
             }
-            else
-            {
-                return Ok(false);
-            }
+
+            return Ok(true);
         }
 
         [HttpGet, Route("{wbill_id}")]
@@ -167,13 +246,14 @@ namespace WebApi.Controllers
         {
             using (var sp_base = SPDatabase.SPBase())
             {
-                var wb = sp_base.v_WayBillBase.Where(w=> w.WbillId == wbill_id).Select(s=> new
+                var wb = sp_base.v_WaybillMove.Where(w=> w.WbillId == wbill_id).Select(s=> new
                 {
                     s.WbillId,
                     s.Num,
                     s.OnDate,
                     s.SummInCurr,
-                    s.KaName,
+                    s.FromWh,
+                    s.ToWh,
                     s.EntName,
                     s.Checked,
                     s.Id,

@@ -162,6 +162,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Api\CustomerMove\AddItemRequest.cs" />
+    <Compile Include="Api\CustomerMove\PosInView.cs" />
+    <Compile Include="Api\CustomerMove\WaybillMoveRepository.cs" />
     <Compile Include="Api\CustomerReturns\CustomerReturnsRepository.cs" />
     <Compile Include="Api\CustomerReturns\GetPosInView.cs" />
     <Compile Include="Api\CustomerReturns\GetPosOutView.cs" />
