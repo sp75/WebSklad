@@ -276,6 +276,7 @@ from
                      where posid=pr.posid )
           and pr.matid = {0}
           and pr.remain > 0 
+          and pr.SupplierId is not null
 ) item 
 inner join Kagent k on k.WId = item.WId
 where k.id = {1} and item.DocDate > {2}", mat_id, Context.Token, start_date).ToList());
