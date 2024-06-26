@@ -169,10 +169,11 @@ namespace WebApi.Controllers
                             shop.Name = item.Name;
                             shop.EDRPOU = item.Kagent2?.OKPO;
                             shop.Archived = (item.Archived == 1 || item.Deleted == 1) ? 1 : 0;
+                            shop.UniqueId = item.Id;
                         }
                         else if (item.Deleted == 0 && (item.Archived == 0 || item.Archived == null))
                         {
-                            db.Shop.Add(new Shop { Id = item.KaId, Name = item.Name, EDRPOU = item.Kagent2?.OKPO, CreatedAt = DateTime.Now });
+                            db.Shop.Add(new Shop { Id = item.KaId, Name = item.Name, EDRPOU = item.Kagent2?.OKPO, CreatedAt = DateTime.Now, UniqueId = item.Id });
                         }
                     }
                 }

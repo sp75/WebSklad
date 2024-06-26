@@ -19,5 +19,6 @@ namespace Tranzit_Waybills_OS_DB
         public Nullable<int> Archived { get; set; }
         public string EDRPOU { get; set; }
         public Nullable<System.DateTime> CreatedAt { get; set; }
+        public Nullable<System.Guid> UniqueId { get; set; }
     }
 }

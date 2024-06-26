@@ -42,6 +42,7 @@
           <Property Name="Archived" Type="int" />
           <Property Name="EDRPOU" Type="nvarchar" MaxLength="50" />
           <Property Name="CreatedAt" Type="datetime" />
+          <Property Name="UniqueId" Type="uniqueidentifier" />
         </EntityType>
         <EntityType Name="WaybillDet">
           <Key>
@@ -126,6 +127,7 @@
           <Property Name="Archived" Type="Int32" />
           <Property Name="EDRPOU" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="CreatedAt" Type="DateTime" Precision="3" />
+          <Property Name="UniqueId" Type="Guid" />
         </EntityType>
         <EntityType Name="Product">
           <Key>
@@ -186,6 +188,7 @@
           <EntitySetMapping Name="Shop">
             <EntityTypeMapping TypeName="Tranzit_Waybills_OSModel.Shop">
               <MappingFragment StoreEntitySet="Shop">
+                <ScalarProperty Name="UniqueId" ColumnName="UniqueId" />
                 <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
                 <ScalarProperty Name="EDRPOU" ColumnName="EDRPOU" />
                 <ScalarProperty Name="Archived" ColumnName="Archived" />
