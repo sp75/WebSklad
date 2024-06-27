@@ -53,50 +53,54 @@ FROM [SERVER_OS].[Tranzit_OS].[dbo].[v_Sales]
 inner join Materials m on m.OpenStoreId = v_Sales.ARTID
 WHERE SESSEND IS NOT null and  v_Sales.SAREAID = {0} AND coalesce( m.Archived,0) = 0 and SessionStartDate > {1}
 GROUP BY [v_Sales].SESSID,v_Sales.SAREAID, ARTID, ARTCODE, ARTNAME,SessionStartDate, v_Sales.[SYSTEMID],m.MatId", k_item.OpenStoreAreaId, k_item.LastInventoryDate).ToList();
-
-                foreach (var mat_sales_item in ka_sales.GroupBy(g => new { g.SESSID, g.SYSTEMID, g.SessionStartDate }).ToList())
+                using (var sp_base = SPDatabase.SPBase())
                 {
-                    var wb = db.WaybillList.Add(new WaybillList()
+                    foreach (var mat_sales_item in ka_sales.GroupBy(g => new { g.SESSID, g.SYSTEMID, g.SessionStartDate }).ToList())
                     {
-                        Id = Guid.NewGuid(),
-                        WType = -5,
-                        DefNum = 0,
-                        OnDate = DateTime.Now,
-                        Num = db.GetDocNum("wb_write_off").FirstOrDefault(),
-                        CurrId = 2,
-                        OnValue = 1,
-                        //   PersonId = DBHelper.CurrentUser.KaId,
-                        WaybillMove = new WaybillMove { SourceWid = k_item.WId.Value },
-                        Nds = 0,
-                        //       UpdatedBy = DBHelper.CurrentUser.UserId,
-                        EntId = _enterprise?.KaId,
-                        AdditionalDocTypeId = 2, //Продажі
-                        Reason = $"Почток змніни: {mat_sales_item.Key.SessionStartDate}, Нмер каси: {mat_sales_item.Key.SYSTEMID}",
-                        Notes = "Списання товарів за зміну по касі"
-                    });
-
-                    db.SaveChanges();
-
-                    foreach (var item in mat_sales_item)
-                    {
-                        var wbd = new WaybillDet()
+                        var wb = sp_base.WaybillList.Add(new WaybillList()
                         {
-                            WbillId = wb.WbillId,
-                            Num = wb.WaybillDet.Count() + 1,
-                            Amount = item.Amount,
-                            OnValue = wb.OnValue,
-                            WId = k_item.WId.Value,
-                            Nds = wb.Nds,
-                            CurrId = wb.CurrId,
-                            OnDate = wb.OnDate,
-                            MatId = item.MatId,
-                            Price = item.Total / item.Amount,
-                            BasePrice = item.Total / item.Amount
-                        };
+                            Id = Guid.NewGuid(),
+                            WType = -5,
+                            DefNum = 0,
+                            OnDate = DateTime.Now,
+                            Num = sp_base.GetDocNum("wb_write_off").FirstOrDefault(),
+                            CurrId = 2,
+                            OnValue = 1,
+                            //   PersonId = DBHelper.CurrentUser.KaId,
+                            WaybillMove = new WaybillMove { SourceWid = k_item.WId.Value },
+                            Nds = 0,
+                            //       UpdatedBy = DBHelper.CurrentUser.UserId,
+                            EntId = _enterprise?.KaId,
+                            AdditionalDocTypeId = 2, //Продажі
+                            Reason = $"Почток змніни: {mat_sales_item.Key.SessionStartDate}, Номер каси: {mat_sales_item.Key.SYSTEMID}",
+                            Notes = "Списання товарів за зміну по касі"
+                        });
 
-                        db.SaveChanges();
+                        sp_base.SaveChanges();
 
-                        db.ReservedPositionV2(wbd.PosId);
+                        foreach (var item in mat_sales_item)
+                        {
+                            var wbd = sp_base.WaybillDet.Add( new WaybillDet()
+                            {
+                                WbillId = wb.WbillId,
+                                Num = wb.WaybillDet.Count() + 1,
+                                Amount = item.Amount,
+                                OnValue = wb.OnValue,
+                                WId = k_item.WId.Value,
+                                Nds = wb.Nds,
+                                CurrId = wb.CurrId,
+                                OnDate = wb.OnDate,
+                                MatId = item.MatId,
+                                Price = item.Total / item.Amount,
+                                BasePrice = item.Total / item.Amount
+                            });
+
+                         
+
+                           
+                        }
+                        sp_base.SaveChanges();
+
                     }
                 }
             }
