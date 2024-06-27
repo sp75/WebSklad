@@ -162,6 +162,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Api\CustomerInventory\InventoryRepository.cs" />
     <Compile Include="Api\CustomerMove\AddItemRequest.cs" />
     <Compile Include="Api\CustomerMove\PosInView.cs" />
     <Compile Include="Api\CustomerMove\WaybillMoveRepository.cs" />
