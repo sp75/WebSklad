@@ -9,7 +9,7 @@ namespace WebApi.Api.CustomerInventory
 {
     public class InventoryRepository: BaseRepository
     {
-        public List<string> ReservedAllosition(int wbill_id)
+        public List<string> ReservedAllosition(int wbill_id, bool execute)
         {
             var list = new List<string>();
 
@@ -24,6 +24,11 @@ namespace WebApi.Api.CustomerInventory
                 {
                     list.Add(i.MatName);
                 }
+            }
+
+            if (execute && !list.Any())
+            {
+                db.ExecuteWayBill(wbill_id, null, null).ToList().FirstOrDefault();
             }
 
             return list;

@@ -121,12 +121,12 @@ namespace WebApi.Controllers
                                     list.Add(i.MatName);
                                 }
                             }*/
-                        var list = new InventoryRepository().ReservedAllosition(wb_write_off.WbillId);
+                        var list = new InventoryRepository().ReservedAllosition(wb_write_off.WbillId, true);
 
-                        if (!list.Any())
+                    /*    if (!list.Any())
                         {
                             SPDatabase.SPBase().ExecuteWayBill(wb_write_off.WbillId, null, null).ToList().FirstOrDefault();
-                        }
+                        }*/
                     }
                     else
                     {

@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApi", "WebApi\WebApi.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tranzit_Waybills_OS_DB", "Tranzit_Waybills_OS_DB\Tranzit_Waybills_OS_DB.csproj", "{E20375BC-8ABA-4608-9D4B-20418BE6775E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tranzit_OS", "Tranzit_OS\Tranzit_OS.csproj", "{B0D76D38-8ABF-48D9-82EA-3AE079B0EAF6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{E20375BC-8ABA-4608-9D4B-20418BE6775E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E20375BC-8ABA-4608-9D4B-20418BE6775E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E20375BC-8ABA-4608-9D4B-20418BE6775E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B0D76D38-8ABF-48D9-82EA-3AE079B0EAF6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B0D76D38-8ABF-48D9-82EA-3AE079B0EAF6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B0D76D38-8ABF-48D9-82EA-3AE079B0EAF6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B0D76D38-8ABF-48D9-82EA-3AE079B0EAF6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

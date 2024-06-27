@@ -303,6 +303,10 @@
     <Content Include="Scripts\jquery-1.10.2.min.map" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Tranzit_OS\Tranzit_OS.csproj">
+      <Project>{b0d76d38-8abf-48d9-82ea-3ae079b0eaf6}</Project>
+      <Name>Tranzit_OS</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Tranzit_Waybills_OS_DB\Tranzit_Waybills_OS_DB.csproj">
       <Project>{e20375bc-8aba-4608-9d4b-20418be6775e}</Project>
       <Name>Tranzit_Waybills_OS_DB</Name>

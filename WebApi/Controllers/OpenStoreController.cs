@@ -8,6 +8,8 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using Tranzit_OS;
+using WebApi.Api.CustomerInventory;
 using WebApi.Api.CustomerMove;
 using WebApi.Controllers.Models;
 using WebApi.Core;
@@ -33,7 +35,7 @@ namespace WebApi.Controllers
   )x
 where x.LastInventoryDate is not null").ToList();
 
-            foreach(var k_item in ka_list)
+            foreach (var k_item in ka_list)
             {
                 var _enterprise = db.Kagent.FirstOrDefault(w => w.KType == 3 && w.Deleted == 0 && (w.Archived == null || w.Archived == 0) && w.EnterpriseWorker.Any(a => a.WorkerId == k_item.KaId));
 
@@ -51,11 +53,12 @@ where x.LastInventoryDate is not null").ToList();
  ,SUM(v_Sales.TOTAL) Total
 FROM [SERVER_OS].[Tranzit_OS].[dbo].[v_Sales]
 inner join Materials m on m.OpenStoreId = v_Sales.ARTID
-WHERE SESSEND IS NOT null and  v_Sales.SAREAID = {0} AND coalesce( m.Archived,0) = 0 and SessionStartDate > {1}
-GROUP BY [v_Sales].SESSID,v_Sales.SAREAID, ARTID, ARTCODE, ARTNAME,SessionStartDate, v_Sales.[SYSTEMID],m.MatId", k_item.OpenStoreAreaId, k_item.LastInventoryDate).ToList();
+left outer join  [SERVER_OS].[Tranzit_OS].[dbo].SESS_EXPOTR on SESS_EXPOTR.SESSID = v_Sales.SESSID and SESS_EXPOTR.SYSTEMID = v_Sales.SYSTEMID and SESS_EXPOTR.SAREAID = v_Sales.SAREAID
+WHERE SESSEND IS NOT null and  v_Sales.SAREAID = {0} AND coalesce( m.Archived,0) = 0 and SessionStartDate > {1} and  SESS_EXPOTR.SYSTEMID is null and m.TypeId in (1,5)
+GROUP BY [v_Sales].SESSID,v_Sales.SAREAID, ARTID, ARTCODE, ARTNAME,SessionStartDate, v_Sales.[SYSTEMID], m.MatId", k_item.OpenStoreAreaId, k_item.LastInventoryDate).ToList();
                 using (var sp_base = SPDatabase.SPBase())
                 {
-                    foreach (var mat_sales_item in ka_sales.GroupBy(g => new { g.SESSID, g.SYSTEMID, g.SessionStartDate }).ToList())
+                    foreach (var mat_sales_item in ka_sales.GroupBy(g => new { g.SESSID, g.SYSTEMID, g.SessionStartDate, g.SAREAID }).ToList())
                     {
                         var wb = sp_base.WaybillList.Add(new WaybillList()
                         {
@@ -78,9 +81,9 @@ GROUP BY [v_Sales].SESSID,v_Sales.SAREAID, ARTID, ARTCODE, ARTNAME,SessionStartD
 
                         sp_base.SaveChanges();
 
-                        foreach (var item in mat_sales_item)
+                        foreach (var item in mat_sales_item.ToList())
                         {
-                            var wbd = sp_base.WaybillDet.Add( new WaybillDet()
+                            var wbd = sp_base.WaybillDet.Add(new WaybillDet()
                             {
                                 WbillId = wb.WbillId,
                                 Num = wb.WaybillDet.Count() + 1,
@@ -94,13 +97,23 @@ GROUP BY [v_Sales].SESSID,v_Sales.SAREAID, ARTID, ARTCODE, ARTNAME,SessionStartD
                                 Price = item.Total / item.Amount,
                                 BasePrice = item.Total / item.Amount
                             });
-
-                         
-
-                           
                         }
+
+                        
                         sp_base.SaveChanges();
 
+                        wb.UpdatedAt = DateTime.Now;
+
+                        sp_base.SaveChanges();
+
+                             var list = new InventoryRepository().ReservedAllosition(wb.WbillId, false);
+
+                        using (var tr_os_db = new Tranzit_OSEntities())
+                        {
+                            tr_os_db.SESS_EXPOTR.Add(new SESS_EXPOTR { SAREAID = mat_sales_item.Key.SAREAID, SESSID = mat_sales_item.Key.SESSID, SYSTEMID = mat_sales_item.Key.SYSTEMID });
+                            tr_os_db.SaveChanges();
+                        }
+                            
                     }
                 }
             }
