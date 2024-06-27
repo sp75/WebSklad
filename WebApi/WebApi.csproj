@@ -206,6 +206,7 @@
     <Compile Include="Controllers\MaterialsController.cs" />
     <Compile Include="Controllers\Models\CustomerPosIn.cs" />
     <Compile Include="Controllers\Models\CustomerPosOut.cs" />
+    <Compile Include="Controllers\OpenStoreController.cs" />
     <Compile Include="Controllers\OrdersSellersController.cs" />
     <Compile Include="Controllers\BaseApiController.cs" />
     <Compile Include="Controllers\CustomerReturnsController.cs" />
@@ -282,6 +283,7 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Models\" />
+    <Folder Include="Views\OpenStore\" />
     <Folder Include="Views\ReturnSupplier\" />
   </ItemGroup>
   <ItemGroup>
