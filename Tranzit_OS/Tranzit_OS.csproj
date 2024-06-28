@@ -68,6 +68,9 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Tranzit_OS_Model.edmx</DependentUpon>
     </Compile>
+    <Compile Include="v_SESS.cs">
+      <DependentUpon>Tranzit_OS_Model.tt</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EntityDeploy Include="Tranzit_OS_Model.edmx">

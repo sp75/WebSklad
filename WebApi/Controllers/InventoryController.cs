@@ -10,6 +10,7 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using WebApi.Api.CustomerInventory;
+using WebApi.Api.OpenStore;
 using WebApi.Controllers.Models;
 using WebApi.Core;
 
@@ -34,6 +35,8 @@ namespace WebApi.Controllers
         [HttpPost, Route("execute")]
         public bool Execute(List<InventoryActDet> req)
         {
+            new OpenStoreRepository().ImportKagentSales(Context.Token);
+
             bool result_exe = true;
 
             using (var sp_base = SPDatabase.SPBase())
@@ -52,7 +55,8 @@ namespace WebApi.Controllers
                     WaybillMove = new WaybillMove { SourceWid = ka.WId.Value },
                     //    UpdatedBy = DBHelper.CurrentUser.UserId,
                     EntId = _enterprise?.KaId,
-                    Checked = 1
+                    Checked = 1,
+                    Notes = "Віддалена інвентаризація торгової точки"
                 });
 
                 sp_base.SaveChanges();

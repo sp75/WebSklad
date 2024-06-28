@@ -170,6 +170,9 @@
     <Compile Include="Api\CustomerReturns\GetPosInView.cs" />
     <Compile Include="Api\CustomerReturns\GetPosOutView.cs" />
     <Compile Include="Api\CustomerReturns\ReturnetPosInView.cs" />
+    <Compile Include="Api\OpenStore\OpenStoreAreaList.cs" />
+    <Compile Include="Api\OpenStore\OpenStoreRepository.cs" />
+    <Compile Include="Api\OpenStore\SalesList.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />

@@ -26,5 +26,6 @@ namespace Tranzit_OS
         }
     
         public virtual DbSet<SESS_EXPOTR> SESS_EXPOTR { get; set; }
+        public virtual DbSet<v_SESS> v_SESS { get; set; }
     }
 }
