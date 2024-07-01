@@ -42,7 +42,7 @@ namespace WebApi.Controllers
                     s.Notes,
                     s.Reason,
                     s.WType,
-                    OnWh = db.GetRelDocIds(s.Id).Any(a => a.DocType == 1 && a.RelType == 1)
+                    OnWh = s.DeliveredWaybillId != null
                 }).ToList();
 
                 return Ok(wb);
