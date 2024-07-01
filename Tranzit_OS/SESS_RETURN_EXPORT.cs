@@ -12,7 +12,7 @@ namespace Tranzit_OS
     using System;
     using System.Collections.Generic;
     
-    public partial class SESS_EXPOTR
+    public partial class SESS_RETURN_EXPORT
     {
         public int SESSID { get; set; }
         public int SYSTEMID { get; set; }

@@ -31,8 +31,8 @@ namespace WebApi.Api.OpenStore
  ,SUM(v_Sales.TOTAL) Total
 FROM [SERVER_OS].[Tranzit_OS].[dbo].[v_Sales]
 inner join Materials m on m.OpenStoreId = v_Sales.ARTID
-left outer join  [SERVER_OS].[Tranzit_OS].[dbo].SESS_EXPOTR on SESS_EXPOTR.SESSID = v_Sales.SESSID and SESS_EXPOTR.SYSTEMID = v_Sales.SYSTEMID and SESS_EXPOTR.SAREAID = v_Sales.SAREAID
-WHERE SESSEND IS NOT null and  v_Sales.SAREAID = {0} AND coalesce( m.Archived,0) = 0 and SessionStartDate > {1} and  SESS_EXPOTR.SYSTEMID is null and m.TypeId in (1,5)
+left outer join  [SERVER_OS].[Tranzit_OS].[dbo].SESS_EXPORT on SESS_EXPORT.SESSID = v_Sales.SESSID and SESS_EXPORT.SYSTEMID = v_Sales.SYSTEMID and SESS_EXPORT.SAREAID = v_Sales.SAREAID
+WHERE SESSEND IS NOT null and  v_Sales.SAREAID = {0} AND coalesce( m.Archived,0) = 0 and SessionStartDate > {1} and  SESS_EXPORT.SYSTEMID is null and m.TypeId in (1,5)
 GROUP BY [v_Sales].SESSID,v_Sales.SAREAID, ARTID, ARTCODE, ARTNAME,SessionStartDate, v_Sales.[SYSTEMID], m.MatId", area_id, last_inventory_date).ToList();
 
                 foreach (var mat_sales_item in ka_sales_out.GroupBy(g => new { g.SESSID, g.SYSTEMID, g.SessionStartDate, g.SAREAID }).ToList())
@@ -60,7 +60,7 @@ GROUP BY [v_Sales].SESSID,v_Sales.SAREAID, ARTID, ARTCODE, ARTNAME,SessionStartD
 
                     using (var tr_os_db = new Tranzit_OSEntities())
                     {
-                        tr_os_db.SESS_EXPOTR.Add(new SESS_EXPOTR { SAREAID = mat_sales_item.Key.SAREAID, SESSID = mat_sales_item.Key.SESSID, SYSTEMID = mat_sales_item.Key.SYSTEMID });
+                        tr_os_db.SESS_EXPORT.Add(new SESS_EXPORT { SAREAID = mat_sales_item.Key.SAREAID, SESSID = mat_sales_item.Key.SESSID, SYSTEMID = mat_sales_item.Key.SYSTEMID });
                         tr_os_db.SaveChanges();
                     }
 
@@ -93,25 +93,6 @@ GROUP BY [v_Sales].SESSID,v_Sales.SAREAID, ARTID, ARTCODE, ARTNAME,SessionStartD
             }
         }
 
-        public void ImportKagentSales(Guid? id)
-        {
-            var ka = db.Database.SqlQuery<OpenStoreAreaList>(@"select * from
-(
-  SELECT [KaId]
-      ,[Name]
-      ,[Id]
-      ,[OpenStoreAreaId]
-      ,WId
-	  , (SELECT MAX(wl.ondate) FROM v_WaybillInventory wl WHERE wl.FromWId = [Kagent].WId ) LastInventoryDate
-  FROM [dbo].[Kagent]
-  where [OpenStoreAreaId] is not null and WId is not null and Kagent.Id= {0}
-  )x
-where x.LastInventoryDate is not null", id).FirstOrDefault();
-
-            ImportKagentSales(ka.KaId, ka.OpenStoreAreaId.Value, ka.LastInventoryDate.Value, ka.WId.Value);
-        }
-
-
         public void ImportKagentReturns(int ka_id, int area_id, DateTime last_inventory_date, int wid)
         {
             using (var sp_base = SPDatabase.SPBase())
@@ -131,8 +112,8 @@ where x.LastInventoryDate is not null", id).FirstOrDefault();
  ,SUM(v_ReturnSales.TOTAL) Total
 FROM [SERVER_OS].[Tranzit_OS].[dbo].v_ReturnSales
 inner join Materials m on m.OpenStoreId = v_ReturnSales.ARTID
-left outer join  [SERVER_OS].[Tranzit_OS].[dbo].SESS_EXPOTR on SESS_EXPOTR.SESSID = v_ReturnSales.SESSID and SESS_EXPOTR.SYSTEMID = v_ReturnSales.SYSTEMID and SESS_EXPOTR.SAREAID = v_ReturnSales.SAREAID
-WHERE SESSEND IS NOT null and  v_ReturnSales.SAREAID = {0} AND coalesce( m.Archived,0) = 0 and SessionStartDate > {1} and  SESS_EXPOTR.SYSTEMID is null and m.TypeId in (1,5)
+left outer join  [SERVER_OS].[Tranzit_OS].[dbo].SESS_RETURN_EXPORT on SESS_RETURN_EXPORT.SESSID = v_ReturnSales.SESSID and SESS_RETURN_EXPORT.SYSTEMID = v_ReturnSales.SYSTEMID and SESS_RETURN_EXPORT.SAREAID = v_ReturnSales.SAREAID
+WHERE SESSEND IS NOT null and  v_ReturnSales.SAREAID = {0} AND coalesce( m.Archived,0) = 0 and SessionStartDate > {1} and  SESS_RETURN_EXPORT.SYSTEMID is null and m.TypeId in (1,5)
 GROUP BY v_ReturnSales.SESSID, v_ReturnSales.SAREAID, ARTID, ARTCODE, ARTNAME, SessionStartDate, v_ReturnSales.[SYSTEMID], m.MatId", area_id, last_inventory_date).ToList();
 
                 foreach (var mat_sales_item in ka_sales_out.GroupBy(g => new { g.SESSID, g.SYSTEMID, g.SessionStartDate, g.SAREAID }).ToList())
@@ -160,7 +141,7 @@ GROUP BY v_ReturnSales.SESSID, v_ReturnSales.SAREAID, ARTID, ARTCODE, ARTNAME, S
 
                     using (var tr_os_db = new Tranzit_OSEntities())
                     {
-                        tr_os_db.SESS_EXPOTR.Add(new SESS_EXPOTR { SAREAID = mat_sales_item.Key.SAREAID, SESSID = mat_sales_item.Key.SESSID, SYSTEMID = mat_sales_item.Key.SYSTEMID });
+                        tr_os_db.SESS_RETURN_EXPORT.Add(new SESS_RETURN_EXPORT { SAREAID = mat_sales_item.Key.SAREAID, SESSID = mat_sales_item.Key.SESSID, SYSTEMID = mat_sales_item.Key.SYSTEMID, CREATED_AT = DateTime.Now });
                         tr_os_db.SaveChanges();
                     }
 
@@ -208,6 +189,25 @@ GROUP BY v_ReturnSales.SESSID, v_ReturnSales.SAREAID, ARTID, ARTCODE, ARTNAME, S
                     db.SaveChanges();
                 }
             }
+        }
+
+        public void ImportKagentSales(Guid? id)
+        {
+            var ka = db.Database.SqlQuery<OpenStoreAreaList>(@"select * from
+(
+  SELECT [KaId]
+      ,[Name]
+      ,[Id]
+      ,[OpenStoreAreaId]
+      ,WId
+	  , (SELECT MAX(wl.ondate) FROM v_WaybillInventory wl WHERE wl.FromWId = [Kagent].WId ) LastInventoryDate
+  FROM [dbo].[Kagent]
+  where [OpenStoreAreaId] is not null and WId is not null and Kagent.Id= {0}
+  )x
+where x.LastInventoryDate is not null", id).FirstOrDefault();
+
+            ImportKagentSales(ka.KaId, ka.OpenStoreAreaId.Value, ka.LastInventoryDate.Value, ka.WId.Value);
+            ImportKagentReturns(ka.KaId, ka.OpenStoreAreaId.Value, ka.LastInventoryDate.Value, ka.WId.Value);
         }
     }
 }

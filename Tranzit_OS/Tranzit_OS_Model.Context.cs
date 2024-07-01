@@ -25,7 +25,8 @@ namespace Tranzit_OS
             throw new UnintentionalCodeFirstException();
         }
     
-        public virtual DbSet<SESS_EXPOTR> SESS_EXPOTR { get; set; }
         public virtual DbSet<v_SESS> v_SESS { get; set; }
+        public virtual DbSet<SESS_EXPORT> SESS_EXPORT { get; set; }
+        public virtual DbSet<SESS_RETURN_EXPORT> SESS_RETURN_EXPORT { get; set; }
     }
 }

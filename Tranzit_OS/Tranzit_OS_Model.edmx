@@ -5,7 +5,18 @@
     <!-- SSDL content -->
     <edmx:StorageModels>
     <Schema Namespace="Tranzit_OSModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
-        <EntityType Name="SESS_EXPOTR">
+        <EntityType Name="SESS_EXPORT">
+          <Key>
+            <PropertyRef Name="SESSID" />
+            <PropertyRef Name="SYSTEMID" />
+            <PropertyRef Name="SAREAID" />
+          </Key>
+          <Property Name="SESSID" Type="int" Nullable="false" />
+          <Property Name="SYSTEMID" Type="int" Nullable="false" />
+          <Property Name="SAREAID" Type="int" Nullable="false" />
+          <Property Name="CREATED_AT" Type="datetime" />
+        </EntityType>
+        <EntityType Name="SESS_RETURN_EXPORT">
           <Key>
             <PropertyRef Name="SESSID" />
             <PropertyRef Name="SYSTEMID" />
@@ -32,7 +43,8 @@ warning 6002: The table/view 'Tranzit_OS.dbo.v_SESS' does not have a primary key
           <Property Name="SESSEND" Type="varchar" MaxLength="14" />
         </EntityType>
         <EntityContainer Name="Tranzit_OSModelStoreContainer">
-          <EntitySet Name="SESS_EXPOTR" EntityType="Self.SESS_EXPOTR" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="SESS_EXPORT" EntityType="Self.SESS_EXPORT" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="SESS_RETURN_EXPORT" EntityType="Self.SESS_RETURN_EXPORT" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="v_SESS" EntityType="Self.v_SESS" store:Type="Views" store:Schema="dbo">
             <DefiningQuery>SELECT 
     [v_SESS].[SESSID] AS [SESSID], 
@@ -47,20 +59,10 @@ warning 6002: The table/view 'Tranzit_OS.dbo.v_SESS' does not have a primary key
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="Tranzit_OSModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
-        <EntityType Name="SESS_EXPOTR">
-          <Key>
-            <PropertyRef Name="SESSID" />
-            <PropertyRef Name="SYSTEMID" />
-            <PropertyRef Name="SAREAID" />
-          </Key>
-          <Property Name="SESSID" Type="Int32" Nullable="false" />
-          <Property Name="SYSTEMID" Type="Int32" Nullable="false" />
-          <Property Name="SAREAID" Type="Int32" Nullable="false" />
-          <Property Name="CREATED_AT" Type="DateTime" Precision="3" />
-        </EntityType>
         <EntityContainer Name="Tranzit_OSEntities" annotation:LazyLoadingEnabled="true">
-          <EntitySet Name="SESS_EXPOTR" EntityType="Self.SESS_EXPOTR" />
           <EntitySet Name="v_SESS" EntityType="Tranzit_OSModel.v_SESS" />
+          <EntitySet Name="SESS_EXPORT" EntityType="Tranzit_OSModel.SESS_EXPORT" />
+          <EntitySet Name="SESS_RETURN_EXPORT" EntityType="Tranzit_OSModel.SESS_RETURN_EXPORT" />
         </EntityContainer>
         <EntityType Name="v_SESS">
           <Key>
@@ -75,27 +77,59 @@ warning 6002: The table/view 'Tranzit_OS.dbo.v_SESS' does not have a primary key
           <Property Name="SESSSTART" Type="String" Nullable="false" MaxLength="14" FixedLength="false" Unicode="false" />
           <Property Name="SESSEND" Type="String" MaxLength="14" FixedLength="false" Unicode="false" />
         </EntityType>
+        <EntityType Name="SESS_EXPORT">
+          <Key>
+            <PropertyRef Name="SESSID" />
+            <PropertyRef Name="SYSTEMID" />
+            <PropertyRef Name="SAREAID" />
+          </Key>
+          <Property Name="SESSID" Type="Int32" Nullable="false" />
+          <Property Name="SYSTEMID" Type="Int32" Nullable="false" />
+          <Property Name="SAREAID" Type="Int32" Nullable="false" />
+          <Property Name="CREATED_AT" Type="DateTime" Precision="3" />
+        </EntityType>
+        <EntityType Name="SESS_RETURN_EXPORT">
+          <Key>
+            <PropertyRef Name="SESSID" />
+            <PropertyRef Name="SYSTEMID" />
+            <PropertyRef Name="SAREAID" />
+          </Key>
+          <Property Name="SESSID" Type="Int32" Nullable="false" />
+          <Property Name="SYSTEMID" Type="Int32" Nullable="false" />
+          <Property Name="SAREAID" Type="Int32" Nullable="false" />
+          <Property Name="CREATED_AT" Type="DateTime" Precision="3" />
+        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
         <EntityContainerMapping StorageEntityContainer="Tranzit_OSModelStoreContainer" CdmEntityContainer="Tranzit_OSEntities">
-          <EntitySetMapping Name="SESS_EXPOTR">
-            <EntityTypeMapping TypeName="Tranzit_OSModel.SESS_EXPOTR">
-              <MappingFragment StoreEntitySet="SESS_EXPOTR">
-                <ScalarProperty Name="SESSID" ColumnName="SESSID" />
-                <ScalarProperty Name="SYSTEMID" ColumnName="SYSTEMID" />
-                <ScalarProperty Name="SAREAID" ColumnName="SAREAID" />
-                <ScalarProperty Name="CREATED_AT" ColumnName="CREATED_AT" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="v_SESS">
             <EntityTypeMapping TypeName="Tranzit_OSModel.v_SESS">
               <MappingFragment StoreEntitySet="v_SESS">
                 <ScalarProperty Name="SESSEND" ColumnName="SESSEND" />
                 <ScalarProperty Name="SESSSTART" ColumnName="SESSSTART" />
+                <ScalarProperty Name="SAREAID" ColumnName="SAREAID" />
+                <ScalarProperty Name="SYSTEMID" ColumnName="SYSTEMID" />
+                <ScalarProperty Name="SESSID" ColumnName="SESSID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="SESS_EXPORT">
+            <EntityTypeMapping TypeName="Tranzit_OSModel.SESS_EXPORT">
+              <MappingFragment StoreEntitySet="SESS_EXPORT">
+                <ScalarProperty Name="CREATED_AT" ColumnName="CREATED_AT" />
+                <ScalarProperty Name="SAREAID" ColumnName="SAREAID" />
+                <ScalarProperty Name="SYSTEMID" ColumnName="SYSTEMID" />
+                <ScalarProperty Name="SESSID" ColumnName="SESSID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="SESS_RETURN_EXPORT">
+            <EntityTypeMapping TypeName="Tranzit_OSModel.SESS_RETURN_EXPORT">
+              <MappingFragment StoreEntitySet="SESS_RETURN_EXPORT">
+                <ScalarProperty Name="CREATED_AT" ColumnName="CREATED_AT" />
                 <ScalarProperty Name="SAREAID" ColumnName="SAREAID" />
                 <ScalarProperty Name="SYSTEMID" ColumnName="SYSTEMID" />
                 <ScalarProperty Name="SESSID" ColumnName="SESSID" />

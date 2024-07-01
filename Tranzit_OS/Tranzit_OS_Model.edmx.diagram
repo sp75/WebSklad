@@ -5,8 +5,9 @@
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
       <Diagram DiagramId="97ab7c5a11ae4dbfb31805c99d665270" Name="Diagram1">
-        <EntityTypeShape EntityType="Tranzit_OSModel.SESS_EXPOTR" Width="1.5" PointX="0.75" PointY="0.75" IsExpanded="true" />
         <EntityTypeShape EntityType="Tranzit_OSModel.v_SESS" Width="1.5" PointX="2.625" PointY="0.75" />
+        <EntityTypeShape EntityType="Tranzit_OSModel.SESS_EXPORT" Width="1.5" PointX="0.75" PointY="3.75" />
+        <EntityTypeShape EntityType="Tranzit_OSModel.SESS_RETURN_EXPORT" Width="1.5" PointX="2.75" PointY="3.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

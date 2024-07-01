@@ -24,22 +24,21 @@ namespace WebApi.Controllers
         [HttpGet, Route("import-sales")]
         public void ImportSales()
         {
-            var ka_list = db.Database.SqlQuery<OpenStoreAreaList>(@"select * from
-(
-  SELECT [KaId]
+            var ka_list = db.Database.SqlQuery<OpenStoreAreaList>(@"SELECT [KaId]
       ,[Name]
       ,[Id]
       ,[OpenStoreAreaId]
       ,WId
-	  , (SELECT MAX(wl.ondate) FROM v_WaybillInventory wl WHERE wl.FromWId = [Kagent].WId ) LastInventoryDate
-  FROM [dbo].[Kagent]
-  where [OpenStoreAreaId] is not null and WId is not null
-  )x
-where x.LastInventoryDate is not null").ToList();
+	  ,LastInventoryDate
+  FROM [dbo].v_Kagent
+  where [OpenStoreAreaId] is not null and WId is not null and LastInventoryDate is not null").ToList();
 
             foreach (var k_item in ka_list)
             {
-                new OpenStoreRepository().ImportKagentSales(k_item.KaId, k_item.OpenStoreAreaId.Value, k_item.LastInventoryDate.Value, k_item.WId.Value);
+                var repo=  new OpenStoreRepository();
+
+                repo.ImportKagentSales(k_item.KaId, k_item.OpenStoreAreaId.Value, k_item.LastInventoryDate.Value, k_item.WId.Value);
+                repo.ImportKagentReturns(k_item.KaId, k_item.OpenStoreAreaId.Value, k_item.LastInventoryDate.Value, k_item.WId.Value);
             }
         }
     
