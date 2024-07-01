@@ -43,11 +43,6 @@ where x.LastInventoryDate is not null").ToList();
             }
         }
     
-
-     
-
-
-
         [ApiTokenAuthorize]
         [HttpGet, Route("is-session-end")]
         public bool IsSessionEnd()
