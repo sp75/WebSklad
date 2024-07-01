@@ -41,7 +41,8 @@ namespace WebApi.Controllers
                     s.Id,
                     s.Notes,
                     s.Reason,
-                    s.WType
+                    s.WType,
+                    OnWh = db.GetRelDocIds(s.Id).Any(a => a.DocType == 1 && a.RelType == 1)
                 }).ToList();
 
                 return Ok(wb);
