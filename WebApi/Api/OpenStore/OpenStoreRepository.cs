@@ -128,7 +128,7 @@ GROUP BY v_ReturnSales.SESSID, v_ReturnSales.SAREAID, ARTID, ARTCODE, ARTNAME, S
                         CurrId = 2,
                         OnValue = 1,
                         //   PersonId = DBHelper.CurrentUser.KaId,
-                   //     WaybillMove = new WaybillMove { SourceWid = wid },
+                        WaybillMove = new WaybillMove { SourceWid = wid , DestWId = wid },
                         Nds = 0,
                         //       UpdatedBy = DBHelper.CurrentUser.UserId,
                         EntId = _enterprise?.KaId,
