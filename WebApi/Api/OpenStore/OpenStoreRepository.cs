@@ -193,18 +193,15 @@ GROUP BY v_ReturnSales.SESSID, v_ReturnSales.SAREAID, ARTID, ARTCODE, ARTNAME, S
 
         public void ImportKagentSales(Guid? id)
         {
-            var ka = db.Database.SqlQuery<OpenStoreAreaList>(@"select * from
-(
-  SELECT [KaId]
+            var ka = db.Database.SqlQuery<OpenStoreAreaList>(@"
+SELECT [KaId]
       ,[Name]
       ,[Id]
       ,[OpenStoreAreaId]
       ,WId
-	  , (SELECT MAX(wl.ondate) FROM v_WaybillInventory wl WHERE wl.FromWId = [Kagent].WId ) LastInventoryDate
-  FROM [dbo].[Kagent]
-  where [OpenStoreAreaId] is not null and WId is not null and Kagent.Id= {0}
-  )x
-where x.LastInventoryDate is not null", id).FirstOrDefault();
+	  ,LastInventoryDate
+  FROM [dbo].v_Kagent
+  where [OpenStoreAreaId] is not null and WId is not null and LastInventoryDate is not null  and Kagent.Id= {0}", id).FirstOrDefault();
 
             ImportKagentSales(ka.KaId, ka.OpenStoreAreaId.Value, ka.LastInventoryDate.Value, ka.WId.Value);
             ImportKagentReturns(ka.KaId, ka.OpenStoreAreaId.Value, ka.LastInventoryDate.Value, ka.WId.Value);
