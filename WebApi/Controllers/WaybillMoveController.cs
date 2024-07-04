@@ -32,7 +32,7 @@ namespace WebApi.Controllers
             {
                 var ka = sp_base.Kagent.FirstOrDefault(w => w.Id == Context.Token);
 
-                var wb = sp_base.v_WaybillMove.Where(w => w.OnDate >= req.start_date && w.OnDate < req.end_date && (w.FromWId == ka.WId || w.ToWId == ka.WId)).Select(s => new
+                var wb = sp_base.v_WaybillMove.Where(w => w.OnDate >= req.start_date && w.OnDate < req.end_date && (w.FromWId == ka.WId || w.ToWId == ka.WId) && (w.AdditionalDocTypeId ?? 0) == 0).Select(s => new
                 {
                     s.WbillId,
                     s.Num,
