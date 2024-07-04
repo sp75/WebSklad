@@ -21,15 +21,24 @@ namespace WebApi.Controllers
     [ApiTokenAuthorize]
     public class InventoryController :  BaseApiController
     {
-        public class InventoryActDet
+
+        [HttpPost, Route("checking")]
+        public IHttpActionResult CheckingInventoryAct(List<InventoryActDet> req)
         {
-            public Guid Id { get; set; }
-            public int? Num { get; set; }
-            public Guid InventoryActId { get; set; }
-            public int ARTID { get; set; }
-            public decimal Amount { get; set; }
-            public decimal Price { get; set; }
-            public DateTime? CreatedAt { get; set; }
+            var ka = db.Kagent.FirstOrDefault(w => w.Id == Context.Token);
+            var art_list = req.Select(s => s.ARTID).ToList();
+
+            var wh = new MaterialRemain(0).GetMaterialsOnWh(ka.WId.Value).Where(w => (w.TypeId == 1 || w.TypeId == 5 || w.TypeId == 6)).ToList();
+
+            var list = wh.Where(w => !art_list.Contains(w.OpenStoreId ?? 0)).Select(s => new
+            {
+                s.OpenStoreId,
+                s.CurRemain,
+                s.MatName,
+                s.Artikul
+            }).ToList();
+
+            return Ok(list);
         }
 
         [HttpPost, Route("execute")]
