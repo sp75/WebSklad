@@ -52,7 +52,7 @@ GROUP BY [v_Sales].SESSID,v_Sales.SAREAID, ARTID, ARTCODE, ARTNAME,SessionStartD
                         //       UpdatedBy = DBHelper.CurrentUser.UserId,
                         EntId = _enterprise?.KaId,
                         AdditionalDocTypeId = 2, //Продажі
-                        Reason = $"Почток змніни: {mat_sales_item.Key.SessionStartDate}, Номер каси: {mat_sales_item.Key.SYSTEMID}",
+                        Reason = $"Початок змніни: {mat_sales_item.Key.SessionStartDate}, Номер каси: {mat_sales_item.Key.SYSTEMID}",
                         Notes = $"Продажі товарів за зміну по касі {mat_sales_item.Key.SYSTEMID}"
                     });
 
@@ -133,8 +133,8 @@ GROUP BY v_ReturnSales.SESSID, v_ReturnSales.SAREAID, ARTID, ARTCODE, ARTNAME, S
                         //       UpdatedBy = DBHelper.CurrentUser.UserId,
                         EntId = _enterprise?.KaId,
                         AdditionalDocTypeId = 3, //Повернення
-                        Reason = $"Почток змніни: {mat_sales_item.Key.SessionStartDate}, Номер каси: {mat_sales_item.Key.SYSTEMID}",
-                        Notes = $"Повернення товарів за зміну по касі №{mat_sales_item.Key.SYSTEMID}"
+                        Reason = $"Початок змніни: {mat_sales_item.Key.SessionStartDate}, Номер каси: {mat_sales_item.Key.SYSTEMID}",
+                        Notes = $"Повернення товарів за зміну по касі {mat_sales_item.Key.SYSTEMID}"
                     });
 
                     sp_base.SaveChanges();
