@@ -53,7 +53,7 @@ GROUP BY [v_Sales].SESSID,v_Sales.SAREAID, ARTID, ARTCODE, ARTNAME,SessionStartD
                         EntId = _enterprise?.KaId,
                         AdditionalDocTypeId = 2, //Продажі
                         Reason = $"Почток змніни: {mat_sales_item.Key.SessionStartDate}, Номер каси: {mat_sales_item.Key.SYSTEMID}",
-                        Notes = "Списання товарів за зміну по касі"
+                        Notes = $"Продажі товарів за зміну по касі {mat_sales_item.Key.SYSTEMID}"
                     });
 
                     sp_base.SaveChanges();
