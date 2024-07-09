@@ -17,5 +17,7 @@ namespace WebApi.Api.OpenStore
         public int MatId { get; set; }
         public decimal Amount { get; set; }
         public decimal Total { get; set; }
+        public string GrpName { get; set; }
+        public string UNITNAME { get; set; }
     }
 }

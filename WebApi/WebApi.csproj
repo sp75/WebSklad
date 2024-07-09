@@ -167,10 +167,12 @@
     <Compile Include="Api\CustomerMove\AddItemRequest.cs" />
     <Compile Include="Api\CustomerMove\PosInView.cs" />
     <Compile Include="Api\CustomerMove\WaybillMoveRepository.cs" />
+    <Compile Include="Api\CustomerRemain\MaterialsOnWh.cs" />
     <Compile Include="Api\CustomerReturns\CustomerReturnsRepository.cs" />
     <Compile Include="Api\CustomerReturns\GetPosInView.cs" />
     <Compile Include="Api\CustomerReturns\GetPosOutView.cs" />
     <Compile Include="Api\CustomerReturns\ReturnetPosInView.cs" />
+    <Compile Include="Api\CustomerSales\CustomerSalesRepository.cs" />
     <Compile Include="Api\OpenStore\OpenStoreAreaList.cs" />
     <Compile Include="Api\OpenStore\OpenStoreRepository.cs" />
     <Compile Include="Api\OpenStore\SalesList.cs" />
