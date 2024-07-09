@@ -7,6 +7,7 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using WebApi.Api.CustomerReturns;
+using WebApi.Api.CustomerSales;
 using WebApi.Api.OpenStore;
 using WebApi.Controllers.Models;
 using WebApi.Core;
@@ -30,23 +31,7 @@ namespace WebApi.Controllers
         [HttpGet, Route("current-sales}")]
         public IHttpActionResult GetCurrentSales()
         {
-            var ka_sales_out = SPDatabase.SPBase().Database.SqlQuery<SalesList>(@"SELECT 
-  v_Sales.ARTID 
- ,v_Sales.ARTCODE
- ,v_Sales.ARTNAME
- ,v_Sales.SESSID
- ,v_Sales.SAREAID
- ,v_Sales.SYSTEMID
- ,v_Sales.SessionStartDate
- ,m.MatId
- ,SUM(v_Sales.AMOUNT) Amount
- ,SUM(v_Sales.TOTAL) Total
-FROM [SERVER_OS].[Tranzit_OS].[dbo].[v_Sales]
-inner join Materials m on m.OpenStoreId = v_Sales.ARTID
-inner join v_Kagent ka on ka.OpenStoreAreaId = v_Sales.SAREAID
-WHERE SESSEND IS null and coalesce( m.Archived,0) = 0 and m.TypeId in (1,5) and ka.Id = {0}
-GROUP BY [v_Sales].SESSID,v_Sales.SAREAID, ARTID, ARTCODE, ARTNAME,SessionStartDate, v_Sales.[SYSTEMID], m.MatId", Context.Token.Value).ToList();
-
+            var ka_sales_out = new CustomerSalesRepository().GetCurrentSales(Context.Token.Value);
             return Ok(ka_sales_out);
         }
 
