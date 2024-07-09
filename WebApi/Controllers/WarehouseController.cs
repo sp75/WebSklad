@@ -26,9 +26,10 @@ namespace WebApi.Controllers
             using (var sp_base = SPDatabase.SPBase())
             {
                 var ka = sp_base.Kagent.FirstOrDefault(w => w.Id == Context.Token);
+
                 var ka_sales_out = new CustomerSalesRepository().GetCurrentSales(Context.Token.Value);
                 
-                var mat_remain = new MaterialRemain(0).GetMaterialsOnWh(ka.WId.Value).Select(s => new MaterialsOnWh
+                var mat_remain = new MaterialRemain(0).GetMaterialsOnWh(ka.WId.Value).Where(w=> w.TypeId != null).Select(s => new MaterialsOnWh
                 {
                     Artikul = s.Artikul,
                     AvgPrice = s.AvgPrice,
