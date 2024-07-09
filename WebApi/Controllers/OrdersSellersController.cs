@@ -27,7 +27,7 @@ namespace WebApi.Controllers
         }
 
         [ApiTokenAuthorize]
-        [HttpGet, Route("current-sales}")]
+        [HttpGet, Route("current-sales")]
         public IHttpActionResult GetCurrentSales()
         {
             var ka_sales_out = SPDatabase.SPBase().Database.SqlQuery<SalesList>(@"SELECT 
