@@ -28,5 +28,8 @@ namespace Tranzit_OS
         public virtual DbSet<v_SESS> v_SESS { get; set; }
         public virtual DbSet<SESS_EXPORT> SESS_EXPORT { get; set; }
         public virtual DbSet<SESS_RETURN_EXPORT> SESS_RETURN_EXPORT { get; set; }
+        public virtual DbSet<v_Payment> v_Payment { get; set; }
+        public virtual DbSet<v_ReturnSales> v_ReturnSales { get; set; }
+        public virtual DbSet<v_Sales> v_Sales { get; set; }
     }
 }

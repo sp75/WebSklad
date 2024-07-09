@@ -71,6 +71,15 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Tranzit_OS_Model.edmx</DependentUpon>
     </Compile>
+    <Compile Include="v_Payment.cs">
+      <DependentUpon>Tranzit_OS_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="v_ReturnSales.cs">
+      <DependentUpon>Tranzit_OS_Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="v_Sales.cs">
+      <DependentUpon>Tranzit_OS_Model.tt</DependentUpon>
+    </Compile>
     <Compile Include="v_SESS.cs">
       <DependentUpon>Tranzit_OS_Model.tt</DependentUpon>
     </Compile>
