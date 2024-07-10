@@ -76,6 +76,28 @@ namespace WebApi.Controllers
             return Ok(new_doc.HasValue);
         }
 
+        [HttpGet, Route("service-move-to-store-wh")]
+        public IHttpActionResult MoveToStoreService()
+        {
+            var wb_out_list = db.Database.SqlQuery<MoveToStoreWarehouseWbList>(@"SELECT wb.WbillId, wb.ShipmentDate
+FROM v_WayBillOut wb
+  inner join[dbo].v_Kagent on wb.KaId = v_Kagent.KaId
+  where[OpenStoreAreaId] is not null and WId is not null and LastInventoryDate is not null and wb.IsDelivered = 0 and wb.ShipmentDate < GETDATE() and wb.ShipmentDate > v_Kagent.[LastInventoryDate] and wb.WType = -1").ToList();
+
+            var _repo = new ExecuteWayBill();
+            foreach (var item in wb_out_list)
+            {
+                _repo.MoveToStoreWarehouse(item.WbillId, true);
+            }
+
+            return Ok(wb_out_list);
+        }
+
+        public class MoveToStoreWarehouseWbList
+        {
+            public int WbillId { get; set; }
+            public DateTime ShipmentDate { get; set; }
+        }
     }
 
 
