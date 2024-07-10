@@ -28,8 +28,10 @@ namespace WebApi.Controllers
                 var ka = sp_base.Kagent.FirstOrDefault(w => w.Id == Context.Token);
 
                 var ka_sales_out = new CustomerSalesRepository().GetCurrentSales(Context.Token.Value);
-                
-                var mat_remain = new MaterialRemain(0).GetMaterialsOnWh(ka.WId.Value).Where(w=> w.TypeId != null).Select(s => new MaterialsOnWh
+                var ka_return_sales = new CustomerSalesRepository().GetCurrentReturns(Context.Token.Value);
+
+
+                var mat_remain = new MaterialRemain(0).GetMaterialsOnWh(ka.WId.Value).Where(w => w.TypeId != null).Select(s => new MaterialsOnWh
                 {
                     Artikul = s.Artikul,
                     AvgPrice = s.AvgPrice,
@@ -43,12 +45,12 @@ namespace WebApi.Controllers
                     TypeId = s.TypeId,
                     Rsv = s.Rsv,
                     SumRemain = s.SumRemain,
-                    AmountSold = ka_sales_out.Where(w => w.MatId == s.MatId).Select(ss => ss.Amount).FirstOrDefault()
+                    AmountSold = ka_sales_out.Where(w => w.MatId == s.MatId).Select(ss => ss.Amount).FirstOrDefault() - ka_return_sales.Where(w => w.MatId == s.MatId).Select(ss => ss.Amount).FirstOrDefault()
                 }).ToList();
 
                 foreach (var item in ka_sales_out)
                 {
-                    if(!mat_remain.Any(a=> a.MatId == item.MatId))
+                    if (!mat_remain.Any(a => a.MatId == item.MatId))
                     {
                         mat_remain.Add(new MaterialsOnWh
                         {
@@ -57,12 +59,34 @@ namespace WebApi.Controllers
                             MatId = item.MatId,
                             MatName = item.ARTNAME,
                             GrpName = item.GrpName,
-                            MsrName = item.UNITNAME
+                            MsrName = item.UNITNAME,
+                            Remain = 0,
+                            CurRemain = 0,
+                            Rsv = 0,
+                            OpenStoreId = item.ARTID
                         });
                     }
                 }
 
-                  
+                foreach (var item in ka_return_sales)
+                {
+                    if (!mat_remain.Any(a => a.MatId == item.MatId))
+                    {
+                        mat_remain.Add(new MaterialsOnWh
+                        {
+                            AmountSold = item.Amount * -1,
+                            Artikul = item.ARTCODE.ToString(),
+                            MatId = item.MatId,
+                            MatName = item.ARTNAME,
+                            GrpName = item.GrpName,
+                            MsrName = item.UNITNAME,
+                            Remain = 0,
+                            CurRemain = 0,
+                            Rsv = 0,
+                            OpenStoreId = item.ARTID
+                        });
+                    }
+                }
 
                 return Ok(mat_remain);
             }
