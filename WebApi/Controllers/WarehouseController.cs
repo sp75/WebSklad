@@ -17,9 +17,9 @@ using WebApi.Core;
 namespace WebApi.Controllers
 {
     [RoutePrefix("api/warehouse")]
-    [ApiTokenAuthorize]
     public class WarehouseController : BaseApiController
     {
+        [ApiTokenAuthorize]
         [HttpGet, Route("remain")]
         public IHttpActionResult GetRemainInWh()
         {
@@ -68,6 +68,7 @@ namespace WebApi.Controllers
             }
         }
 
+        [ApiTokenAuthorize]
         [HttpGet, Route("add-doc/{wbill_id}")]
         public IHttpActionResult AddDocument(int wbill_id)
         {
@@ -76,7 +77,7 @@ namespace WebApi.Controllers
             return Ok(new_doc.HasValue);
         }
 
-        [HttpGet, Route("service-move-to-store-wh")]
+        [HttpGet, Route("auto-move-material-to-store-wh")]
         public IHttpActionResult MoveToStoreService()
         {
             var wb_out_list = db.Database.SqlQuery<MoveToStoreWarehouseWbList>(@"SELECT wb.WbillId, wb.ShipmentDate
