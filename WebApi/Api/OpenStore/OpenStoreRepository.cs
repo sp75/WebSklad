@@ -88,7 +88,106 @@ GROUP BY [v_Sales].SESSID,v_Sales.SAREAID, ARTID, ARTCODE, ARTNAME,SessionStartD
 
                     sp_base.SaveChanges();
 
+                    CorrectDocument(wb, wid, mat_sales_item.Key.SYSTEMID);
+
                     var list = new InventoryRepository().ReservedAllosition(wb.WbillId, false);
+                }
+            }
+        }
+
+        public class CorrectDetList
+        {
+            public int MatId { get; set; }
+            public decimal Amount { get; set; }
+            public decimal CorrectAmount { get; set; }
+            public decimal Price { get; set; }
+        }
+
+        public void CorrectDocument(WaybillList wb_write_off, int wid, int kass_id)
+        {
+            using (var sp_base = SPDatabase.SPBase())
+            {
+                var wb_det = sp_base.Database.SqlQuery<CorrectDetList>(@"select waybilldet.MatId, waybilldet.Amount,  remaain.TotalRemain, (waybilldet.Amount - remaain.TotalRemain) CorrectAmount, waybilldet.Price
+from waybilldet 
+outer apply (
+
+                                   SELECT 
+		                                 coalesce( sum( ActualRemain),0 ) TotalRemain
+			                              
+                                        FROM PosRemains pr
+										inner join waybilldet wbd on wbd.posid=pr.posid
+		                                WHERE pr.matid = waybilldet.MatId
+                                              and pr.ondate = (select max(ondate) from posremains where posid = pr.posid ) 
+                                              and (pr.remain > 0 or Ordered > 0) and pr.wid= waybilldet.WId  and ActualRemain > 0 
+											  and  wbd.OnDate <= waybilldet.OnDate ) remaain
+
+where waybilldet.WbillId = {0} and remaain.TotalRemain < waybilldet.Amount", wb_write_off.WbillId).ToList();
+
+                if (wb_det.Any())
+                {
+                    var wb_in = sp_base.WaybillList.Add(new WaybillList()
+                    {
+                        Id = Guid.NewGuid(),
+                        WType = 5,
+                        DefNum = 0,
+                        OnDate = DateTime.Now,
+                        Num = sp_base.GetDocNum("wb_write_on").FirstOrDefault(),
+                        CurrId = 2,
+                        OnValue = 1,
+                        //   PersonId = DBHelper.CurrentUser.KaId,
+                        WaybillMove = new WaybillMove { SourceWid = wid, DestWId = wid },
+                        Nds = 0,
+                        //       UpdatedBy = DBHelper.CurrentUser.UserId,
+                        EntId = wb_write_off.EntId,
+                        AdditionalDocTypeId = 4, //Корегування
+                        Reason = $"Документ на списання {wb_write_off.Num}",
+                        Notes = $"Корегування продажу товрів по касі {kass_id}"
+                    });
+                    sp_base.SaveChanges();
+
+                    foreach (var item in wb_det)
+                    {
+                        var wbd = sp_base.WaybillDet.Add(new WaybillDet()
+                        {
+                            WbillId = wb_in.WbillId,
+                            Num = wb_in.WaybillDet.Count() + 1,
+                            Amount = item.Amount,
+                            OnValue = wb_in.OnValue,
+                            WId = wid,
+                            Nds = wb_in.Nds,
+                            CurrId = wb_in.CurrId,
+                            OnDate = wb_in.OnDate,
+                            MatId = item.MatId,
+                            Price = item.Price,
+                            BasePrice = item.Price
+                        });
+                    }
+                    sp_base.SaveChanges();
+
+                    sp_base.DocRels.Add(new DocRels { OriginatorId = wb_write_off.Id, RelOriginatorId = wb_in.Id });
+
+                    wb_in.UpdatedAt = DateTime.Now;
+
+                    sp_base.SaveChanges();
+
+
+                    foreach (var det_item in sp_base.WaybillDet.Where(w => w.WbillId == wb_in.WbillId).ToList())
+                    {
+                        sp_base.WMatTurn.Add(new WMatTurn
+                        {
+                            PosId = det_item.PosId,
+                            WId = det_item.WId.Value,
+                            MatId = det_item.MatId,
+                            OnDate = det_item.OnDate.Value,
+                            TurnType = 1,
+                            Amount = det_item.Amount,
+                            SourceId = det_item.PosId
+                        });
+                    }
+
+                    wb_in.Checked = 1;
+
+                    sp_base.SaveChanges();
                 }
             }
         }
@@ -124,7 +223,7 @@ GROUP BY v_ReturnSales.SESSID, v_ReturnSales.SAREAID, ARTID, ARTCODE, ARTNAME, S
                         WType = 5,
                         DefNum = 0,
                         OnDate = DateTime.Now,
-                        Num = sp_base.GetDocNum("wb_write_off").FirstOrDefault(),
+                        Num = sp_base.GetDocNum("wb_write_on").FirstOrDefault(),
                         CurrId = 2,
                         OnValue = 1,
                         //   PersonId = DBHelper.CurrentUser.KaId,
@@ -170,9 +269,9 @@ GROUP BY v_ReturnSales.SESSID, v_ReturnSales.SAREAID, ARTID, ARTCODE, ARTNAME, S
                     sp_base.SaveChanges();
 
 
-                    foreach (var det_item in db.WaybillDet.Where(w => w.WbillId == wb.WbillId).ToList())
+                    foreach (var det_item in sp_base.WaybillDet.Where(w => w.WbillId == wb.WbillId).ToList())
                     {
-                        db.WMatTurn.Add(new WMatTurn
+                        sp_base.WMatTurn.Add(new WMatTurn
                         {
                             PosId = det_item.PosId,
                             WId = det_item.WId.Value,
@@ -186,7 +285,7 @@ GROUP BY v_ReturnSales.SESSID, v_ReturnSales.SAREAID, ARTID, ARTCODE, ARTNAME, S
 
                     wb.Checked = 1;
 
-                    db.SaveChanges();
+                    sp_base.SaveChanges();
                 }
             }
         }
