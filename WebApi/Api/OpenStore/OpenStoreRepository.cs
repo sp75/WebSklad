@@ -203,8 +203,8 @@ SELECT [KaId]
   FROM [dbo].v_Kagent
   where [OpenStoreAreaId] is not null and WId is not null and LastInventoryDate is not null  and v_Kagent.Id= {0}", id).FirstOrDefault();
 
-            ImportKagentSales(ka.KaId, ka.OpenStoreAreaId.Value, ka.LastInventoryDate.Value, ka.WId.Value);
             ImportKagentReturns(ka.KaId, ka.OpenStoreAreaId.Value, ka.LastInventoryDate.Value, ka.WId.Value);
+            ImportKagentSales(ka.KaId, ka.OpenStoreAreaId.Value, ka.LastInventoryDate.Value, ka.WId.Value);
         }
     }
 }

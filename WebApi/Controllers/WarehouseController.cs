@@ -30,7 +30,6 @@ namespace WebApi.Controllers
                 var ka_sales_out = new CustomerSalesRepository().GetCurrentSales(Context.Token.Value);
                 var ka_return_sales = new CustomerSalesRepository().GetCurrentReturns(Context.Token.Value);
 
-
                 var mat_remain = new MaterialRemain(0).GetMaterialsOnWh(ka.WId.Value).Where(w => w.TypeId != null).Select(s => new MaterialsOnWh
                 {
                     Artikul = s.Artikul,
@@ -126,6 +125,4 @@ namespace WebApi.Controllers
             public DateTime ShipmentDate { get; set; }
         }
     }
-
-
 }

@@ -37,8 +37,8 @@ namespace WebApi.Controllers
             {
                 var repo=  new OpenStoreRepository();
 
-                repo.ImportKagentSales(k_item.KaId, k_item.OpenStoreAreaId.Value, k_item.LastInventoryDate.Value, k_item.WId.Value);
                 repo.ImportKagentReturns(k_item.KaId, k_item.OpenStoreAreaId.Value, k_item.LastInventoryDate.Value, k_item.WId.Value);
+                repo.ImportKagentSales(k_item.KaId, k_item.OpenStoreAreaId.Value, k_item.LastInventoryDate.Value, k_item.WId.Value);
             }
         }
     
