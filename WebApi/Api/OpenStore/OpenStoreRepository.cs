@@ -29,6 +29,7 @@ namespace WebApi.Api.OpenStore
  ,m.MatId
  ,SUM(v_Sales.AMOUNT) Amount
  ,SUM(v_Sales.TOTAL) Total
+ ,AVG(v_Sales.PRICE) Price
 FROM [SERVER_OS].[Tranzit_OS].[dbo].[v_Sales]
 inner join Materials m on m.OpenStoreId = v_Sales.ARTID
 left outer join  [SERVER_OS].[Tranzit_OS].[dbo].SESS_EXPORT on SESS_EXPORT.SESSID = v_Sales.SESSID and SESS_EXPORT.SYSTEMID = v_Sales.SYSTEMID and SESS_EXPORT.SAREAID = v_Sales.SAREAID
@@ -77,8 +78,8 @@ GROUP BY [v_Sales].SESSID,v_Sales.SAREAID, ARTID, ARTCODE, ARTNAME,SessionStartD
                             CurrId = wb.CurrId,
                             OnDate = wb.OnDate,
                             MatId = item.MatId,
-                            Price = item.Total / item.Amount,
-                            BasePrice = item.Total / item.Amount
+                            Price = item.Price,
+                            BasePrice = item.Price
                         });
                     }
 
@@ -90,7 +91,7 @@ GROUP BY [v_Sales].SESSID,v_Sales.SAREAID, ARTID, ARTCODE, ARTNAME,SessionStartD
 
                     CorrectDocument(wb, wid, mat_sales_item.Key.SYSTEMID);
 
-                    var list = new InventoryRepository().ReservedAllosition(wb.WbillId, false);
+                    var list = new InventoryRepository().ReservedAllosition(wb.WbillId, true);
                 }
             }
         }
@@ -130,7 +131,7 @@ where waybilldet.WbillId = {0} and remaain.TotalRemain < waybilldet.Amount", wb_
                         Id = Guid.NewGuid(),
                         WType = 5,
                         DefNum = 0,
-                        OnDate = DateTime.Now,
+                        OnDate = wb_write_off.OnDate.AddMinutes(-1),
                         Num = sp_base.GetDocNum("wb_write_on").FirstOrDefault(),
                         CurrId = 2,
                         OnValue = 1,

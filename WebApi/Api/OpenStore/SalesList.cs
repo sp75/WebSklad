@@ -19,5 +19,6 @@ namespace WebApi.Api.OpenStore
         public decimal Total { get; set; }
         public string GrpName { get; set; }
         public string UNITNAME { get; set; }
+        public decimal Price { get; set; }
     }
 }
