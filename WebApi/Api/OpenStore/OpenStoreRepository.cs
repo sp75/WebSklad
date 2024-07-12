@@ -152,7 +152,7 @@ where waybilldet.WbillId = {0} and remaain.TotalRemain < waybilldet.Amount", wb_
                         {
                             WbillId = wb_in.WbillId,
                             Num = wb_in.WaybillDet.Count() + 1,
-                            Amount = item.Amount,
+                            Amount = item.CorrectAmount,
                             OnValue = wb_in.OnValue,
                             WId = wid,
                             Nds = wb_in.Nds,
