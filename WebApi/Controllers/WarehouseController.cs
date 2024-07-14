@@ -19,6 +19,14 @@ namespace WebApi.Controllers
     [RoutePrefix("api/warehouse")]
     public class WarehouseController : BaseApiController
     {
+        private readonly Log4netLogger _log = new Log4netLogger("ErrorNotification");
+
+        [HttpGet, Route("test")]
+        public void Test()
+        {
+            _log.LogInfo("Ok");
+        }
+
         [ApiTokenAuthorize]
         [HttpGet, Route("remain")]
         public IHttpActionResult GetRemainInWh()
