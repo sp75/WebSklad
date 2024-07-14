@@ -40,16 +40,14 @@ namespace WebApi.Api.CustomerReturns
                     });
                     sp_base.SaveChanges();
 
-
-                    foreach (var pos_in in wb_item.Select(s => new { s.Id, s.PosId, s.TotalRemain, s.Amount, s.BasePrice, s.MatId, s.WId,s.Price }))
+                    int num = 1;
+                    foreach (var pos_in in wb_item.Select(s => new { s.Id, s.PosId, s.TotalRemain, s.Amount, s.BasePrice, s.MatId, s.WId, s.Price }))
                     {
-
-                        int num = 1;
 
                         var wbd = sp_base.WaybillDet.Add(new WaybillDet()
                         {
                             WbillId = _wb.WbillId,
-                            Price = pos_in.Price ,
+                            Price = pos_in.Price,
                             BasePrice = pos_in.BasePrice,
                             Nds = _wb.Nds,
                             CurrId = _wb.CurrId,
@@ -62,22 +60,32 @@ namespace WebApi.Api.CustomerReturns
                         });
                         sp_base.SaveChanges();
 
-                        sp_base.WMatTurn.Add(new WMatTurn
+                        try
                         {
-                            PosId = pos_in.PosId,
-                            WId = pos_in.WId,
-                            MatId = pos_in.MatId,
-                            OnDate = _wb.OnDate,
-                            TurnType = 2,
-                            Amount = pos_in.Amount,
-                            SourceId = wbd.PosId
-                        });
-                        sp_base.SaveChanges();
 
-                        var rcr = sp_base.RemoteCustomerReturned.Find(pos_in.Id);
-                        rcr.WbillIdOut = _wb.WbillId;
+                            sp_base.WMatTurn.Add(new WMatTurn
+                            {
+                                PosId = pos_in.PosId,
+                                WId = pos_in.WId,
+                                MatId = pos_in.MatId,
+                                OnDate = _wb.OnDate,
+                                TurnType = 2,
+                                Amount = pos_in.Amount,
+                                SourceId = wbd.PosId
+                            });
+                            sp_base.SaveChanges();
 
-                        sp_base.SaveChanges();
+                            var rcr = sp_base.RemoteCustomerReturned.Find(pos_in.Id);
+                            rcr.WbillIdOut = _wb.WbillId;
+
+                            sp_base.SaveChanges();
+                        }
+                        catch
+                        {
+                            sp_base.WaybillDet.Remove(wbd);
+                            sp_base.SaveChanges();
+                        }
+
                     }
 
                     if (sp_base.WaybillDet.Any(a => a.WbillId == _wb.WbillId) )
