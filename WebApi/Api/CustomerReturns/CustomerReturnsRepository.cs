@@ -2,6 +2,7 @@
 using SP.Base.Models;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Web;
 using WebApi.Core;
@@ -10,15 +11,16 @@ namespace WebApi.Api.CustomerReturns
 {
     public class CustomerReturnsRepository : BaseRepository
     {
+        private readonly Log4netLogger _log = new Log4netLogger("ErrorNotification");
+
         public List<Guid> GreateReturnToSupplier(Guid customer_id)
         {
             var result = new List<Guid>();
 
             using (var sp_base = SPDatabase.SPBase())
             {
-                var pos_in_list = GetReturnetPosIn(customer_id);
-                var ka = sp_base.Kagent.FirstOrDefault(w => w.Id == customer_id);
-                var _enterprise = sp_base.Kagent.FirstOrDefault(w => w.KType == 3 && w.Deleted == 0 && (w.Archived == null || w.Archived == 0) && w.EnterpriseWorker.Any(a => a.WorkerId == ka.KaId));
+                var pos_in_list = GetReturnetPosIn(customer_id).Where(w => (w.TotalRemain - w.Amount) >= 0).ToList();
+                var ka = sp_base.v_Kagent.FirstOrDefault(w => w.Id == customer_id);
 
                 foreach (var wb_item in pos_in_list.GroupBy(g => g.KaId).ToList())
                 {
@@ -32,7 +34,7 @@ namespace WebApi.Api.CustomerReturns
                         CurrId = 2,
                         OnValue = 1,
                         Notes = "віддалене повернення",
-                        EntId = _enterprise?.KaId,
+                        EntId = ka.EnterpriseId,
                         ReportingDate = DateTime.Now,
                         PTypeId = 1,
                         Nds = 0,
@@ -62,7 +64,6 @@ namespace WebApi.Api.CustomerReturns
 
                         try
                         {
-
                             sp_base.WMatTurn.Add(new WMatTurn
                             {
                                 PosId = pos_in.PosId,
@@ -73,6 +74,7 @@ namespace WebApi.Api.CustomerReturns
                                 Amount = pos_in.Amount,
                                 SourceId = wbd.PosId
                             });
+
                             sp_base.SaveChanges();
 
                             var rcr = sp_base.RemoteCustomerReturned.Find(pos_in.Id);
@@ -82,8 +84,24 @@ namespace WebApi.Api.CustomerReturns
                         }
                         catch
                         {
-                            sp_base.WaybillDet.Remove(wbd);
-                            sp_base.SaveChanges();
+                            foreach (var entry in sp_base.ChangeTracker.Entries())
+                            {
+                                switch (entry.State)
+                                {
+                                    case EntityState.Modified:
+                                        entry.State = EntityState.Unchanged;
+                                        break;
+                                    case EntityState.Deleted:
+                                        entry.Reload();
+                                        break;
+                                    case EntityState.Added:
+                                        entry.State = EntityState.Detached;
+                                        break;
+                                }
+                            }
+
+                            var message = string.Format("| Помилка резервування: {1} | Торгова точка {0} | Error", customer_id, wbd.MatId);
+                            _log.LogInfo(message);
                         }
 
                     }
@@ -164,7 +182,8 @@ namespace WebApi.Api.CustomerReturns
 		 RemoteCustomerReturned.Amount RemoteAmount,
 		 wbd.WId,
 		 wbd.MatId,
-         RemoteCustomerReturned.Id RemoteId
+         RemoteCustomerReturned.Id RemoteId,
+         RemoteCustomerReturned.WbillIdOut
   from WaybillDet wbd
   join WaybillList wbl on wbl.wbillid=wbd.wbillid
   join Materials m on m.matid=wbd.matid
@@ -176,7 +195,7 @@ namespace WebApi.Api.CustomerReturns
 			 group by  rr.OutPosId) r on r.OutPosId =wbd.PosId
  join RemoteCustomerReturned on RemoteCustomerReturned.OutPosId = wbd.PosId
 
-  where RemoteCustomerReturned.WbillId is null      
+  where RemoteCustomerReturned.WbillId is null 
         and wbl.Checked = 1
 	    and wbl.WType = -1
         and (wbd.Amount - coalesce( r.ReturnAmount,0) ) >= RemoteCustomerReturned.Amount

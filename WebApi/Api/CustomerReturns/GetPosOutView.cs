@@ -21,5 +21,6 @@ namespace WebApi.Api.CustomerReturns
         public int? WId { get; set; }
         public int MatId { get; set; }
         public int RemoteId { get; set; }
+        public int? WbillIdOut { get; set; }
     }
 }

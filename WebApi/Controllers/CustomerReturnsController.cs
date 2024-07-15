@@ -136,12 +136,14 @@ namespace WebApi.Controllers
         public IHttpActionResult CreateReturned()
         {
             var wb_list = new CustomerReturnsRepository().GreateReturnToSupplier(Context.Token.Value);
+            if(!wb_list.Any() )
+            {
+                return Ok(false);
+            }
 
             using (var sp_base = SPDatabase.SPBase())
             {
-                var ka = sp_base.Kagent.FirstOrDefault(w => w.Id == Context.Token.Value);
-
-                var _enterprise = sp_base.Kagent.FirstOrDefault(w => w.KType == 3 && w.Deleted == 0 && (w.Archived == null || w.Archived == 0) && w.EnterpriseWorker.Any(a => a.WorkerId == ka.KaId));
+                var ka = sp_base.v_Kagent.FirstOrDefault(w => w.Id == Context.Token.Value);
 
                 var _wb = sp_base.WaybillList.Add(new WaybillList()
                 {
@@ -153,13 +155,13 @@ namespace WebApi.Controllers
                     CurrId = 2,
                     OnValue = 1,
                     Notes = "віддалене повернення",
-                    EntId = _enterprise?.KaId,
+                    EntId = ka.EnterpriseId,
                     ReportingDate = DateTime.Now
                 });
                 sp_base.SaveChanges();
 
 
-                foreach (var pos_out in new CustomerReturnsRepository().GetReturnetPosOut(Context.Token.Value))
+                foreach (var pos_out in new CustomerReturnsRepository().GetReturnetPosOut(Context.Token.Value).Where(w=> w.WbillIdOut != null).ToList())
                 {
                     bool stop = false;
                     int num = 1;
