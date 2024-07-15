@@ -4,6 +4,7 @@ using SP.Base;
 using SP.Base.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -22,9 +23,15 @@ namespace WebApi.Controllers
         private readonly Log4netLogger _log = new Log4netLogger("ErrorNotification");
 
         [HttpGet, Route("test")]
-        public void Test()
+        public bool Test()
         {
             _log.LogInfo("Ok");
+         /*   using (var dd = File.Open(@"C:\inetpub\wwwroot\WebSklad\WebApi\WebApiLog\1.txt", FileMode.OpenOrCreate))
+            {
+                ;
+            }*/
+
+            return true;
         }
 
         [ApiTokenAuthorize]

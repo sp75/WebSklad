@@ -21,24 +21,35 @@ namespace WebApi.Controllers
     [ApiTokenAuthorize]
     public class InventoryController :  BaseApiController
     {
+        private readonly Log4netLogger _log = new Log4netLogger("ErrorNotification");
 
         [HttpPost, Route("checking")]
         public IHttpActionResult CheckingInventoryAct(List<InventoryActDet> req)
         {
-            var ka = db.Kagent.FirstOrDefault(w => w.Id == Context.Token);
-            var art_list = req.Select(s => s.ARTID).ToList();
-
-            var wh = new MaterialRemain(0).GetMaterialsOnWh(ka.WId.Value).Where(w => (w.TypeId == 1 || w.TypeId == 5 || w.TypeId == 6)).ToList();
-
-            var list = wh.Where(w => !art_list.Contains(w.OpenStoreId ?? 0)).Select(s => new
+            try
             {
-                s.OpenStoreId,
-                s.CurRemain,
-                s.MatName,
-                s.Artikul
-            }).ToList();
+                var ka = db.Kagent.FirstOrDefault(w => w.Id == Context.Token);
+                var art_list = req.Select(s => s.ARTID).ToList();
 
-            return Ok(list);
+                var wh = new MaterialRemain(0).GetMaterialsOnWh(ka.WId.Value).Where(w => (w.TypeId == 1 || w.TypeId == 5 || w.TypeId == 6) && w.OpenStoreId != null).ToList();
+
+                var list = wh.Where(w => !art_list.Contains(w.OpenStoreId ?? 0)).Select(s => new
+                {
+                    s.OpenStoreId,
+                    s.CurRemain,
+                    s.MatName,
+                    s.Artikul
+                }).ToList();
+
+                return Ok(list);
+            }
+            catch (Exception ex)
+            {
+                var message = string.Format("| {0} | Error", Context.Token);
+                _log.LogException(ex, message);
+
+                return InternalServerError(ex);
+            }
         }
 
         [HttpPost, Route("execute")]
