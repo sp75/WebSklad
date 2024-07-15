@@ -84,21 +84,7 @@ namespace WebApi.Api.CustomerReturns
                         }
                         catch
                         {
-                            foreach (var entry in sp_base.ChangeTracker.Entries())
-                            {
-                                switch (entry.State)
-                                {
-                                    case EntityState.Modified:
-                                        entry.State = EntityState.Unchanged;
-                                        break;
-                                    case EntityState.Deleted:
-                                        entry.Reload();
-                                        break;
-                                    case EntityState.Added:
-                                        entry.State = EntityState.Detached;
-                                        break;
-                                }
-                            }
+                            sp_base.UndoChanges();
 
                             var message = string.Format("| Помилка резервування: {1} | Торгова точка {0} | Error", customer_id, wbd.MatId);
                             _log.LogInfo(message);
