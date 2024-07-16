@@ -136,10 +136,6 @@ namespace WebApi.Controllers
         public IHttpActionResult CreateReturned()
         {
             var wb_list = new CustomerReturnsRepository().GreateReturnToSupplier(Context.Token.Value);
-            if(!wb_list.Any() )
-            {
-                return Ok(false);
-            }
 
             using (var sp_base = SPDatabase.SPBase())
             {
