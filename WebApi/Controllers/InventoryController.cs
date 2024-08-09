@@ -131,26 +131,8 @@ namespace WebApi.Controllers
                     if (create_write_off != null && create_write_off.NewDocId.HasValue)
                     {
                         var wb_write_off = sp_base.WaybillList.FirstOrDefault(w => w.Id == create_write_off.NewDocId);
-                        /*    var list = new List<string>();
 
-                            var r = new ObjectParameter("RSV", typeof(Int32));
-                            var wb_list = sp_base.v_WayBillOutDet.Where(w => w.WbillId == wb_write_off.WbillId && w.Rsv != 1).Select(s => new { s.PosId, s.MatName }).ToList();//.Where(w => w.Rsv != 1).ToList();
-
-                            foreach (var i in wb_list)
-                            {
-                                sp_base.ReservedPositionV2(i.PosId);
-
-                                if (r.Value != null && (int)r.Value == 0)
-                                {
-                                    list.Add(i.MatName);
-                                }
-                            }*/
                         var list = new InventoryRepository().ReservedAllosition(wb_write_off.WbillId, true);
-
-                    /*    if (!list.Any())
-                        {
-                            SPDatabase.SPBase().ExecuteWayBill(wb_write_off.WbillId, null, null).ToList().FirstOrDefault();
-                        }*/
                     }
                     else
                     {
