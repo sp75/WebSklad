@@ -50,7 +50,7 @@ namespace WebApi.Controllers
 
             using (var tr_os_db = new Tranzit_OSEntities())
             {
-                return !tr_os_db.v_SESS.Any(a => a.SAREAID == ka.OpenStoreAreaId && a.SESSEND == null);
+                return !tr_os_db.v_SESS.Where(w=> w.SAREAID == ka.OpenStoreAreaId).OrderByDescending(o=> o.SESSSTART).Take(10).Any(a => a.SESSEND == null);
             }
         }
 
