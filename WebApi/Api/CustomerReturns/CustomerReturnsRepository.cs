@@ -86,7 +86,8 @@ namespace WebApi.Api.CustomerReturns
                         {
                             sp_base.UndoChanges();
 
-                            var message = string.Format("| Помилка резервування: {1} | Торгова точка {0} | Error", customer_id, wbd.MatId);
+                            var message = string.Format("| Віддалене повернення | Помилка резервування товару mat_id {1} | Торгова точка {0} | Error", customer_id, wbd.MatId);
+
                             _log.LogInfo(message);
                         }
 

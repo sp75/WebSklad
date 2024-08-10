@@ -99,7 +99,7 @@ GROUP BY [v_Sales].SESSID,v_Sales.SAREAID, ARTID, ARTCODE, ARTNAME,SessionStartD
 
                         if (list.Any())
                         {
-                            var message = string.Format("| Помилка резервування | WbillId: {0} | Номенклатура {1} | Error", wb.WbillId, list);
+                            var message = string.Format($"Продажі товарів за зміну по касі { mat_sales_item.Key.SYSTEMID} | Помилка резервування товарів в документі | WbillId: {0} | Номенклатура {1} | Error", wb.WbillId, list);
                             _log.LogInfo(message);
                         }
                     }
@@ -107,7 +107,7 @@ GROUP BY [v_Sales].SESSID,v_Sales.SAREAID, ARTID, ARTCODE, ARTNAME,SessionStartD
             }
             catch (Exception ex)
             {
-                _log.LogException(ex, $"Посилка списання товарів згідно продаж | area_id:{area_id}");
+                _log.LogException(ex, $"Помилка списання товарів згідно продаж | area_id:{area_id} |");
             }
         }
 
