@@ -14,8 +14,10 @@ namespace WebApi.Api.OpenStore
     {
         private readonly Log4netLogger _log = new Log4netLogger("ErrorNotification");
 
-        public void ImportKagentSales(int ka_id, int area_id, DateTime last_inventory_date, int wid)
+        public bool ImportKagentSales(int ka_id, int area_id, DateTime last_inventory_date, int wid)
         {
+            bool rezult = true;
+
             try
             {
                 using (var sp_base = SPDatabase.SPBase())
@@ -101,6 +103,8 @@ GROUP BY [v_Sales].SESSID,v_Sales.SAREAID, ARTID, ARTCODE, ARTNAME,SessionStartD
                         {
                             var message = string.Format($"Продажі товарів за зміну по касі { mat_sales_item.Key.SYSTEMID} | Помилка резервування товарів в документі | WbillId: {0} | Номенклатура {1} | Error", wb.WbillId, list);
                             _log.LogInfo(message);
+
+                            rezult = false;
                         }
                     }
                 }
@@ -108,7 +112,11 @@ GROUP BY [v_Sales].SESSID,v_Sales.SAREAID, ARTID, ARTCODE, ARTNAME,SessionStartD
             catch (Exception ex)
             {
                 _log.LogException(ex, $"Помилка списання товарів згідно продаж | area_id:{area_id} |");
+
+                rezult = false;
             }
+
+            return rezult;
         }
 
         public class CorrectDetList
@@ -306,7 +314,7 @@ GROUP BY v_ReturnSales.SESSID, v_ReturnSales.SAREAID, ARTID, ARTCODE, ARTNAME, S
             }
         }
 
-        public void ImportKagentSales(Guid? id)
+        public bool ImportKagentSales(Guid? id)
         {
             var ka = db.Database.SqlQuery<OpenStoreAreaList>(@"
 SELECT [KaId]
@@ -319,7 +327,9 @@ SELECT [KaId]
   where [OpenStoreAreaId] is not null and WId is not null and LastInventoryDate is not null  and v_Kagent.Id= {0}", id).FirstOrDefault();
 
             ImportKagentReturns(ka.KaId, ka.OpenStoreAreaId.Value, ka.LastInventoryDate.Value, ka.WId.Value);
-            ImportKagentSales(ka.KaId, ka.OpenStoreAreaId.Value, ka.LastInventoryDate.Value, ka.WId.Value);
+            var result = ImportKagentSales(ka.KaId, ka.OpenStoreAreaId.Value, ka.LastInventoryDate.Value, ka.WId.Value);
+            
+            return result;
         }
     }
 }

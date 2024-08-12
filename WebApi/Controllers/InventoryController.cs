@@ -55,9 +55,13 @@ namespace WebApi.Controllers
         [HttpPost, Route("execute")]
         public bool Execute(List<InventoryActDet> req)
         {
-            new OpenStoreRepository().ImportKagentSales(Context.Token);
+            if (!new OpenStoreRepository().ImportKagentSales(Context.Token))
+            {
+                return false;
+            }
 
             bool result_exe = true;
+            string log_msg="";
 
             using (var sp_base = SPDatabase.SPBase())
             {
@@ -120,7 +124,8 @@ namespace WebApi.Controllers
                     }
                     else
                     {
-                        result_exe = false;
+                        log_msg = $"Невдалося створити акт на введення залишків по акту інвентаризації WbillId:{new_inventory_wb.WbillId}";
+                        result_exe = true;
                     }
                 }
 
@@ -131,21 +136,31 @@ namespace WebApi.Controllers
                     if (create_write_off != null && create_write_off.NewDocId.HasValue)
                     {
                         var wb_write_off = sp_base.WaybillList.FirstOrDefault(w => w.Id == create_write_off.NewDocId);
+                        try
+                        {
+                            var list = new InventoryRepository().ReservedAllosition(wb_write_off.WbillId, true);
+                        }
 
-                        var list = new InventoryRepository().ReservedAllosition(wb_write_off.WbillId, true);
+                        catch (Exception ex)
+                        {
+                            _log.LogException(ex, $"Помилка резервування в акті на списання товарів по акту інвернтризації | WbillId:{wb_write_off.WbillId} |");
+
+                            result_exe = false;
+                        }
                     }
                     else
                     {
+                        log_msg = $"Невдалося створити акт списання залишків по акту інвентаризації WbillId:{new_inventory_wb.WbillId}";
                         result_exe = false;
                     }
                 }
 
                 if (!result_exe)
                 {
-                    ;
+                    _log.LogInfo(log_msg);
                 }
 
-                return result_exe;
+                return true; // продовжуемо якщо і були помилки 
             }
         }
     }
