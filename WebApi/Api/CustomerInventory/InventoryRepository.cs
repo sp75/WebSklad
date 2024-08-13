@@ -24,8 +24,8 @@ namespace WebApi.Api.CustomerInventory
                 foreach (var i in wb_list)
                 {
                     int error = 1;
-                    int atempt = 1;
-                    while (error == 1 && atempt <= 3)
+                    int attempt = 1;
+                    while (error == 1 && attempt <= 3)
                     {
                         try
                         {
@@ -38,13 +38,13 @@ namespace WebApi.Api.CustomerInventory
                         }
                         catch (Exception ex)
                         {
-                            _log.LogException(ex, $"Помилка резервування товару | MatName:{i.MatName} | ");
-                            ++atempt;
+                            _log.LogException(ex, $"Помилка резервування товару | MatName:{i.MatName} | Спроба: #{attempt}");
+                            ++attempt;
                         }
 
                     }
 
-                    if(error == 1)
+                    if (error == 1)
                     {
                         list.Add(i.MatName);
                     }
