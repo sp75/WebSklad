@@ -136,14 +136,12 @@ namespace WebApi.Controllers
                     if (create_write_off != null && create_write_off.NewDocId.HasValue)
                     {
                         var wb_write_off = sp_base.WaybillList.FirstOrDefault(w => w.Id == create_write_off.NewDocId);
-                        try
-                        {
-                            var list = new InventoryRepository().ReservedAllosition(wb_write_off.WbillId, true);
-                        }
 
-                        catch (Exception ex)
+                        var list = new InventoryRepository().ReservedAllosition(wb_write_off.WbillId, true);
+
+                        if (list.Any())
                         {
-                            _log.LogException(ex, $"Помилка резервування в акті на списання товарів по акту інвернтризації | WbillId:{wb_write_off.WbillId} |");
+                            log_msg = $"Помилка резервування в акті на списання товарів по акту інвернтризації | WbillId:{wb_write_off.WbillId} | Номенклатура {list}";
 
                             result_exe = false;
                         }

@@ -101,7 +101,7 @@ GROUP BY [v_Sales].SESSID,v_Sales.SAREAID, ARTID, ARTCODE, ARTNAME,SessionStartD
 
                         if (list.Any())
                         {
-                            var message = string.Format($"Продажі товарів за зміну по касі { mat_sales_item.Key.SYSTEMID} | Помилка резервування товарів в документі | WbillId: {0} | Номенклатура {1} | Error", wb.WbillId, list);
+                            var message = $"Продажі товарів за зміну по касі { mat_sales_item.Key.SYSTEMID} | Помилка резервування товарів в документі | WbillId: {wb.WbillId} | Номенклатура {list} | Error";
                             _log.LogInfo(message);
 
                             rezult = false;
