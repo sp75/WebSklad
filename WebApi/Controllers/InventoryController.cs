@@ -141,7 +141,7 @@ namespace WebApi.Controllers
 
                         if (list.Any())
                         {
-                            log_msg = $"Помилка резервування в акті на списання товарів по акту інвернтризації | WbillId:{wb_write_off.WbillId} | Номенклатура {list}";
+                            log_msg = $"Помилка резервування в акті на списання товарів по акту інвернтризації | WbillId:{wb_write_off.WbillId} | Номенклатура {string.Join(",", list)}";
 
                             result_exe = false;
                         }

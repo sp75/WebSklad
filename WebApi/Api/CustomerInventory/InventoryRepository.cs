@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.Entity.Core.Objects;
 using System.Linq;
+using System.Threading;
 using System.Web;
 using Tranzit_OS;
 using WebApi.Core;
@@ -25,7 +26,7 @@ namespace WebApi.Api.CustomerInventory
                 {
                     int error = 1;
                     int attempt = 1;
-                    while (error == 1 && attempt <= 3)
+                    while (error == 1 && attempt <= 4)
                     {
                         try
                         {
@@ -38,8 +39,9 @@ namespace WebApi.Api.CustomerInventory
                         }
                         catch (Exception ex)
                         {
-                            _log.LogException(ex, $"Помилка резервування товару | MatName:{i.MatName} | Спроба: #{attempt}");
+                            _log.LogException(ex, $"Помилка резервування товару | MatName:{i.MatName} | Спроба: #{attempt} | ");
                             ++attempt;
+                            Thread.Sleep(1000);
                         }
 
                     }
