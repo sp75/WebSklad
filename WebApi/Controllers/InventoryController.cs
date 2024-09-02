@@ -55,6 +55,11 @@ namespace WebApi.Controllers
         [HttpPost, Route("execute")]
         public bool Execute(List<InventoryActDet> req)
         {
+            if (!req.Any())
+            {
+                return false;
+            }
+
             if (!new OpenStoreRepository().ImportKagentSales(Context.Token))
             {
                 return false;
@@ -67,11 +72,12 @@ namespace WebApi.Controllers
             {
                 var ka = sp_base.Kagent.FirstOrDefault(w => w.Id == Context.Token);
                 var _enterprise = sp_base.Kagent.FirstOrDefault(w => w.KType == 3 && w.Deleted == 0 && (w.Archived == null || w.Archived == 0) && w.EnterpriseWorker.Any(a => a.WorkerId == ka.KaId));
+                var on_date = req.Min(m => m.CreatedAt);
                 var new_inventory_wb = sp_base.WaybillList.Add(new WaybillList()
                 {
                     Id = Guid.NewGuid(),
                     WType = 7,
-                    OnDate = DateTime.Now,
+                    OnDate = on_date.Value,
                     Num = sp_base.GetDocNum("wb_inventory").FirstOrDefault(),
                     CurrId = 2,
                     OnValue = 1,
@@ -85,7 +91,7 @@ namespace WebApi.Controllers
 
                 sp_base.SaveChanges();
 
-                var wh = new MaterialRemain(0).GetMaterialsOnWh(ka.WId.Value);
+                var wh = new MaterialRemain(0).GetMaterialsOnWh(ka.WId.Value, on_date.Value.Date);
 
                 int num = 0;
                 foreach (var item in req)
