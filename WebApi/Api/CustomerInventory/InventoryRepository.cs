@@ -26,7 +26,7 @@ namespace WebApi.Api.CustomerInventory
                 {
                     int error = 1;
                     int attempt = 1;
-                    while (error == 1 && attempt <= 4)
+                    while (error == 1 && attempt <= 10)
                     {
                         try
                         {
