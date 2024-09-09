@@ -119,6 +119,111 @@ GROUP BY [v_Sales].SESSID,v_Sales.SAREAID, ARTID, ARTCODE, ARTNAME,SessionStartD
             return rezult;
         }
 
+        public bool ImportCurrentKagentSales(int ka_id, int area_id, DateTime last_inventory_date, int wid, DateTime inventory_date)
+        {
+            bool rezult = true;
+
+            try
+            {
+                using (var sp_base = SPDatabase.SPBase())
+                {
+                    var _enterprise = sp_base.Kagent.FirstOrDefault(w => w.KType == 3 && w.Deleted == 0 && (w.Archived == null || w.Archived == 0) && w.EnterpriseWorker.Any(a => a.WorkerId == ka_id));
+
+                    var ka_sales_out = sp_base.Database.SqlQuery<SalesList>(@"SELECT 
+  v_Sales.ARTID 
+ ,v_Sales.ARTCODE
+ ,v_Sales.ARTNAME
+ ,v_Sales.SESSID
+ ,v_Sales.SAREAID
+ ,v_Sales.SYSTEMID
+ ,v_Sales.SessionStartDate
+ ,m.MatId
+ ,SUM(v_Sales.AMOUNT) Amount
+ ,SUM(v_Sales.TOTAL) Total
+ ,AVG(v_Sales.PRICE) Price
+FROM [SERVER_OS].[Tranzit_OS].[dbo].[v_Sales]
+inner join Materials m on m.OpenStoreId = v_Sales.ARTID
+left outer join  [SERVER_OS].[Tranzit_OS].[dbo].SESS_EXPORT on SESS_EXPORT.SESSID = v_Sales.SESSID and SESS_EXPORT.SYSTEMID = v_Sales.SYSTEMID and SESS_EXPORT.SAREAID = v_Sales.SAREAID
+WHERE SESSEND IS null and  v_Sales.SAREAID = {0} AND coalesce( m.Archived,0) = 0 and SessionStartDate > {1}  and SessionStartDate < {2} and  SESS_EXPORT.SYSTEMID is null and m.TypeId in (1,5)
+GROUP BY [v_Sales].SESSID,v_Sales.SAREAID, ARTID, ARTCODE, ARTNAME,SessionStartDate, v_Sales.[SYSTEMID], m.MatId", area_id, last_inventory_date, inventory_date).ToList();
+
+                    foreach (var mat_sales_item in ka_sales_out.GroupBy(g => new { g.SESSID, g.SYSTEMID, g.SessionStartDate, g.SAREAID }).ToList())
+                    {
+                        var wb = sp_base.WaybillList.Add(new WaybillList()
+                        {
+                            Id = Guid.NewGuid(),
+                            WType = -5,
+                            DefNum = 0,
+                            OnDate = DateTime.Now,
+                            Num = sp_base.GetDocNum("wb_write_off").FirstOrDefault(),
+                            CurrId = 2,
+                            OnValue = 1,
+                            //   PersonId = DBHelper.CurrentUser.KaId,
+                            WaybillMove = new WaybillMove { SourceWid = wid },
+                            Nds = 0,
+                            //       UpdatedBy = DBHelper.CurrentUser.UserId,
+                            EntId = _enterprise?.KaId,
+                            AdditionalDocTypeId = 2, //Продажі
+                            Reason = $"Початок змніни: {mat_sales_item.Key.SessionStartDate}, Номер каси: {mat_sales_item.Key.SYSTEMID}",
+                            Notes = $"Продажі товарів за зміну по касі {mat_sales_item.Key.SYSTEMID}"
+                        });
+
+                        sp_base.SaveChanges();
+
+                        using (var tr_os_db = new Tranzit_OSEntities())
+                        {
+                            tr_os_db.SESS_EXPORT.Add(new SESS_EXPORT { SAREAID = mat_sales_item.Key.SAREAID, SESSID = mat_sales_item.Key.SESSID, SYSTEMID = mat_sales_item.Key.SYSTEMID, CREATED_AT = DateTime.Now });
+                            tr_os_db.SaveChanges();
+                        }
+
+                        foreach (var item in mat_sales_item.ToList())
+                        {
+                            var wbd = sp_base.WaybillDet.Add(new WaybillDet()
+                            {
+                                WbillId = wb.WbillId,
+                                Num = wb.WaybillDet.Count() + 1,
+                                Amount = item.Amount,
+                                OnValue = wb.OnValue,
+                                WId = wid,
+                                Nds = wb.Nds,
+                                CurrId = wb.CurrId,
+                                OnDate = wb.OnDate,
+                                MatId = item.MatId,
+                                Price = item.Price,
+                                BasePrice = item.Price
+                            });
+                        }
+
+                        sp_base.SaveChanges();
+
+                        wb.UpdatedAt = DateTime.Now;
+
+                        sp_base.SaveChanges();
+
+                        CorrectDocument(wb, wid, $"Корегування продажу товрів по касі { mat_sales_item.Key.SYSTEMID}");
+
+                        var list = new InventoryRepository().ReservedAllosition(wb.WbillId, true);
+
+                        if (list.Any())
+                        {
+                            var message = $"Продажі товарів за зміну по касі { mat_sales_item.Key.SYSTEMID} | Помилка резервування товарів в документі | WbillId: {wb.WbillId} | Номенклатура | {string.Join(",", list)} | Error";
+                            _log.LogInfo(message);
+
+                            rezult = false;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _log.LogException(ex, $"Помилка списання товарів згідно продаж | area_id:{area_id} |");
+
+                rezult = false;
+            }
+
+            return rezult;
+        }
+
         public class CorrectDetList
         {
             public int MatId { get; set; }
@@ -329,6 +434,24 @@ SELECT [KaId]
             ImportKagentReturns(ka.KaId, ka.OpenStoreAreaId.Value, ka.LastInventoryDate.Value, ka.WId.Value);
             var result = ImportKagentSales(ka.KaId, ka.OpenStoreAreaId.Value, ka.LastInventoryDate.Value, ka.WId.Value);
             
+            return result;
+        }
+
+        public bool ImportCurrentKagentSales(Guid? id, DateTime InventoryDate)
+        {
+            var ka = db.Database.SqlQuery<OpenStoreAreaList>(@"
+SELECT [KaId]
+      ,[Name]
+      ,[Id]
+      ,[OpenStoreAreaId]
+      ,WId
+	  ,LastInventoryDate
+  FROM [dbo].v_Kagent
+  where [OpenStoreAreaId] is not null and WId is not null and LastInventoryDate is not null  and v_Kagent.Id= {0}", id).FirstOrDefault();
+
+        //    ImportKagentReturns(ka.KaId, ka.OpenStoreAreaId.Value, ka.LastInventoryDate.Value, ka.WId.Value);
+            var result = ImportCurrentKagentSales(ka.KaId, ka.OpenStoreAreaId.Value, ka.LastInventoryDate.Value, ka.WId.Value, InventoryDate);
+
             return result;
         }
     }

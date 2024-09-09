@@ -59,8 +59,14 @@ namespace WebApi.Controllers
             {
                 return false;
             }
+            var on_date = req.Min(m => m.CreatedAt);
 
             if (!new OpenStoreRepository().ImportKagentSales(Context.Token))
+            {
+                return false;
+            }
+
+            if (!new OpenStoreRepository().ImportCurrentKagentSales(Context.Token, on_date.Value))
             {
                 return false;
             }
@@ -72,7 +78,6 @@ namespace WebApi.Controllers
             {
                 var ka = sp_base.Kagent.FirstOrDefault(w => w.Id == Context.Token);
                 var _enterprise = sp_base.Kagent.FirstOrDefault(w => w.KType == 3 && w.Deleted == 0 && (w.Archived == null || w.Archived == 0) && w.EnterpriseWorker.Any(a => a.WorkerId == ka.KaId));
-                var on_date = req.Min(m => m.CreatedAt);
                 var new_inventory_wb = sp_base.WaybillList.Add(new WaybillList()
                 {
                     Id = Guid.NewGuid(),
