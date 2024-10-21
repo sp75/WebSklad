@@ -125,7 +125,7 @@ namespace WebApi.Controllers
                     return BadRequest("Замовлення вже закрито !"); // ResponseMessage(Request.CreateResponse(HttpStatusCode.NotModified, new ErrorMessage { message = "Замовлення вже закрито !" }));
                 }
 
-                return Ok(sp_base.v_WaybillDet.Where(w => w.PosId == In.PosId).Select(s => new
+                return Ok(sp_base.v_wrd_CustomerOrders.Where(w => w.PosId == In.PosId).Select(s => new
                 {
                     s.PosId,
                     s.MatId,
