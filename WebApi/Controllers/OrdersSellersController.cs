@@ -45,7 +45,27 @@ namespace WebApi.Controllers
             var prev_dt = from_dt.AddDays(-7);
             using (var sp_base = SPDatabase.SPBase())
             {
-                return Ok(sp_base.v_WaybillDet.Where(w => w.WType == -16 && w.KagentId == Context.Token && w.WbOnDate >= from_dt && w.WbOnDate < to_dt && w.WbChecked == 0).OrderBy(o => o.Num).Select(s => new
+                /*  return Ok(sp_base.v_WaybillDet.Where(w => w.WType == -16 && w.KagentId == Context.Token && w.WbOnDate >= from_dt && w.WbOnDate < to_dt && w.WbChecked == 0).OrderBy(o => o.Num).Select(s => new
+                  {
+                      s.PosId,
+                      s.Num,
+                      s.MatId,
+                      s.Artikul,
+                      s.Amount,
+                      s.MatName,
+                      s.WbillId,
+                      s.WbNum,
+                      s.MsrName,
+                      s.Price,
+                      s.Total,
+                      s.Checked,
+                      s.WbOnDate,
+                      s.Notes,
+                      s.WbNotes,
+                      PrevAmount = sp_base.v_WaybillDet.Where(ww => ww.KagentId == s.KagentId && ww.MatId == s.MatId && ww.WbChecked == 1 && ww.WType == -16 && ww.WbOnDate >= prev_dt).OrderByDescending(or => or.OnDate).Select(s3 => s3.Amount).FirstOrDefault()
+                  }).ToList());*/
+
+                return Ok(sp_base.v_wrd_CustomerOrders.Where(w => w.KagentId == Context.Token && w.WbOnDate >= from_dt && w.WbOnDate < to_dt ).OrderBy(o => o.Num).Select(s => new
                 {
                     s.PosId,
                     s.Num,
@@ -62,7 +82,7 @@ namespace WebApi.Controllers
                     s.WbOnDate,
                     s.Notes,
                     s.WbNotes,
-                    PrevAmount = sp_base.v_WaybillDet.Where(ww => ww.KagentId == s.KagentId && ww.MatId == s.MatId && ww.WbChecked == 1 && ww.WType == -16 && ww.WbOnDate >= prev_dt).OrderByDescending(or => or.OnDate).Select(s3 => s3.Amount).FirstOrDefault()
+                    s.PrevAmount
                 }).ToList());
             }
         }
@@ -76,9 +96,11 @@ namespace WebApi.Controllers
                 var pos = sp_base.WaybillDet.FirstOrDefault(w => w.PosId == In.PosId);
                 if (pos.WaybillList.Checked == 0)
                 {
-                    var pos_date = DateTime.Now;
+                    var msr = sp_base.MaterialMeasures.Where(w => w.MatId == pos.MatId && w.UseInOrders == true).FirstOrDefault();
 
-                    pos.Amount = In.Amount;
+                       var pos_date = DateTime.Now;
+
+                    pos.Amount = msr != null && msr.Amount > 0 ? In.Amount/ msr.Amount : In.Amount;
                     pos.Checked = In.Amount > 0 ? 1 : 0;
                     pos.UpdateAt = pos_date;
                     pos.Notes = In.Notes;
@@ -88,7 +110,7 @@ namespace WebApi.Controllers
 
                     sp_base.RemoteCustomerOrders.Add(new SP.Base.Models.RemoteCustomerOrders
                     {
-                        Amount = In.Amount,
+                        Amount = msr != null && msr.Amount > 0 ? In.Amount / msr.Amount : In.Amount,
                         CreatedAt = pos_date,
                         MatId = pos.MatId,
                         PosId = In.PosId,
