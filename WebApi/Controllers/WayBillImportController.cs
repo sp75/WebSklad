@@ -161,7 +161,7 @@ namespace WebApi.Controllers
                 var shop_list = db.Shop.ToList();
                 using (var sp_base = SPDatabase.SPBase())
                 {
-                    foreach (var item in sp_base.Kagent.Where(w => w.KType == 4).ToList())
+                    foreach (var item in sp_base.Kagent.Where(w => w.KType == 4 && w.KAU != "1").ToList())
                     {
                         var shop = shop_list.FirstOrDefault(w => w.Id == item.KaId);
                         if (shop != null)
