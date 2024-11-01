@@ -24,6 +24,7 @@ namespace WebApi.Api.CustomerSales
  ,mg.Name GrpName
  ,SUM(v_Sales.AMOUNT) Amount
  ,SUM(v_Sales.TOTAL) Total
+ ,AVG(v_Sales.PRICE) Price
 FROM [SERVER_OS].[Tranzit_OS].[dbo].[v_Sales]
 inner join Materials m on m.OpenStoreId = v_Sales.ARTID
 inner join MatGroup mg on m.GrpId = mg.GrpId
