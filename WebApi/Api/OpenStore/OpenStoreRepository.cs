@@ -44,6 +44,7 @@ GROUP BY [v_Sales].SESSID,v_Sales.SAREAID, ARTID, ARTCODE, ARTNAME,SessionStartD
 
                     foreach (var mat_sales_item in ka_sales_out.GroupBy(g => new { g.SESSID, g.SYSTEMID, g.SessionStartDate, g.SAREAID }).ToList())
                     {
+
                         var wb = sp_base.WaybillList.Add(new WaybillList()
                         {
                             Id = Guid.NewGuid(),
@@ -89,7 +90,7 @@ GROUP BY [v_Sales].SESSID,v_Sales.SAREAID, ARTID, ARTCODE, ARTNAME,SessionStartD
 
                         sp_base.SaveChanges();
 
-                        if (mat_sales_item.Any())
+                        if (sp_base.WaybillDet.Any(a => a.WbillId == wb.WbillId))
                         {
                             using (var tr_os_db = new Tranzit_OSEntities())
                             {

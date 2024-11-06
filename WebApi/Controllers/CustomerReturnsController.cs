@@ -152,7 +152,8 @@ namespace WebApi.Controllers
                     OnValue = 1,
                     Notes = "віддалене повернення",
                     EntId = ka.EnterpriseId,
-                    ReportingDate = DateTime.Now
+                    ReportingDate = DateTime.Now,
+                    PTypeId = 1
                 });
                 sp_base.SaveChanges();
 
