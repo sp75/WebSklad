@@ -65,12 +65,6 @@ GROUP BY [v_Sales].SESSID,v_Sales.SAREAID, ARTID, ARTCODE, ARTNAME,SessionStartD
 
                         sp_base.SaveChanges();
 
-                        using (var tr_os_db = new Tranzit_OSEntities())
-                        {
-                            tr_os_db.SESS_EXPORT.Add(new SESS_EXPORT { SAREAID = mat_sales_item.Key.SAREAID, SESSID = mat_sales_item.Key.SESSID, SYSTEMID = mat_sales_item.Key.SYSTEMID, CREATED_AT = DateTime.Now });
-                            tr_os_db.SaveChanges();
-                        }
-
                         foreach (var item in mat_sales_item.ToList())
                         {
                             var wbd = sp_base.WaybillDet.Add(new WaybillDet()
@@ -94,6 +88,15 @@ GROUP BY [v_Sales].SESSID,v_Sales.SAREAID, ARTID, ARTCODE, ARTNAME,SessionStartD
                         wb.UpdatedAt = DateTime.Now;
 
                         sp_base.SaveChanges();
+
+                        if (mat_sales_item.Any())
+                        {
+                            using (var tr_os_db = new Tranzit_OSEntities())
+                            {
+                                tr_os_db.SESS_EXPORT.Add(new SESS_EXPORT { SAREAID = mat_sales_item.Key.SAREAID, SESSID = mat_sales_item.Key.SESSID, SYSTEMID = mat_sales_item.Key.SYSTEMID, CREATED_AT = DateTime.Now });
+                                tr_os_db.SaveChanges();
+                            }
+                        }
 
                         CorrectDocument(wb, wid, $"Корегування продажу товрів по касі { mat_sales_item.Key.SYSTEMID}");
 
