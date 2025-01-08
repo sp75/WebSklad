@@ -85,7 +85,7 @@ namespace WebApi.Controllers
                         WbNum = s.WaybillList.Num,
                         WbOnDate = (DateTime?)s.WaybillList.OnDate,
                         OutPosAmount = s.WaybillDet_OutPosId != null ? s.WaybillDet_OutPosId.Amount : (decimal?)null,
-                        OutPosPrice = s.WaybillDet_OutPosId != null ? s.WaybillDet_OutPosId.BasePrice : sp_base.v_MatRemains.Where(w2 => w2.MatId == s.MatId).OrderByDescending(o2 => o2.OnDate).FirstOrDefault().AvgPrice,
+                        OutPosPrice = s.WaybillDet_OutPosId != null ? s.WaybillDet_OutPosId.BasePrice : sp_base.PosRemains.Where(w2 => w2.MatId == s.MatId && w2.Remain > 0).OrderByDescending(o2 => o2.OnDate).Select(sr => sr.AvgPrice).FirstOrDefault(),
                         OutPosOnDate = s.WaybillDet_OutPosId.OnDate
                     }).ToList());
             }
@@ -103,7 +103,7 @@ namespace WebApi.Controllers
                     CreatedAt = DateTime.Now,
                     CustomerId = Context.Token.Value,
                     MatId = In.MatId,
-                    OutPosId = In.OutPosId,
+                    OutPosId = In.OutPosId == 0 ? null : In.OutPosId,
                 });
 
                 sp_base.SaveChanges();
@@ -265,7 +265,7 @@ from
 (
     select pr.PosId, (pr.remain-pr.rsv) as CurRemain, pr.Rsv, wbd.OnDate, wbd.Price, 
            wbl.num as DocNum, wbl.OnDate as DocDate, 
-           wbl.WType, wbl.WbillId, wbd.BasePrice, pr.SupplierId KaId, pr.Remain,  pr.MatId, pr.WId, wbd.PosParent
+           wbl.WType, wbl.WbillId, wbd.BasePrice, pr.SupplierId KaId, pr.Remain,  pr.MatId, pr.WId,  (case when coalesce(wbd.PosParent, 0) = 0 then pr.PosId else wbd.PosParent end) PosParent
     from posremains pr
          left outer join serials s on s.posid=pr.posid
          join waybilldet wbd on wbd.posid=pr.posid
@@ -275,7 +275,7 @@ from
                      where posid=pr.posid )
           and pr.matid = {0}
           and pr.remain > 0 
-          and pr.SupplierId is not null
+   --       and pr.SupplierId is not null
 ) item 
 inner join Kagent k on k.WId = item.WId
 where k.id = {1} and item.DocDate > {2}", mat_id, Context.Token, start_date).ToList());

@@ -138,7 +138,7 @@ namespace WebApi.Controllers
             using (var sp_base = SPDatabase.SPBase())
             {
                 var _wb = sp_base.WaybillList.Find(req.WbillId);
-                var mat = sp_base.Materials.FirstOrDefault(w => w.OpenStoreId == req.ArtId);
+                var mat = sp_base.Materials.FirstOrDefault(w => w.MatId == req.ArtId);
                 if (mat != null)
                 {
                     var pos_in = new WaybillMoveRepository().GetPosIn(Context.Token.Value, mat.MatId);

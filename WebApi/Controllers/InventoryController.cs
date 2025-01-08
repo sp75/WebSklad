@@ -31,11 +31,11 @@ namespace WebApi.Controllers
                 var ka = db.Kagent.FirstOrDefault(w => w.Id == Context.Token);
                 var art_list = req.Select(s => s.ARTID).ToList();
 
-                var wh = new MaterialRemain(0).GetMaterialsOnWh(ka.WId.Value).Where(w => (w.TypeId == 1 || w.TypeId == 5 || w.TypeId == 6) && w.OpenStoreId != null).ToList();
+                var wh = new MaterialRemain(0).GetMaterialsOnWh(ka.WId.Value).Where(w => (w.TypeId == 1 || w.TypeId == 5 || w.TypeId == 6) ).ToList();
 
-                var list = wh.Where(w => !art_list.Contains(w.OpenStoreId ?? 0)).Select(s => new
+                var list = wh.Where(w => !art_list.Contains(w.MatId)).Select(s => new
                 {
-                    s.OpenStoreId,
+                    OpenStoreId = s.MatId,
                     s.CurRemain,
                     s.MatName,
                     s.Artikul
@@ -101,7 +101,7 @@ namespace WebApi.Controllers
                 int num = 0;
                 foreach (var item in req)
                 {
-                    var mat = sp_base.Materials.FirstOrDefault(w => w.OpenStoreId == item.ARTID);
+                    var mat = sp_base.Materials.FirstOrDefault(w => w.MatId == item.ARTID);
 
                     if (mat != null)
                     {

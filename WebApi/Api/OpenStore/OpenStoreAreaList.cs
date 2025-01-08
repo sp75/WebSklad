@@ -11,5 +11,6 @@ namespace WebApi.Api.OpenStore
         public int? OpenStoreAreaId { get; set; }
         public DateTime? LastInventoryDate { get; set; }
         public int? WId { get; set; }
+        public string KAU { get; set; }
     }
 }

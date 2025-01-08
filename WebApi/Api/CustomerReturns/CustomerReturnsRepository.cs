@@ -21,6 +21,99 @@ namespace WebApi.Api.CustomerReturns
             {
                 var pos_in_list = GetReturnetPosIn(customer_id).Where(w => (w.TotalRemain - w.Amount) >= 0).ToList();
                 var ka = sp_base.v_Kagent.FirstOrDefault(w => w.Id == customer_id);
+                var _wb = sp_base.WaybillList.Add(new WaybillList()
+                {
+                    Id = Guid.NewGuid(),
+                    WType = -5,
+                    OnDate = DateTime.Now,
+                    Num = sp_base.GetDocNum("wb_write_off").FirstOrDefault(),
+                    CurrId = 2,
+                    OnValue = 1,
+                    Notes = "віддалене повернення",
+                    EntId = ka.EnterpriseId,
+                    ReportingDate = DateTime.Now,
+                    Nds = 0,
+                    WaybillMove = new WaybillMove { SourceWid = ka.WId.Value },
+                    AdditionalDocTypeId = 6 //Повернення
+                });
+                sp_base.SaveChanges();
+
+                int num = 1;
+                foreach (var pos_in in pos_in_list)
+                {
+                    var wbd = sp_base.WaybillDet.Add(new WaybillDet()
+                    {
+                        WbillId = _wb.WbillId,
+                        Price = pos_in.Price,
+                        BasePrice = pos_in.BasePrice,
+                        Nds = _wb.Nds,
+                        CurrId = _wb.CurrId,
+                        OnDate = _wb.OnDate,
+                        WId = ka.WId.Value,
+                        Num = ++num,
+                        Amount = pos_in.Amount,
+                        MatId = pos_in.MatId,
+                        OnValue = _wb.OnValue
+                    });
+                    sp_base.SaveChanges();
+
+                    try
+                    {
+                        sp_base.WMatTurn.Add(new WMatTurn
+                        {
+                            PosId = pos_in.PosId,
+                            WId = pos_in.WId,
+                            MatId = pos_in.MatId,
+                            OnDate = _wb.OnDate,
+                            TurnType = 2,
+                            Amount = pos_in.Amount,
+                            SourceId = wbd.PosId
+                        });
+
+                        sp_base.SaveChanges();
+
+                        var rcr = sp_base.RemoteCustomerReturned.Find(pos_in.Id);
+                        rcr.WbillIdOut = _wb.WbillId;
+
+                        sp_base.SaveChanges();
+                    }
+                    catch
+                    {
+                        sp_base.UndoChanges();
+
+                        var message = string.Format("| Віддалене повернення | Помилка резервування товару mat_id {1} | Торгова точка {0} | Error", customer_id, wbd.MatId);
+
+                        _log.LogInfo(message);
+                    }
+
+                }
+
+                if (sp_base.WaybillDet.Any(a => a.WbillId == _wb.WbillId))
+                {
+                    _wb.UpdatedAt = DateTime.Now;
+                    result.Add(_wb.Id);
+                }
+                else
+                {
+                    sp_base.WaybillList.Remove(sp_base.WaybillList.Find(_wb.WbillId));
+                }
+
+                sp_base.SaveChanges();
+
+                sp_base.ExecuteWayBill(_wb.WbillId, null, null).ToList().FirstOrDefault();
+
+            }
+            return result;
+        }
+
+        public List<Guid> GreateReturnToSupplierOld(Guid customer_id)
+        {
+            var result = new List<Guid>();
+
+            using (var sp_base = SPDatabase.SPBase())
+            {
+                var pos_in_list = GetReturnetPosIn(customer_id).Where(w => (w.TotalRemain - w.Amount) >= 0).ToList();
+                var ka = sp_base.v_Kagent.FirstOrDefault(w => w.Id == customer_id);
 
                 foreach (var wb_item in pos_in_list.GroupBy(g => g.KaId).ToList())
                 {
@@ -38,7 +131,7 @@ namespace WebApi.Api.CustomerReturns
                         ReportingDate = DateTime.Now,
                         PTypeId = 1,
                         Nds = 0,
-                         
+
                     });
                     sp_base.SaveChanges();
 
@@ -93,7 +186,7 @@ namespace WebApi.Api.CustomerReturns
 
                     }
 
-                    if (sp_base.WaybillDet.Any(a => a.WbillId == _wb.WbillId) )
+                    if (sp_base.WaybillDet.Any(a => a.WbillId == _wb.WbillId))
                     {
                         _wb.UpdatedAt = DateTime.Now;
                         result.Add(_wb.Id);
@@ -118,7 +211,7 @@ namespace WebApi.Api.CustomerReturns
                    item.BasePrice, item.KaId, item.WId, item.MatId, item.Price
             from
             (
-               select pr.PosId, (pr.remain-pr.rsv) as CurRemain,  wbd.OnDate, wbd.Price, wbl.WType, wbd.BasePrice, pr.SupplierId KaId, pr.MatId, pr.WId, wbd.PosParent
+               select pr.PosId, (pr.remain-pr.rsv) as CurRemain,  wbd.OnDate, wbd.Price, wbl.WType, wbd.BasePrice, pr.SupplierId KaId, pr.MatId, pr.WId
                from posremains pr
                left outer join serials s on s.posid=pr.posid
                join waybilldet wbd on wbd.posid=pr.posid
@@ -129,7 +222,7 @@ namespace WebApi.Api.CustomerReturns
                and pr.remain > 0 
             ) item 
             inner join RemoteCustomerReturned rcr on rcr.PosId = item.PosId
-            where item.KaId is not null and rcr.CustomerId = {0} and rcr.WbillIdOut is null ", customer_id).ToList();
+            where rcr.CustomerId = {0} and rcr.WbillIdOut is null ", customer_id).ToList();
         }
 
 
@@ -149,7 +242,7 @@ namespace WebApi.Api.CustomerReturns
 
                     from WMATTURN wmt, WAYBILLLIST, WAYBILLDET  
 	                where wmt.SOURCEID = {0} and WAYBILLDET.posid = wmt.posid 
-	                and WAYBILLDET.wbillid = WAYBILLLIST.wbillid and wmt.TURNTYPE = -1
+	                and WAYBILLDET.wbillid = WAYBILLLIST.wbillid and wmt.TURNTYPE in ( -1 , 1 )
                )item", pos_in).ToList();
         }
 
@@ -174,17 +267,17 @@ namespace WebApi.Api.CustomerReturns
   from WaybillDet wbd
   join WaybillList wbl on wbl.wbillid=wbd.wbillid
   join Materials m on m.matid=wbd.matid
-  join Kagent ka on ka.kaid=wbl.kaid
   left join (select rr.OutPosId, 
 	               sum(wbd_r.amount) ReturnAmount 
 	         from ReturnRel rr, WaybillDet wbd_r 
 		     where  wbd_r.PosId = rr.PosId 
 			 group by  rr.OutPosId) r on r.OutPosId =wbd.PosId
+ left join Kagent k on k.WId = wbd.WId
  join RemoteCustomerReturned on RemoteCustomerReturned.OutPosId = wbd.PosId
 
   where RemoteCustomerReturned.WbillId is null 
         and wbl.Checked = 1
-	    and wbl.WType = -1
+	    and ( wbl.WType  = -1 or k.WId is not null )
         and (wbd.Amount - coalesce( r.ReturnAmount,0) ) >= RemoteCustomerReturned.Amount
 		and RemoteCustomerReturned.CustomerId = {0}", customer_id).ToList();
 

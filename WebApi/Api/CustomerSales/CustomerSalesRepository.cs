@@ -25,8 +25,8 @@ namespace WebApi.Api.CustomerSales
  ,SUM(v_Sales.AMOUNT) Amount
  ,SUM(v_Sales.TOTAL) Total
  ,AVG(v_Sales.PRICE) Price
-FROM [SERVER_OS].[Tranzit_OS].[dbo].[v_Sales]
-inner join Materials m on m.OpenStoreId = v_Sales.ARTID
+FROM [BK_OS].[Tranzit_OS].[dbo].[v_Sales]
+inner join Materials m on m.MatId = v_Sales.ARTID
 inner join MatGroup mg on m.GrpId = mg.GrpId
 inner join v_Kagent ka on ka.OpenStoreAreaId = v_Sales.SAREAID
 WHERE SESSEND IS null and coalesce( m.Archived,0) = 0 and m.TypeId in (1,5,6) and ka.Id = {0}
@@ -50,8 +50,8 @@ GROUP BY [v_Sales].SESSID,v_Sales.SAREAID, ARTID, ARTCODE, ARTNAME,SessionStartD
  ,mg.Name GrpName
  ,SUM(v_ReturnSales.AMOUNT) Amount
  ,SUM(v_ReturnSales.TOTAL) Total
-FROM [SERVER_OS].[Tranzit_OS].[dbo].v_ReturnSales
-inner join Materials m on m.OpenStoreId = v_ReturnSales.ARTID
+FROM [BK_OS].[Tranzit_OS].[dbo].v_ReturnSales
+inner join Materials m on m.MatId = v_ReturnSales.ARTID
 inner join MatGroup mg on m.GrpId = mg.GrpId
 inner join v_Kagent ka on ka.OpenStoreAreaId = v_ReturnSales.SAREAID
 WHERE SESSEND IS null and coalesce( m.Archived,0) = 0 and m.TypeId in (1,5,6) and ka.Id = {0}

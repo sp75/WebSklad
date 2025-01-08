@@ -286,7 +286,7 @@ namespace WebApi.Controllers
                         WbNum = s.WaybillList.Num,
                         WbOnDate = (DateTime?)s.WaybillList.OnDate,
                         OutPosAmount = s.WaybillDet_OutPosId != null ? s.WaybillDet_OutPosId.Amount : (decimal?)null,
-                        OutPosPrice = s.WaybillDet_OutPosId != null ? s.WaybillDet_OutPosId.BasePrice : sp_base.v_MatRemains.Where(w2 => w2.MatId == s.MatId).OrderByDescending(o2 => o2.OnDate).FirstOrDefault().AvgPrice,
+                        OutPosPrice = s.WaybillDet_OutPosId != null ? s.WaybillDet_OutPosId.BasePrice : sp_base.PosRemains.Where(w2 => w2.MatId == s.MatId && w2.Remain > 0).OrderByDescending(o2 => o2.OnDate).Select(sr=> sr.AvgPrice).FirstOrDefault(),
                         OutPosOnDate = s.WaybillDet_OutPosId.OnDate
                     }).ToList());
             }

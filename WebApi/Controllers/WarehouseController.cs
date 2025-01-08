@@ -54,7 +54,7 @@ namespace WebApi.Controllers
                     MatId = s.MatId,
                     MatName = s.MatName,
                     MsrName = s.MsrName,
-                    OpenStoreId = s.OpenStoreId,
+                    OpenStoreId = s.MatId,
                     Remain = s.Remain,
                     TypeId = s.TypeId,
                     Rsv = s.Rsv,
