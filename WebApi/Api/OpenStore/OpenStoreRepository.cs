@@ -1,4 +1,5 @@
-﻿using SP.Base;
+﻿using SkladEngine.ExecuteDoc;
+using SP.Base;
 using SP.Base.Models;
 using System;
 using System.Collections.Generic;
@@ -99,7 +100,8 @@ GROUP BY [v_Sales].SESSID,v_Sales.SAREAID, ARTID, ARTCODE, ARTNAME,SessionStartD
                             }
                         }
 
-                        CorrectDocument(wb, wid, $"Корегування продажу товрів по касі { mat_sales_item.Key.SYSTEMID}");
+                            // CorrectDocument(wb, wid, $"Корегування продажу товрів по касі { mat_sales_item.Key.SYSTEMID}");
+                        new ExecuteWayBill().CorrectDocument(wb.WbillId, $"Корегування продажу товрів по касі { mat_sales_item.Key.SYSTEMID}", true);
 
                         var list = new InventoryRepository().ReservedAllosition(wb.WbillId, true);
 
@@ -204,7 +206,8 @@ GROUP BY [v_Sales].SESSID,v_Sales.SAREAID, ARTID, ARTCODE, ARTNAME,SessionStartD
 
                         sp_base.SaveChanges();
 
-                        CorrectDocument(wb, wid, $"Корегування продажу товрів по касі { mat_sales_item.Key.SYSTEMID}");
+                        //  CorrectDocument(wb, wid, $"Корегування продажу товрів по касі { mat_sales_item.Key.SYSTEMID}");
+                        new ExecuteWayBill().CorrectDocument(wb.WbillId, $"Корегування продажу товрів по касі { mat_sales_item.Key.SYSTEMID}", true);
 
                         var list = new InventoryRepository().ReservedAllosition(wb.WbillId, true);
 
