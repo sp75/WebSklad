@@ -259,7 +259,7 @@ namespace WebApi.Controllers
 
             using (var sp_base = SPDatabase.SPBase())
             {
-                return Ok(sp_base.Database.SqlQuery<CustomerPosIn>(@"
+             var list =    sp_base.Database.SqlQuery<CustomerPosIn>(@"
 select item.* , (CurRemain - (select coalesce( sum([Amount]), 0 ) from RemoteCustomerReturned where PosId = item.PosId ) ) TotalRemain
 from
 (
@@ -278,7 +278,9 @@ from
    --       and pr.SupplierId is not null
 ) item 
 inner join Kagent k on k.WId = item.WId
-where k.id = {1} and item.DocDate > {2}", mat_id, Context.Token, start_date).ToList());
+where k.id = {1} and item.DocDate > {2}", mat_id, Context.Token, start_date).ToList();
+
+                return Ok(list);
             }
         }
     }
