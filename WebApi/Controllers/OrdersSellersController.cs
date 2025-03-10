@@ -94,13 +94,13 @@ namespace WebApi.Controllers
             using (var sp_base = SPDatabase.SPBase())
             {
                 var pos = sp_base.WaybillDet.FirstOrDefault(w => w.PosId == In.PosId);
-                if (pos.WaybillList.Checked == 0)
+                if (pos.WaybillList.Checked == 0 && (!pos.WaybillList.ToDate.HasValue || pos.WaybillList.ToDate > DateTime.Now))
                 {
                     var msr = sp_base.MaterialMeasures.Where(w => w.MatId == pos.MatId && w.UseInOrders == true).FirstOrDefault();
 
-                       var pos_date = DateTime.Now;
+                    var pos_date = DateTime.Now;
 
-                    pos.Amount = msr != null && msr.Amount > 0 ? In.Amount/ msr.Amount : In.Amount;
+                    pos.Amount = msr != null && msr.Amount > 0 ? In.Amount / msr.Amount : In.Amount;
                     pos.Checked = In.Amount > 0 ? 1 : 0;
                     pos.UpdateAt = pos_date;
                     pos.Notes = In.Notes;

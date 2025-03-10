@@ -59,14 +59,14 @@ namespace WebApi.Controllers
             {
                 return false;
             }
-            var on_date = req.Min(m => m.CreatedAt);
+            var on_date = DateTime.Now; //  req.Min(m => m.CreatedAt);
 
             if (!new OpenStoreRepository().ImportKagentSales(Context.Token))
             {
                 return false;
             }
 
-            if (!new OpenStoreRepository().ImportCurrentKagentSales(Context.Token, on_date.Value))
+            if (!new OpenStoreRepository().ImportCurrentKagentSales(Context.Token, on_date))
             {
                 return false;
             }
@@ -82,7 +82,7 @@ namespace WebApi.Controllers
                 {
                     Id = Guid.NewGuid(),
                     WType = 7,
-                    OnDate = on_date.Value,
+                    OnDate = on_date,
                     Num = sp_base.GetDocNum("wb_inventory").FirstOrDefault(),
                     CurrId = 2,
                     OnValue = 1,
@@ -96,7 +96,7 @@ namespace WebApi.Controllers
 
                 sp_base.SaveChanges();
 
-                var wh = new MaterialRemain(0).GetMaterialsOnWh(ka.WId.Value, on_date.Value.Date);
+                var wh = new MaterialRemain(0).GetMaterialsOnWh(ka.WId.Value, on_date.Date);
 
                 int num = 0;
                 foreach (var item in req)
@@ -147,6 +147,8 @@ namespace WebApi.Controllers
                     if (create_write_off != null && create_write_off.NewDocId.HasValue)
                     {
                         var wb_write_off = sp_base.WaybillList.FirstOrDefault(w => w.Id == create_write_off.NewDocId);
+
+                   //     new ExecuteWayBill().CorrectDocument(wb_write_off.WbillId, $"Корегування товрів по акту інвентаризації #{ new_inventory_wb.Num}", true);
 
                         var list = new InventoryRepository().ReservedAllosition(wb_write_off.WbillId, true);
 
