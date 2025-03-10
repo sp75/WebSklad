@@ -10,6 +10,11 @@ namespace WebApi.Controllers
     [RoutePrefix("api/settings")]
     public class RegController : ApiController
     {
+        [HttpGet, Route("version")]
+        public string GetVersion()
+        {
+            return "1.0.0.1";
+        }
 
         [HttpGet, Route("kay-gen/{kay_id}")]
         public string Coding(String kay_id)
