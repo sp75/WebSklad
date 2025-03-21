@@ -82,7 +82,8 @@ namespace WebApi.Controllers
                     s.WbOnDate,
                     s.Notes,
                     s.WbNotes,
-                    s.PrevAmount
+                    s.PrevAmount,
+                    s.ToDate
                 }).ToList());
             }
         }

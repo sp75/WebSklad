@@ -260,7 +260,7 @@ namespace WebApi.Controllers
             using (var sp_base = SPDatabase.SPBase())
             {
              var list =    sp_base.Database.SqlQuery<CustomerPosIn>(@"
-select item.* , (CurRemain - (select coalesce( sum([Amount]), 0 ) from RemoteCustomerReturned where PosId = item.PosId ) ) TotalRemain
+select item.* , (CurRemain /*- (select coalesce( sum([Amount]), 0 ) from RemoteCustomerReturned where PosId = item.PosId )*/ ) TotalRemain
 from
 (
     select pr.PosId, (pr.remain-pr.rsv) as CurRemain, pr.Rsv, wbd.OnDate, wbd.Price, 
