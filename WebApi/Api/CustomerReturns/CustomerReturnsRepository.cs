@@ -19,7 +19,7 @@ namespace WebApi.Api.CustomerReturns
 
             using (var sp_base = SPDatabase.SPBase())
             {
-                var pos_in_list = GetReturnetPosIn(customer_id).Where(w => (w.TotalRemain - w.Amount) >= 0).ToList();
+                var pos_in_list = GetReturnetPosIn(customer_id).Where(w => (w.CurRemain - w.Amount) >= 0).ToList();
                 var ka = sp_base.v_Kagent.FirstOrDefault(w => w.Id == customer_id);
                 var _wb = sp_base.WaybillList.Add(new WaybillList()
                 {
@@ -39,6 +39,7 @@ namespace WebApi.Api.CustomerReturns
                 sp_base.SaveChanges();
 
                 int num = 1;
+                int error = 0;
                 foreach (var pos_in in pos_in_list)
                 {
                     var wbd = sp_base.WaybillDet.Add(new WaybillDet()
@@ -79,7 +80,8 @@ namespace WebApi.Api.CustomerReturns
                     }
                     catch
                     {
-                        sp_base.UndoChanges();
+                        error = 1;
+                        //      sp_base.UndoChanges();
 
                         var message = string.Format("| Віддалене повернення | Помилка резервування товару mat_id {1} | Торгова точка {0} | Error", customer_id, wbd.MatId);
 
@@ -88,24 +90,25 @@ namespace WebApi.Api.CustomerReturns
 
                 }
 
-                if (sp_base.WaybillDet.Any(a => a.WbillId == _wb.WbillId))
+                if (error == 0 && sp_base.WaybillDet.Any(a => a.WbillId == _wb.WbillId))
                 {
                     _wb.UpdatedAt = DateTime.Now;
                     result.Add(_wb.Id);
+
+                    sp_base.SaveChanges();
+
+                    sp_base.ExecuteWayBill(_wb.WbillId, null, null).ToList().FirstOrDefault();
                 }
                 else
                 {
-                    sp_base.WaybillList.Remove(sp_base.WaybillList.Find(_wb.WbillId));
+                    sp_base.DeleteWhere<WaybillList>(w => w.WbillId == _wb.WbillId);
                 }
-
-                sp_base.SaveChanges();
-
-                sp_base.ExecuteWayBill(_wb.WbillId, null, null).ToList().FirstOrDefault();
 
             }
             return result;
         }
 
+        /*
         public List<Guid> GreateReturnToSupplierOld(Guid customer_id)
         {
             var result = new List<Guid>();
@@ -203,12 +206,12 @@ namespace WebApi.Api.CustomerReturns
             }
             return result;
         }
-
+*/
         public List<ReturnetPosInView> GetReturnetPosIn(Guid customer_id)
         {
             return db.Database.SqlQuery<ReturnetPosInView>(@"
-            select rcr.* , (CurRemain - (select coalesce( sum([Amount]), 0 ) from RemoteCustomerReturned where PosId = item.PosId and id <> rcr.Id ) ) TotalRemain, 
-                   item.BasePrice, item.KaId, item.WId, item.MatId, item.Price
+            select rcr.*, /*(CurRemain - (select coalesce( sum([Amount]), 0 ) from RemoteCustomerReturned where PosId = item.PosId and id <> rcr.Id ) ) TotalRemain, */
+                   item.BasePrice, item.KaId, item.WId, item.MatId, item.Price, item.CurRemain
             from
             (
                select pr.PosId, (pr.remain-pr.rsv) as CurRemain,  wbd.OnDate, wbd.Price, wbl.WType, wbd.BasePrice, pr.SupplierId KaId, pr.MatId, pr.WId

@@ -11,10 +11,10 @@ namespace WebApi.Api.CustomerReturns
         public int PosId { get; set; }
         public decimal Amount { get; set; }
         public decimal? BasePrice { get; set; }
-        public decimal? TotalRemain { get; set; }
         public int? KaId { get; set; }
         public int WId { get; set; }
         public int MatId { get; set; }
         public decimal? Price { get; set; }
+        public decimal? CurRemain { get; set; }
     }
 }
