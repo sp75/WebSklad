@@ -259,26 +259,58 @@ namespace WebApi.Controllers
 
             using (var sp_base = SPDatabase.SPBase())
             {
-             var list =    sp_base.Database.SqlQuery<CustomerPosIn>(@"
-select item.* , (CurRemain - (select coalesce( sum([Amount]), 0 ) from RemoteCustomerReturned where PosId = item.PosId ) ) TotalRemain
-from
-(
-    select pr.PosId, (pr.remain-pr.rsv) as CurRemain, pr.Rsv, wbd.OnDate, wbd.Price, 
-           wbl.num as DocNum, wbl.OnDate as DocDate, 
-           wbl.WType, wbl.WbillId, wbd.BasePrice, pr.SupplierId KaId, pr.Remain,  pr.MatId, pr.WId,  (case when coalesce(wbd.PosParent, 0) = 0 then pr.PosId else wbd.PosParent end) PosParent
-    from posremains pr
-         left outer join serials s on s.posid=pr.posid
-         join waybilldet wbd on wbd.posid=pr.posid
-         join waybilllist wbl on wbl.wbillid=wbd.wbillid
-    where pr.ondate=(select max(ondate)
-                     from posremains
-                     where posid=pr.posid )
-          and pr.matid = {0}
-          and pr.remain > 0 
-   --       and pr.SupplierId is not null
-) item 
-inner join Kagent k on k.WId = item.WId
-where k.id = {1} and item.DocDate > {2} and item.PosId != item.PosParent", mat_id, Context.Token, start_date).ToList();
+                /*        var list =    sp_base.Database.SqlQuery<CustomerPosIn>(@"
+           select item.* , (CurRemain - (select coalesce( sum([Amount]), 0 ) from RemoteCustomerReturned where PosId = item.PosId ) ) TotalRemain
+           from
+           (
+               select pr.PosId, (pr.remain-pr.rsv) as CurRemain, pr.Rsv, wbd.OnDate, wbd.Price, 
+                      wbl.num as DocNum, wbl.OnDate as DocDate, 
+                      wbl.WType, wbl.WbillId, wbd.BasePrice, pr.SupplierId KaId, pr.Remain,  pr.MatId, pr.WId,  (case when coalesce(wbd.PosParent, 0) = 0 then pr.PosId else wbd.PosParent end) PosParent
+               from posremains pr
+                    left outer join serials s on s.posid=pr.posid
+                    join waybilldet wbd on wbd.posid=pr.posid
+                    join waybilllist wbl on wbl.wbillid=wbd.wbillid
+               where pr.ondate=(select max(ondate)
+                                from posremains
+                                where posid=pr.posid )
+                     and pr.matid = {0}
+                     and pr.remain > 0 
+              --       and pr.SupplierId is not null
+           ) item 
+           inner join Kagent k on k.WId = item.WId
+           where k.id = {1} and item.DocDate > {2} and item.PosId != item.PosParent", mat_id, Context.Token, start_date).ToList();*/
+
+                var list = sp_base.Database.SqlQuery<CustomerPosIn>(@"
+   select wbd.PosId, 
+         wbd.PosId PosParent, 
+         wbl.WbillId, 
+		 wbl.Num DocNum, 
+		 wbl.OnDate DocDate, 
+         wbd.OnDate,
+         wbd.Amount, 
+		 wbd.Price, 
+         wbd.BasePrice,
+		 r.ReturnAmount,
+     	 (wbd.Amount - coalesce( r.ReturnAmount, 0) - coalesce( rcr.RemotePosAmount, 0) ) TotalRemain,
+		 (wbd.Amount - coalesce( rcr.RemotePosAmount, 0) ) RemoteRemain,
+		 m.MatId,
+		 rcr.RemotePosAmount
+  from WaybillDet wbd
+  join WaybillList wbl on wbl.wbillid=wbd.wbillid
+  join Materials m on m.matid=wbd.matid
+  join Kagent ka on ka.kaid=wbl.kaid
+  left join (select rr.OutPosId, 
+	               sum(wbd_r.amount) ReturnAmount 
+	         from ReturnRel rr, WaybillDet wbd_r 
+		     where  wbd_r.PosId = rr.PosId 
+			 group by  rr.OutPosId) r on r.OutPosId =wbd.PosId
+  left join (select OutPosId, sum(amount) RemotePosAmount from RemoteCustomerReturned where WbillId is null group by OutPosId) rcr on rcr.OutPosId = wbd.PosId
+  where  wbl.OnDate > {2}
+         and m.MatId = {0}
+         and ka.Id = {1}
+         and wbl.Checked = 1
+	     and wbl.WType = -1", mat_id, Context.Token, start_date).ToList();
+
 
                 return Ok(list);
             }
