@@ -44,11 +44,12 @@ namespace WebApi.Controllers
 
                 var ka_sales_out = new CustomerSalesRepository().GetCurrentSales(Context.Token.Value);
                 var ka_return_sales = new CustomerSalesRepository().GetCurrentReturns(Context.Token.Value);
+                var ka_price = sp_base.v_KagentMaterilPrices.Where(w => w.KaId == ka.KaId).Select(s=> new { s.MatId, s.Price}).ToList();
 
                 var mat_remain = new MaterialRemain(0).GetMaterialsOnWh(ka.WId.Value).Where(w => w.TypeId != null).Select(s => new MaterialsOnWh
                 {
                     Artikul = s.Artikul,
-                    AvgPrice = s.AvgPrice,
+                    AvgPrice = ka_price.Where(w => w.MatId == s.MatId).Select(sp => sp.Price).FirstOrDefault(), //s.AvgPrice,
                     CurRemain = s.CurRemain,
                     GrpName = s.GrpName,
                     MatId = s.MatId,

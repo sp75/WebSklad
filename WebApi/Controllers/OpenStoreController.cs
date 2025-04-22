@@ -31,7 +31,7 @@ namespace WebApi.Controllers
       ,WId
 	  ,LastInventoryDate
   FROM [dbo].v_Kagent
-  where [OpenStoreAreaId] is not null and WId is not null and LastInventoryDate is not null and KAU = '1'").ToList();
+  where [OpenStoreAreaId] is not null and WId is not null and LastInventoryDate is not null and PTypeId is not null").ToList();
 
             foreach (var k_item in ka_list)
             {
