@@ -230,7 +230,7 @@ namespace WebApi.Controllers
 
             if (wb.Checked == 0)
             {
-                var ex_wb_move = SPDatabase.SPBase().ExecuteWayBill(wbill_id, 4, null).ToList().FirstOrDefault();
+                var ex_wb_move = SPDatabase.SPBase().ExecuteWayBill(wbill_id, null, null).ToList().FirstOrDefault();
 
                 if (ex_wb_move.ErrorMessage != "False")
                 {

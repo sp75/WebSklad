@@ -59,7 +59,7 @@ namespace WebApi.Controllers
                     Remain = s.Remain,
                     TypeId = s.TypeId,
                     Rsv = s.Rsv,
-                    SumRemain = s.SumRemain,
+                    SumRemain = Math.Round((ka_price.Where(w => w.MatId == s.MatId).Select(sp => sp.Price).FirstOrDefault() ?? 0) * s.Remain, 2),
                     AmountSold = ka_sales_out.Where(w => w.MatId == s.MatId).Select(ss => ss.Amount).FirstOrDefault() - ka_return_sales.Where(w => w.MatId == s.MatId).Select(ss => ss.Amount).FirstOrDefault()
                 }).ToList();
 
