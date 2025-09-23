@@ -40,9 +40,8 @@ namespace WebApi.Api.OpenStore
 FROM [BK_OS].[Tranzit_OS].[dbo].[v_Sales]
 inner join Materials m on m.MatId = v_Sales.ARTID
 left outer join  [BK_OS].[Tranzit_OS].[dbo].SESS_EXPORT on SESS_EXPORT.SESSID = v_Sales.SESSID and SESS_EXPORT.SYSTEMID = v_Sales.SYSTEMID and SESS_EXPORT.SAREAID = v_Sales.SAREAID
-WHERE SESSEND IS NOT null and  v_Sales.SAREAID = {0} AND coalesce( m.Archived,0) = 0 and SessionStartDate > {1} and  SESS_EXPORT.SYSTEMID is null and m.TypeId in (1,5)
-GROUP BY [v_Sales].SESSID,v_Sales.SAREAID, ARTID, ARTCODE, ARTNAME,SessionStartDate, v_Sales.[SYSTEMID], m.MatId
-HAVING SUM(v_Sales.AMOUNT) > 0", area_id, last_inventory_date).ToList();
+WHERE SESSEND IS NOT null and  v_Sales.SAREAID = {0} AND coalesce( m.Archived,0) = 0 and SessionStartDate > {1} and  SESS_EXPORT.SYSTEMID is null and m.TypeId in (1,5) and v_Sales.SALESTAG = 0 
+GROUP BY [v_Sales].SESSID,v_Sales.SAREAID, ARTID, ARTCODE, ARTNAME,SessionStartDate, v_Sales.[SYSTEMID], m.MatId", area_id, last_inventory_date).ToList();
 
                     foreach (var mat_sales_item in ka_sales_out.GroupBy(g => new { g.SESSID, g.SYSTEMID, g.SessionStartDate, g.SAREAID }).ToList())
                     {
@@ -151,9 +150,8 @@ HAVING SUM(v_Sales.AMOUNT) > 0", area_id, last_inventory_date).ToList();
 FROM [BK_OS].[Tranzit_OS].[dbo].[v_Sales]
 inner join Materials m on m.MatId = v_Sales.ARTID
 left outer join  [BK_OS].[Tranzit_OS].[dbo].SESS_EXPORT on SESS_EXPORT.SESSID = v_Sales.SESSID and SESS_EXPORT.SYSTEMID = v_Sales.SYSTEMID and SESS_EXPORT.SAREAID = v_Sales.SAREAID
-WHERE SESSEND IS null and  v_Sales.SAREAID = {0} AND coalesce( m.Archived,0) = 0 and SessionStartDate > {1}  and SessionStartDate < {2} and  SESS_EXPORT.SYSTEMID is null and m.TypeId in (1,5)
-GROUP BY [v_Sales].SESSID,v_Sales.SAREAID, ARTID, ARTCODE, ARTNAME,SessionStartDate, v_Sales.[SYSTEMID], m.MatId
-HAVING SUM(v_Sales.AMOUNT) > 0", area_id, last_inventory_date, inventory_date).ToList();
+WHERE SESSEND IS null and  v_Sales.SAREAID = {0} AND coalesce( m.Archived,0) = 0 and SessionStartDate > {1}  and SessionStartDate < {2} and  SESS_EXPORT.SYSTEMID is null and m.TypeId in (1,5) and v_Sales.SALESTAG = 0 
+GROUP BY [v_Sales].SESSID,v_Sales.SAREAID, ARTID, ARTCODE, ARTNAME,SessionStartDate, v_Sales.[SYSTEMID], m.MatId", area_id, last_inventory_date, inventory_date).ToList();
 
                     foreach (var mat_sales_item in ka_sales_out.GroupBy(g => new { g.SESSID, g.SYSTEMID, g.SessionStartDate, g.SAREAID }).ToList())
                     {
@@ -360,7 +358,7 @@ GROUP BY v_ReturnSales.SESSID, v_ReturnSales.SAREAID, ARTID, ARTCODE, ARTNAME, S
                         Id = Guid.NewGuid(),
                         WType = 5,
                         DefNum = 0,
-                        OnDate = DateTime.Now,
+                        OnDate = DateTime.Now.AddSeconds(-1),
                         Num = sp_base.GetDocNum("wb_write_on").FirstOrDefault(),
                         CurrId = 2,
                         OnValue = 1,
@@ -437,7 +435,7 @@ GROUP BY v_ReturnSales.SESSID, v_ReturnSales.SAREAID, ARTID, ARTCODE, ARTNAME, S
 
             var ka = GetOpenStoreAreaList(id).FirstOrDefault();
 
-         // продажі заходять з врахуванням повернень   ImportKagentReturns(ka.KaId, ka.OpenStoreAreaId.Value, ka.LastInventoryDate.Value, ka.WId.Value);
+            ImportKagentReturns(ka.KaId, ka.OpenStoreAreaId.Value, ka.LastInventoryDate.Value, ka.WId.Value);
             var result = ImportKagentSales(ka.KaId, ka.OpenStoreAreaId.Value, ka.LastInventoryDate.Value, ka.WId.Value);
             
             return result;

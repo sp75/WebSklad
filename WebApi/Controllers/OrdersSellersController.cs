@@ -65,7 +65,7 @@ namespace WebApi.Controllers
                       PrevAmount = sp_base.v_WaybillDet.Where(ww => ww.KagentId == s.KagentId && ww.MatId == s.MatId && ww.WbChecked == 1 && ww.WType == -16 && ww.WbOnDate >= prev_dt).OrderByDescending(or => or.OnDate).Select(s3 => s3.Amount).FirstOrDefault()
                   }).ToList());*/
 
-                return Ok(sp_base.v_wrd_CustomerOrders.Where(w => w.KagentId == Context.Token && w.WbOnDate >= from_dt && w.WbOnDate < to_dt ).OrderBy(o => o.Num).Select(s => new
+                return Ok(sp_base.v_wrd_CustomerOrders.Where(w => w.KagentId == Context.Token && w.WbOnDate >= from_dt/* && w.WbOnDate < to_dt */).OrderBy(o => o.Num).Select(s => new
                 {
                     s.PosId,
                     s.Num,
