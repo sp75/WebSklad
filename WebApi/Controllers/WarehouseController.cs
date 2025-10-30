@@ -135,10 +135,200 @@ namespace WebApi.Controllers
             return Ok(wb_out_list);
         }
 
+        [HttpGet, Route("auto-insert-external-waybill-to-store-wh")]
+        public IHttpActionResult MoveExternalWbOutToStoreService()
+        {
+            var wb_out_list = db.Database.SqlQuery<ExtWaybillList>(@"SELECT wb_s.[Id]
+      ,wb_s.[WbillId]
+      ,wb_s.[Num]
+      ,wb_s.[OnDate]
+      ,wb_s.[Reason]
+      ,wb_s.[Checked]
+      ,wb_s.[WType]
+      ,wb_s.[Nds]
+      ,wb_s.[PersonId]
+      ,wb_s.[SummPay]
+      ,wb_s.[Notes]
+      ,wb_s.[SummInCurr]
+      ,[KaName]
+      ,[EntName]
+      ,wb_s.[ShipmentDate]
+      ,[CarNumber]
+      ,[CarName]
+      ,[DriverName]
+      ,[RouteName]
+      ,ka_t.[KaId]
+      ,ka_t.WId
+      ,[KaArchived]
+      ,[DefTotalAmount]
+      ,[ExTotalAmount]
+      ,[KagentId]
+      ,wb_s.[AdditionalDocTypeId]
+      ,wb_s.[DeliveredWaybillId]
+      ,wh.Name WhName
+  FROM [MIRONOVKA].[sp_base].[dbo].[v_WayBillBase] wb_s
+  INNER JOIN [sp_base].[dbo].Kagent as ka_t on ka_t.Id = wb_s.[KagentId]
+  INNER JOIN [sp_base].[dbo].Warehouse as wh on wh.WId = ka_t.WId
+  left outer join [sp_base].[dbo].WaybillList as wb_target on wb_target.Id = wb_s.Id
+  where wb_s.[OnDate] > GETDATE()-2 and wb_s.ShipmentDate < GETDATE() and wb_s.WType = -1 and wb_s.[Checked] = 1 and wb_target.WbillId is null
+        and exists (SELECT ExpeditionDet.* FROM [MIRONOVKA].[sp_base].[dbo].ExpeditionDet
+		           inner join [MIRONOVKA].[sp_base].[dbo].Expedition on Expedition.Id = ExpeditionDet.ExpeditionId
+                   WHERE  ExpeditionDet.WbillId = wb_s.WbillId and ExpeditionDet.Checked = 1 and Expedition.Checked = 1)
+  order by [OnDate]").ToList();
+
+            foreach (var item in wb_out_list)
+            {
+                using (var db = SPDatabase.SPBase())
+                {
+                    var wb_in = db.WaybillList.Add(new WaybillList()
+                    {
+                        Id = item.Id,
+                        WType = 1,
+                        KaId = 4257, //ТОВ "АГРОПЕРЕРОБНИЙ КОМПЛЕКС-МИРОНІВКА"
+                        DefNum = 0,
+                        OnDate = DateTime.Now,
+                        Num = db.GetDocNum("wb_in").FirstOrDefault(),
+                        CurrId = 2,
+                        OnValue = 1,
+                        // PersonId = wb_out.PersonId,
+                        Nds = 0,
+                        //    UpdatedBy = wb_out.UpdatedBy,
+                        UpdatedAt = DateTime.Now,
+                        EntId = 2605,
+                        PTypeId = 2,
+                        Notes = item.WhName,
+                        Reason = $"Оприбуткування на склад {item.WhName} згідно видаткової накладної №{item.Num}"
+                    });
+
+                    db.SaveChanges();
+
+                    var wb_out_det = db.Database.SqlQuery<ExtWaybillDet>(@"SELECT 
+       PosId
+      ,m_t.[MatId]
+      ,[Amount]
+      ,[Price]
+      ,WaybillDet.[Num]
+  FROM [MIRONOVKA].[sp_base].[dbo].[WaybillDet]
+  inner join  [MIRONOVKA].[sp_base].[dbo].[Materials] as m on m.MatId = WaybillDet.MatId 
+  inner join  [sp_base].[dbo].[Materials] as m_t on m_t.Artikul = m.Artikul 
+  where WaybillDet.WbillId = {0} and (m.Archived is null or m.Archived = 0 ) and (m_t.Archived is null or m_t.Archived = 0 )", item.WbillId).ToList();
+
+                    foreach (var det_item in wb_out_det)
+                    {
+                        var _wbd = db.WaybillDet.Add(new WaybillDet()
+                        {
+                            WbillId = wb_in.WbillId,
+                            OnDate = wb_in.OnDate,
+                            MatId = det_item.MatId,
+                            Discount = 0,
+                            Nds = wb_in.Nds,
+                            CurrId = wb_in.CurrId,
+                            OnValue = wb_in.OnValue,
+                            Num = det_item.Num,
+                            PosKind = 0,
+                            DiscountKind = 0,
+                            Amount = det_item.Amount,
+                            BasePrice = det_item.Price,
+                            Price = det_item.Price,
+                            WId = item.WId,
+                        });
+
+                    }
+                    db.SaveChanges();
+
+                    foreach (var det_item in db.WaybillDet.Where(w => w.WbillId == wb_in.WbillId).ToList())
+                    {
+                        db.WMatTurn.Add(new WMatTurn
+                        {
+                            PosId = det_item.PosId,
+                            WId = det_item.WId.Value,
+                            MatId = det_item.MatId,
+                            OnDate = det_item.OnDate.Value,
+                            TurnType = 1,
+                            Amount = det_item.Amount,
+                            SourceId = det_item.PosId
+                        });
+                    }
+                    wb_in.Checked = 1;
+
+                    db.SaveChanges();
+                }
+            }
+
+            return Ok(true);
+        }
+
         public class MoveToStoreWarehouseWbList
         {
             public int WbillId { get; set; }
             public DateTime ShipmentDate { get; set; }
+        }
+
+        public class ExtWaybillList
+        {
+            public int? WId { get; set; }
+            public DateTime? ShipmentDate { get; set; }
+            public DateTime? ReportingDate { get; set; }
+            public Guid? ReceiptId { get; set; }
+            public string CarNumber { get; set; }
+            public string CarName { get; set; }
+            public string DriverName { get; set; }
+            public string RouteName { get; set; }
+            public TimeSpan? RouteDuration { get; set; }
+            public long? RouteId { get; set; }
+            public Guid? CarId { get; set; }
+            public int? CustomerId { get; set; }
+            public int? DriverId { get; set; }
+            public int? KaId { get; set; }
+            public decimal? DefTotalAmount { get; set; }
+            public decimal? ExTotalAmount { get; set; }
+            public string KagentGroupName { get; set; }
+            public Guid? KagentId { get; set; }
+            public string EntName { get; set; }
+            public Guid Id { get; set; }
+            public int WbillId { get; set; }
+            public string Num { get; set; }
+            public DateTime OnDate { get; set; }
+            public int? CurrId { get; set; }
+            public string Reason { get; set; }
+            public decimal? SummAll { get; set; }
+            public decimal? SummPay { get; set; }
+            public string Notes { get; set; }
+            public decimal? SummInCurr { get; set; }
+            public string KaName { get; set; }
+            public string KaFullName { get; set; }
+            public string PersonName { get; set; }
+            public int? KType { get; set; }
+            public string Received { get; set; }
+            public DateTime? ToDate { get; set; }
+            public int? EntId { get; set; }
+            public int? DeliveredWaybillId { get; set; }
+            public string WhName { get; set; }
+        }
+
+        public class ExtWaybillDet
+        {
+            public string Notes { get; set; }
+            public decimal? AvgInPrice { get; set; }
+            public int PosId { get; set; }
+            public int WbillId { get; set; }
+            public int MatId { get; set; }
+            public int? WId { get; set; }
+            public decimal Amount { get; set; }
+            public decimal? Price { get; set; }
+            public decimal? Discount { get; set; }
+            public decimal? Nds { get; set; }
+            public DateTime? OnDate { get; set; }
+            public int Num { get; set; }
+            public int? Checked { get; set; }
+            public decimal? OnValue { get; set; }
+            public decimal? Total { get; set; }
+            public decimal? BasePrice { get; set; }
+            public DateTime? Expires { get; set; }
+            public int? PosKind { get; set; }
+            public int? PosParent { get; set; }
+            public int? MsrUnitId { get; set; }
+            public int? DiscountKind { get; set; }
         }
     }
 }

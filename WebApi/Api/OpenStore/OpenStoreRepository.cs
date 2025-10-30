@@ -40,7 +40,7 @@ namespace WebApi.Api.OpenStore
 FROM [BK_OS].[Tranzit_OS].[dbo].[v_Sales]
 inner join Materials m on m.MatId = v_Sales.ARTID
 left outer join  [BK_OS].[Tranzit_OS].[dbo].SESS_EXPORT on SESS_EXPORT.SESSID = v_Sales.SESSID and SESS_EXPORT.SYSTEMID = v_Sales.SYSTEMID and SESS_EXPORT.SAREAID = v_Sales.SAREAID
-WHERE SESSEND IS NOT null and  v_Sales.SAREAID = {0} AND coalesce( m.Archived,0) = 0 and SessionStartDate > {1} and  SESS_EXPORT.SYSTEMID is null and m.TypeId in (1,5) and v_Sales.SALESTAG = 0 
+WHERE SESSEND IS NOT null and  v_Sales.SAREAID = {0} AND coalesce( m.Archived,0) = 0 and SessionStartDate > {1} and  SESS_EXPORT.SYSTEMID is null and m.TypeId in (1,5,6) and v_Sales.SALESTAG = 0 
 GROUP BY [v_Sales].SESSID,v_Sales.SAREAID, ARTID, ARTCODE, ARTNAME,SessionStartDate, v_Sales.[SYSTEMID], m.MatId", area_id, last_inventory_date).ToList();
 
                     foreach (var mat_sales_item in ka_sales_out.GroupBy(g => new { g.SESSID, g.SYSTEMID, g.SessionStartDate, g.SAREAID }).ToList())
@@ -150,7 +150,7 @@ GROUP BY [v_Sales].SESSID,v_Sales.SAREAID, ARTID, ARTCODE, ARTNAME,SessionStartD
 FROM [BK_OS].[Tranzit_OS].[dbo].[v_Sales]
 inner join Materials m on m.MatId = v_Sales.ARTID
 left outer join  [BK_OS].[Tranzit_OS].[dbo].SESS_EXPORT on SESS_EXPORT.SESSID = v_Sales.SESSID and SESS_EXPORT.SYSTEMID = v_Sales.SYSTEMID and SESS_EXPORT.SAREAID = v_Sales.SAREAID
-WHERE SESSEND IS null and  v_Sales.SAREAID = {0} AND coalesce( m.Archived,0) = 0 and SessionStartDate > {1}  and SessionStartDate < {2} and  SESS_EXPORT.SYSTEMID is null and m.TypeId in (1,5) and v_Sales.SALESTAG = 0 
+WHERE SESSEND IS null and  v_Sales.SAREAID = {0} AND coalesce( m.Archived,0) = 0 and SessionStartDate > {1}  and SessionStartDate < {2} and  SESS_EXPORT.SYSTEMID is null and m.TypeId in (1,5,6) and v_Sales.SALESTAG = 0 
 GROUP BY [v_Sales].SESSID,v_Sales.SAREAID, ARTID, ARTCODE, ARTNAME,SessionStartDate, v_Sales.[SYSTEMID], m.MatId", area_id, last_inventory_date, inventory_date).ToList();
 
                     foreach (var mat_sales_item in ka_sales_out.GroupBy(g => new { g.SESSID, g.SYSTEMID, g.SessionStartDate, g.SAREAID }).ToList())
@@ -348,7 +348,7 @@ where waybilldet.WbillId = {0} and remaain.TotalRemain < waybilldet.Amount", wb_
 FROM [BK_OS].[Tranzit_OS].[dbo].v_ReturnSales
 inner join Materials m on m.MatId = v_ReturnSales.ARTID
 left outer join  [BK_OS].[Tranzit_OS].[dbo].SESS_RETURN_EXPORT on SESS_RETURN_EXPORT.SESSID = v_ReturnSales.SESSID and SESS_RETURN_EXPORT.SYSTEMID = v_ReturnSales.SYSTEMID and SESS_RETURN_EXPORT.SAREAID = v_ReturnSales.SAREAID
-WHERE SESSEND IS NOT null and  v_ReturnSales.SAREAID = {0} AND coalesce( m.Archived,0) = 0 and SessionStartDate > {1} and  SESS_RETURN_EXPORT.SYSTEMID is null and m.TypeId in (1,5)
+WHERE SESSEND IS NOT null and  v_ReturnSales.SAREAID = {0} AND coalesce( m.Archived,0) = 0 and SessionStartDate > {1} and  SESS_RETURN_EXPORT.SYSTEMID is null and m.TypeId in (1,5,6)
 GROUP BY v_ReturnSales.SESSID, v_ReturnSales.SAREAID, ARTID, ARTCODE, ARTNAME, SessionStartDate, v_ReturnSales.[SYSTEMID], m.MatId", area_id, last_inventory_date).ToList();
 
                 foreach (var mat_sales_item in ka_sales_out.GroupBy(g => new { g.SESSID, g.SYSTEMID, g.SessionStartDate, g.SAREAID }).ToList())
