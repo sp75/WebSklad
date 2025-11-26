@@ -36,5 +36,7 @@ namespace Tranzit_OS
         public int ARTCODE { get; set; }
         public Nullable<int> ARTID { get; set; }
         public Nullable<System.DateTime> SessionStartDate { get; set; }
+        public int FiscalReceipt { get; set; }
+        public Nullable<int> SALESTYPE { get; set; }
     }
 }

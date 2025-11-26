@@ -27,5 +27,13 @@ namespace Tranzit_OS
         public string SESSSTART { get; set; }
         public string SESSEND { get; set; }
         public Nullable<System.DateTime> OnDate { get; set; }
+        public Nullable<int> SALESTYPE { get; set; }
+        public int FiscalReceipt { get; set; }
+        public int ReturnPayment { get; set; }
+        public string SALESATTRS { get; set; }
+        public Nullable<long> ENTITYSALESTIME { get; set; }
+        public string FPSN { get; set; }
+        public string SAREAADDR { get; set; }
+        public Nullable<System.DateTime> SessionStartDate { get; set; }
     }
 }

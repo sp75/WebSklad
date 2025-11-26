@@ -53,6 +53,9 @@
     <Compile Include="SESS_EXPORT.cs">
       <DependentUpon>Tranzit_OS_Model.tt</DependentUpon>
     </Compile>
+    <Compile Include="SESS_PAYMENT_EXPORT.cs">
+      <DependentUpon>Tranzit_OS_Model.tt</DependentUpon>
+    </Compile>
     <Compile Include="SESS_RETURN_EXPORT.cs">
       <DependentUpon>Tranzit_OS_Model.tt</DependentUpon>
     </Compile>

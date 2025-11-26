@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using WebApi.Api.CustomerPayments;
 using WebApi.Api.CustomerReturns;
 using WebApi.Api.CustomerSales;
 using WebApi.Api.OpenStore;
@@ -484,36 +485,6 @@ namespace WebApi.Controllers
 	     and wbl.WType = -1", mat_id, Context.Token, start_date).ToList());
             }
         }
-
-
-        [ApiTokenAuthorize]
-        [HttpGet, Route("paydoc/{doc_type}")]
-        public IHttpActionResult GetPayDocOut(int doc_type)
-        {
-            var from_dt = DateTime.Now.Date.AddDays(-30);
-            var to_dt = DateTime.Now.Date.AddDays(1);
-            using (var sp_base = SPDatabase.SPBase())
-            {
-                return Ok(sp_base.v_PayDoc.Where(w => w.DocType == doc_type && w.KagentId == Context.Token && w.OnDate >= from_dt && w.OnDate < to_dt)
-                    .OrderByDescending(o => o.OnDate)
-                    .Select(s => new
-                    {
-                        s.PayDocId,
-                        s.DocNum,
-                        s.Checked,
-                        s.OnDate,
-                        s.Total,
-                        s.Notes,
-                        s.Reason,
-                        s.PersonName,
-                        s.ChargeName,
-                        s.SourceType,
-                        s.PayTypeName
-                    }).ToList());
-            }
-        }
-
-
 
 
         public class ErrorMessage

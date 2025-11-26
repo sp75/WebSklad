@@ -16,6 +16,17 @@
           <Property Name="SAREAID" Type="int" Nullable="false" />
           <Property Name="CREATED_AT" Type="datetime" />
         </EntityType>
+        <EntityType Name="SESS_PAYMENT_EXPORT">
+          <Key>
+            <PropertyRef Name="SESSID" />
+            <PropertyRef Name="SYSTEMID" />
+            <PropertyRef Name="SAREAID" />
+          </Key>
+          <Property Name="SESSID" Type="int" Nullable="false" />
+          <Property Name="SYSTEMID" Type="int" Nullable="false" />
+          <Property Name="SAREAID" Type="int" Nullable="false" />
+          <Property Name="CREATED_AT" Type="datetime" />
+        </EntityType>
         <EntityType Name="SESS_RETURN_EXPORT">
           <Key>
             <PropertyRef Name="SESSID" />
@@ -38,6 +49,8 @@ warning 6002: The table/view 'Tranzit_OS.dbo.v_Payment' does not have a primary 
             <PropertyRef Name="SALESNUM" />
             <PropertyRef Name="SRECNUM" />
             <PropertyRef Name="SESSSTART" />
+            <PropertyRef Name="FiscalReceipt" />
+            <PropertyRef Name="ReturnPayment" />
           </Key>
           <Property Name="SAREANAME" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="SAREAID" Type="int" Nullable="false" />
@@ -45,13 +58,21 @@ warning 6002: The table/view 'Tranzit_OS.dbo.v_Payment' does not have a primary 
           <Property Name="SESSID" Type="int" Nullable="false" />
           <Property Name="SALESNUM" Type="int" Nullable="false" />
           <Property Name="SALESTIME" Type="varchar" MaxLength="14" />
-          <Property Name="Price" Type="decimal" Precision="22" Scale="10" />
-          <Property Name="Total" Type="decimal" Precision="22" Scale="10" />
+          <Property Name="Price" Type="numeric" Precision="15" Scale="2" />
+          <Property Name="Total" Type="numeric" Precision="15" Scale="2" />
           <Property Name="FRECNUM" Type="nvarchar" MaxLength="30" />
           <Property Name="SRECNUM" Type="int" Nullable="false" />
           <Property Name="SESSSTART" Type="varchar" MaxLength="14" Nullable="false" />
           <Property Name="SESSEND" Type="varchar" MaxLength="14" />
           <Property Name="OnDate" Type="datetime" />
+          <Property Name="SALESTYPE" Type="int" />
+          <Property Name="FiscalReceipt" Type="int" Nullable="false" />
+          <Property Name="ReturnPayment" Type="int" Nullable="false" />
+          <Property Name="SALESATTRS" Type="nvarchar" MaxLength="100" />
+          <Property Name="ENTITYSALESTIME" Type="bigint" />
+          <Property Name="FPSN" Type="nvarchar" MaxLength="30" />
+          <Property Name="SAREAADDR" Type="nvarchar" MaxLength="100" />
+          <Property Name="SessionStartDate" Type="datetime" />
         </EntityType>
         <!--Errors Found During Generation:
 warning 6002: The table/view 'Tranzit_OS.dbo.v_ReturnSales' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
@@ -69,6 +90,7 @@ warning 6002: The table/view 'Tranzit_OS.dbo.v_ReturnSales' does not have a prim
             <PropertyRef Name="GRPID" />
             <PropertyRef Name="GRPNAME" />
             <PropertyRef Name="ARTCODE" />
+            <PropertyRef Name="FiscalReceipt" />
           </Key>
           <Property Name="SAREANAME" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="SAREAID" Type="int" Nullable="false" />
@@ -92,6 +114,8 @@ warning 6002: The table/view 'Tranzit_OS.dbo.v_ReturnSales' does not have a prim
           <Property Name="ARTCODE" Type="int" Nullable="false" />
           <Property Name="ARTID" Type="int" />
           <Property Name="SessionStartDate" Type="datetime" />
+          <Property Name="FiscalReceipt" Type="int" Nullable="false" />
+          <Property Name="SALESTYPE" Type="int" />
         </EntityType>
         <!--Errors Found During Generation:
 warning 6002: The table/view 'Tranzit_OS.dbo.v_Sales' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
@@ -109,6 +133,8 @@ warning 6002: The table/view 'Tranzit_OS.dbo.v_Sales' does not have a primary ke
             <PropertyRef Name="ARTCODE" />
             <PropertyRef Name="GRPID" />
             <PropertyRef Name="GRPNAME" />
+            <PropertyRef Name="FiscalReceipt" />
+            <PropertyRef Name="SALESTAG" />
           </Key>
           <Property Name="SAREANAME" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="SAREAID" Type="int" Nullable="false" />
@@ -118,7 +144,7 @@ warning 6002: The table/view 'Tranzit_OS.dbo.v_Sales' does not have a primary ke
           <Property Name="SALESTIME" Type="varchar" MaxLength="14" />
           <Property Name="PRICE" Type="decimal" Precision="22" Scale="10" />
           <Property Name="AMOUNT" Type="numeric" Precision="19" Scale="7" />
-          <Property Name="TOTAL" Type="decimal" Precision="22" Scale="10" />
+          <Property Name="TOTAL" Type="decimal" Precision="24" Scale="10" />
           <Property Name="FRECNUM" Type="nvarchar" MaxLength="30" />
           <Property Name="SRECNUM" Type="int" Nullable="false" />
           <Property Name="PACKID" Type="int" />
@@ -132,6 +158,11 @@ warning 6002: The table/view 'Tranzit_OS.dbo.v_Sales' does not have a primary ke
           <Property Name="GRPID" Type="int" Nullable="false" />
           <Property Name="GRPNAME" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="SessionStartDate" Type="datetime" />
+          <Property Name="FiscalReceipt" Type="int" Nullable="false" />
+          <Property Name="ENTITYSALESTIME" Type="bigint" />
+          <Property Name="SAREAADDR" Type="nvarchar" MaxLength="100" />
+          <Property Name="ARTSNAME" Type="nvarchar" MaxLength="50" />
+          <Property Name="SALESTAG" Type="int" Nullable="false" />
         </EntityType>
         <!--Errors Found During Generation:
 warning 6002: The table/view 'Tranzit_OS.dbo.v_SESS' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
@@ -150,6 +181,7 @@ warning 6002: The table/view 'Tranzit_OS.dbo.v_SESS' does not have a primary key
         </EntityType>
         <EntityContainer Name="Tranzit_OSModelStoreContainer">
           <EntitySet Name="SESS_EXPORT" EntityType="Self.SESS_EXPORT" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="SESS_PAYMENT_EXPORT" EntityType="Self.SESS_PAYMENT_EXPORT" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="SESS_RETURN_EXPORT" EntityType="Self.SESS_RETURN_EXPORT" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="v_Payment" EntityType="Self.v_Payment" store:Type="Views" store:Schema="dbo">
             <DefiningQuery>SELECT 
@@ -165,7 +197,15 @@ warning 6002: The table/view 'Tranzit_OS.dbo.v_SESS' does not have a primary key
     [v_Payment].[SRECNUM] AS [SRECNUM], 
     [v_Payment].[SESSSTART] AS [SESSSTART], 
     [v_Payment].[SESSEND] AS [SESSEND], 
-    [v_Payment].[OnDate] AS [OnDate]
+    [v_Payment].[OnDate] AS [OnDate], 
+    [v_Payment].[SALESTYPE] AS [SALESTYPE], 
+    [v_Payment].[FiscalReceipt] AS [FiscalReceipt], 
+    [v_Payment].[ReturnPayment] AS [ReturnPayment], 
+    [v_Payment].[SALESATTRS] AS [SALESATTRS], 
+    [v_Payment].[ENTITYSALESTIME] AS [ENTITYSALESTIME], 
+    [v_Payment].[FPSN] AS [FPSN], 
+    [v_Payment].[SAREAADDR] AS [SAREAADDR], 
+    [v_Payment].[SessionStartDate] AS [SessionStartDate]
     FROM [dbo].[v_Payment] AS [v_Payment]</DefiningQuery>
           </EntitySet>
           <EntitySet Name="v_ReturnSales" EntityType="Self.v_ReturnSales" store:Type="Views" store:Schema="dbo">
@@ -191,7 +231,9 @@ warning 6002: The table/view 'Tranzit_OS.dbo.v_SESS' does not have a primary key
     [v_ReturnSales].[GRPNAME] AS [GRPNAME], 
     [v_ReturnSales].[ARTCODE] AS [ARTCODE], 
     [v_ReturnSales].[ARTID] AS [ARTID], 
-    [v_ReturnSales].[SessionStartDate] AS [SessionStartDate]
+    [v_ReturnSales].[SessionStartDate] AS [SessionStartDate], 
+    [v_ReturnSales].[FiscalReceipt] AS [FiscalReceipt], 
+    [v_ReturnSales].[SALESTYPE] AS [SALESTYPE]
     FROM [dbo].[v_ReturnSales] AS [v_ReturnSales]</DefiningQuery>
           </EntitySet>
           <EntitySet Name="v_Sales" EntityType="Self.v_Sales" store:Type="Views" store:Schema="dbo">
@@ -217,7 +259,12 @@ warning 6002: The table/view 'Tranzit_OS.dbo.v_SESS' does not have a primary key
     [v_Sales].[ARTCODE] AS [ARTCODE], 
     [v_Sales].[GRPID] AS [GRPID], 
     [v_Sales].[GRPNAME] AS [GRPNAME], 
-    [v_Sales].[SessionStartDate] AS [SessionStartDate]
+    [v_Sales].[SessionStartDate] AS [SessionStartDate], 
+    [v_Sales].[FiscalReceipt] AS [FiscalReceipt], 
+    [v_Sales].[ENTITYSALESTIME] AS [ENTITYSALESTIME], 
+    [v_Sales].[SAREAADDR] AS [SAREAADDR], 
+    [v_Sales].[ARTSNAME] AS [ARTSNAME], 
+    [v_Sales].[SALESTAG] AS [SALESTAG]
     FROM [dbo].[v_Sales] AS [v_Sales]</DefiningQuery>
           </EntitySet>
           <EntitySet Name="v_SESS" EntityType="Self.v_SESS" store:Type="Views" store:Schema="dbo">
@@ -241,6 +288,7 @@ warning 6002: The table/view 'Tranzit_OS.dbo.v_SESS' does not have a primary key
           <EntitySet Name="v_Payment" EntityType="Tranzit_OSModel.v_Payment" />
           <EntitySet Name="v_ReturnSales" EntityType="Tranzit_OSModel.v_ReturnSales" />
           <EntitySet Name="v_Sales" EntityType="Tranzit_OSModel.v_Sales" />
+          <EntitySet Name="SESS_PAYMENT_EXPORT" EntityType="Tranzit_OSModel.SESS_PAYMENT_EXPORT" />
         </EntityContainer>
         <EntityType Name="v_SESS">
           <Key>
@@ -286,6 +334,8 @@ warning 6002: The table/view 'Tranzit_OS.dbo.v_SESS' does not have a primary key
             <PropertyRef Name="SALESNUM" />
             <PropertyRef Name="SRECNUM" />
             <PropertyRef Name="SESSSTART" />
+            <PropertyRef Name="FiscalReceipt" />
+            <PropertyRef Name="ReturnPayment" />
           </Key>
           <Property Name="SAREANAME" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="SAREAID" Type="Int32" Nullable="false" />
@@ -293,13 +343,21 @@ warning 6002: The table/view 'Tranzit_OS.dbo.v_SESS' does not have a primary key
           <Property Name="SESSID" Type="Int32" Nullable="false" />
           <Property Name="SALESNUM" Type="Int32" Nullable="false" />
           <Property Name="SALESTIME" Type="String" MaxLength="14" FixedLength="false" Unicode="false" />
-          <Property Name="Price" Type="Decimal" Precision="22" Scale="10" />
-          <Property Name="Total" Type="Decimal" Precision="22" Scale="10" />
+          <Property Name="Price" Type="Decimal" Precision="15" Scale="2" />
+          <Property Name="Total" Type="Decimal" Precision="15" Scale="2" />
           <Property Name="FRECNUM" Type="String" MaxLength="30" FixedLength="false" Unicode="true" />
           <Property Name="SRECNUM" Type="Int32" Nullable="false" />
           <Property Name="SESSSTART" Type="String" Nullable="false" MaxLength="14" FixedLength="false" Unicode="false" />
           <Property Name="SESSEND" Type="String" MaxLength="14" FixedLength="false" Unicode="false" />
           <Property Name="OnDate" Type="DateTime" Precision="3" />
+          <Property Name="SALESTYPE" Type="Int32" />
+          <Property Name="FiscalReceipt" Type="Int32" Nullable="false" />
+          <Property Name="ReturnPayment" Type="Int32" Nullable="false" />
+          <Property Name="SALESATTRS" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="ENTITYSALESTIME" Type="Int64" />
+          <Property Name="FPSN" Type="String" MaxLength="30" FixedLength="false" Unicode="true" />
+          <Property Name="SAREAADDR" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="SessionStartDate" Type="DateTime" Precision="3" />
         </EntityType>
         <EntityType Name="v_ReturnSales">
           <Key>
@@ -315,6 +373,7 @@ warning 6002: The table/view 'Tranzit_OS.dbo.v_SESS' does not have a primary key
             <PropertyRef Name="GRPID" />
             <PropertyRef Name="GRPNAME" />
             <PropertyRef Name="ARTCODE" />
+            <PropertyRef Name="FiscalReceipt" />
           </Key>
           <Property Name="SAREANAME" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="SAREAID" Type="Int32" Nullable="false" />
@@ -338,6 +397,8 @@ warning 6002: The table/view 'Tranzit_OS.dbo.v_SESS' does not have a primary key
           <Property Name="ARTCODE" Type="Int32" Nullable="false" />
           <Property Name="ARTID" Type="Int32" />
           <Property Name="SessionStartDate" Type="DateTime" Precision="3" />
+          <Property Name="FiscalReceipt" Type="Int32" Nullable="false" />
+          <Property Name="SALESTYPE" Type="Int32" />
         </EntityType>
         <EntityType Name="v_Sales">
           <Key>
@@ -353,6 +414,8 @@ warning 6002: The table/view 'Tranzit_OS.dbo.v_SESS' does not have a primary key
             <PropertyRef Name="ARTCODE" />
             <PropertyRef Name="GRPID" />
             <PropertyRef Name="GRPNAME" />
+            <PropertyRef Name="FiscalReceipt" />
+            <PropertyRef Name="SALESTAG" />
           </Key>
           <Property Name="SAREANAME" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="SAREAID" Type="Int32" Nullable="false" />
@@ -362,7 +425,7 @@ warning 6002: The table/view 'Tranzit_OS.dbo.v_SESS' does not have a primary key
           <Property Name="SALESTIME" Type="String" MaxLength="14" FixedLength="false" Unicode="false" />
           <Property Name="PRICE" Type="Decimal" Precision="22" Scale="10" />
           <Property Name="AMOUNT" Type="Decimal" Precision="19" Scale="7" />
-          <Property Name="TOTAL" Type="Decimal" Precision="22" Scale="10" />
+          <Property Name="TOTAL" Type="Decimal" Precision="24" Scale="10" />
           <Property Name="FRECNUM" Type="String" MaxLength="30" FixedLength="false" Unicode="true" />
           <Property Name="SRECNUM" Type="Int32" Nullable="false" />
           <Property Name="PACKID" Type="Int32" />
@@ -376,6 +439,22 @@ warning 6002: The table/view 'Tranzit_OS.dbo.v_SESS' does not have a primary key
           <Property Name="GRPID" Type="Int32" Nullable="false" />
           <Property Name="GRPNAME" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="SessionStartDate" Type="DateTime" Precision="3" />
+          <Property Name="FiscalReceipt" Type="Int32" Nullable="false" />
+          <Property Name="ENTITYSALESTIME" Type="Int64" />
+          <Property Name="SAREAADDR" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="ARTSNAME" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="SALESTAG" Type="Int32" Nullable="false" />
+        </EntityType>
+        <EntityType Name="SESS_PAYMENT_EXPORT">
+          <Key>
+            <PropertyRef Name="SESSID" />
+            <PropertyRef Name="SYSTEMID" />
+            <PropertyRef Name="SAREAID" />
+          </Key>
+          <Property Name="SESSID" Type="Int32" Nullable="false" />
+          <Property Name="SYSTEMID" Type="Int32" Nullable="false" />
+          <Property Name="SAREAID" Type="Int32" Nullable="false" />
+          <Property Name="CREATED_AT" Type="DateTime" Precision="3" />
         </EntityType>
       </Schema>
     </edmx:ConceptualModels>
@@ -417,6 +496,14 @@ warning 6002: The table/view 'Tranzit_OS.dbo.v_SESS' does not have a primary key
           <EntitySetMapping Name="v_Payment">
             <EntityTypeMapping TypeName="Tranzit_OSModel.v_Payment">
               <MappingFragment StoreEntitySet="v_Payment">
+                <ScalarProperty Name="SessionStartDate" ColumnName="SessionStartDate" />
+                <ScalarProperty Name="SAREAADDR" ColumnName="SAREAADDR" />
+                <ScalarProperty Name="FPSN" ColumnName="FPSN" />
+                <ScalarProperty Name="ENTITYSALESTIME" ColumnName="ENTITYSALESTIME" />
+                <ScalarProperty Name="SALESATTRS" ColumnName="SALESATTRS" />
+                <ScalarProperty Name="ReturnPayment" ColumnName="ReturnPayment" />
+                <ScalarProperty Name="FiscalReceipt" ColumnName="FiscalReceipt" />
+                <ScalarProperty Name="SALESTYPE" ColumnName="SALESTYPE" />
                 <ScalarProperty Name="OnDate" ColumnName="OnDate" />
                 <ScalarProperty Name="SESSEND" ColumnName="SESSEND" />
                 <ScalarProperty Name="SESSSTART" ColumnName="SESSSTART" />
@@ -436,6 +523,8 @@ warning 6002: The table/view 'Tranzit_OS.dbo.v_SESS' does not have a primary key
           <EntitySetMapping Name="v_ReturnSales">
             <EntityTypeMapping TypeName="Tranzit_OSModel.v_ReturnSales">
               <MappingFragment StoreEntitySet="v_ReturnSales">
+                <ScalarProperty Name="SALESTYPE" ColumnName="SALESTYPE" />
+                <ScalarProperty Name="FiscalReceipt" ColumnName="FiscalReceipt" />
                 <ScalarProperty Name="SessionStartDate" ColumnName="SessionStartDate" />
                 <ScalarProperty Name="ARTID" ColumnName="ARTID" />
                 <ScalarProperty Name="ARTCODE" ColumnName="ARTCODE" />
@@ -464,6 +553,11 @@ warning 6002: The table/view 'Tranzit_OS.dbo.v_SESS' does not have a primary key
           <EntitySetMapping Name="v_Sales">
             <EntityTypeMapping TypeName="Tranzit_OSModel.v_Sales">
               <MappingFragment StoreEntitySet="v_Sales">
+                <ScalarProperty Name="SALESTAG" ColumnName="SALESTAG" />
+                <ScalarProperty Name="ARTSNAME" ColumnName="ARTSNAME" />
+                <ScalarProperty Name="SAREAADDR" ColumnName="SAREAADDR" />
+                <ScalarProperty Name="ENTITYSALESTIME" ColumnName="ENTITYSALESTIME" />
+                <ScalarProperty Name="FiscalReceipt" ColumnName="FiscalReceipt" />
                 <ScalarProperty Name="SessionStartDate" ColumnName="SessionStartDate" />
                 <ScalarProperty Name="GRPNAME" ColumnName="GRPNAME" />
                 <ScalarProperty Name="GRPID" ColumnName="GRPID" />
@@ -486,6 +580,16 @@ warning 6002: The table/view 'Tranzit_OS.dbo.v_SESS' does not have a primary key
                 <ScalarProperty Name="SYSTEMID" ColumnName="SYSTEMID" />
                 <ScalarProperty Name="SAREAID" ColumnName="SAREAID" />
                 <ScalarProperty Name="SAREANAME" ColumnName="SAREANAME" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="SESS_PAYMENT_EXPORT">
+            <EntityTypeMapping TypeName="Tranzit_OSModel.SESS_PAYMENT_EXPORT">
+              <MappingFragment StoreEntitySet="SESS_PAYMENT_EXPORT">
+                <ScalarProperty Name="CREATED_AT" ColumnName="CREATED_AT" />
+                <ScalarProperty Name="SAREAID" ColumnName="SAREAID" />
+                <ScalarProperty Name="SYSTEMID" ColumnName="SYSTEMID" />
+                <ScalarProperty Name="SESSID" ColumnName="SESSID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

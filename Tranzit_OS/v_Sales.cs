@@ -36,5 +36,10 @@ namespace Tranzit_OS
         public int GRPID { get; set; }
         public string GRPNAME { get; set; }
         public Nullable<System.DateTime> SessionStartDate { get; set; }
+        public int FiscalReceipt { get; set; }
+        public Nullable<long> ENTITYSALESTIME { get; set; }
+        public string SAREAADDR { get; set; }
+        public string ARTSNAME { get; set; }
+        public int SALESTAG { get; set; }
     }
 }

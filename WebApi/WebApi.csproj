@@ -170,6 +170,8 @@
     <Compile Include="Api\CustomerMove\AddItemRequest.cs" />
     <Compile Include="Api\CustomerMove\PosInView.cs" />
     <Compile Include="Api\CustomerMove\WaybillMoveRepository.cs" />
+    <Compile Include="Api\CustomerPayments\CustomerPaymentsRepository.cs" />
+    <Compile Include="Api\CustomerPayments\PayDocView.cs" />
     <Compile Include="Api\CustomerRemain\MaterialsOnWh.cs" />
     <Compile Include="Api\CustomerReturns\CustomerReturnsRepository.cs" />
     <Compile Include="Api\CustomerReturns\GetPosInView.cs" />
@@ -221,6 +223,7 @@
     <Compile Include="Controllers\OrdersSellersController.cs" />
     <Compile Include="Controllers\BaseApiController.cs" />
     <Compile Include="Controllers\CustomerReturnsController.cs" />
+    <Compile Include="Controllers\PayDocController.cs" />
     <Compile Include="Controllers\RegController.cs" />
     <Compile Include="Controllers\WarehouseController.cs" />
     <Compile Include="Controllers\WaybillMoveController.cs" />

@@ -41,7 +41,16 @@ namespace WebApi.Controllers
                 repo.ImportKagentSales(k_item.KaId, k_item.OpenStoreAreaId.Value, k_item.LastInventoryDate.Value, k_item.WId.Value);
             }
         }
-    
+
+        [HttpGet, Route("import-payments")]
+        public void ImportPayment()
+        {
+            var repo = new OpenStoreRepository();
+
+            repo.ImportKagentPayment();
+        }
+
+
         [ApiTokenAuthorize]
         [HttpGet, Route("is-session-end")]
         public bool IsSessionEnd()

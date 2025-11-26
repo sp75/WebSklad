@@ -11,7 +11,7 @@ using WebApi.Core;
 
 namespace WebApi.Api.OpenStore
 {
-    public class OpenStoreRepository: BaseRepository
+    public class OpenStoreRepository : BaseRepository
     {
         private readonly Log4netLogger _log = new Log4netLogger("ErrorNotification");
 
@@ -69,20 +69,20 @@ GROUP BY [v_Sales].SESSID,v_Sales.SAREAID, ARTID, ARTCODE, ARTNAME,SessionStartD
 
                         foreach (var item in mat_sales_item.ToList())
                         {
-                                var wbd = sp_base.WaybillDet.Add(new WaybillDet()
-                                {
-                                    WbillId = wb.WbillId,
-                                    Num = wb.WaybillDet.Count() + 1,
-                                    Amount = item.Amount,
-                                    OnValue = wb.OnValue,
-                                    WId = wid,
-                                    Nds = wb.Nds,
-                                    CurrId = wb.CurrId,
-                                    OnDate = wb.OnDate,
-                                    MatId = item.MatId,
-                                    Price = item.Price,
-                                    BasePrice = item.Price
-                                });
+                            var wbd = sp_base.WaybillDet.Add(new WaybillDet()
+                            {
+                                WbillId = wb.WbillId,
+                                Num = wb.WaybillDet.Count() + 1,
+                                Amount = item.Amount,
+                                OnValue = wb.OnValue,
+                                WId = wid,
+                                Nds = wb.Nds,
+                                CurrId = wb.CurrId,
+                                OnDate = wb.OnDate,
+                                MatId = item.MatId,
+                                Price = item.Price,
+                                BasePrice = item.Price
+                            });
                         }
 
                         sp_base.SaveChanges();
@@ -100,7 +100,7 @@ GROUP BY [v_Sales].SESSID,v_Sales.SAREAID, ARTID, ARTCODE, ARTNAME,SessionStartD
                             }
                         }
 
-                            // CorrectDocument(wb, wid, $"Корегування продажу товрів по касі { mat_sales_item.Key.SYSTEMID}");
+                        // CorrectDocument(wb, wid, $"Корегування продажу товрів по касі { mat_sales_item.Key.SYSTEMID}");
                         new ExecuteWayBill().CorrectDocument(wb.WbillId, $"Корегування продажу товрів по касі { mat_sales_item.Key.SYSTEMID}", true);
 
                         var list = new InventoryRepository().ReservedAllosition(wb.WbillId, true);
@@ -239,7 +239,7 @@ GROUP BY [v_Sales].SESSID,v_Sales.SAREAID, ARTID, ARTCODE, ARTNAME,SessionStartD
             public decimal Price { get; set; }
         }
 
-        public void CorrectDocument(WaybillList wb_write_off, int wid,  string wb_notes)
+        public void CorrectDocument(WaybillList wb_write_off, int wid, string wb_notes)
         {
             using (var sp_base = SPDatabase.SPBase())
             {
@@ -363,7 +363,7 @@ GROUP BY v_ReturnSales.SESSID, v_ReturnSales.SAREAID, ARTID, ARTCODE, ARTNAME, S
                         CurrId = 2,
                         OnValue = 1,
                         //   PersonId = DBHelper.CurrentUser.KaId,
-                        WaybillMove = new WaybillMove { SourceWid = wid , DestWId = wid },
+                        WaybillMove = new WaybillMove { SourceWid = wid, DestWId = wid },
                         Nds = 0,
                         //       UpdatedBy = DBHelper.CurrentUser.UserId,
                         EntId = _enterprise?.KaId,
@@ -426,6 +426,90 @@ GROUP BY v_ReturnSales.SESSID, v_ReturnSales.SAREAID, ARTID, ARTCODE, ARTNAME, S
             }
         }
 
+        public bool ImportKagentPayment()
+        {
+            bool rezult = true;
+
+            using (var sp_base = SPDatabase.SPBase())
+            {
+                var ka_payment_out = sp_base.Database.SqlQuery<PaymentList>(@"
+  SELECT sum([Price]) TotalCash, 
+         CashDesks.CashId, 
+         [v_Payment].SESSID, 
+         [v_Payment].SessionStartDate, 
+         [v_Payment].SYSTEMID,
+         [v_Payment].[SAREAID],
+         v_Kagent.EnterpriseId
+  FROM [BK_OS].[Tranzit_OS].[dbo].[v_Payment]
+  inner join CashDesks on CashDesks.KaId = v_Payment.SAREAID
+  inner join v_Kagent on v_Kagent.KaId =  CashDesks.KaId 
+  left outer join   [BK_OS].[Tranzit_OS].[dbo].SESS_PAYMENT_EXPORT on SESS_PAYMENT_EXPORT.SESSID = [v_Payment].SESSID and SESS_PAYMENT_EXPORT.SYSTEMID = [v_Payment].SYSTEMID and SESS_PAYMENT_EXPORT.SAREAID = [v_Payment].SAREAID
+  where [SESSEND] is not null and SALESTYPE in (0,4) and SessionStartDate > GETDATE() -2 and  SESS_PAYMENT_EXPORT.SYSTEMID is null 
+         and v_Kagent.[OpenStoreAreaId] is not null and v_Kagent.WId is not null and v_Kagent.PTypeId is not null and v_Kagent.KType = 4
+  group by CashDesks.CashId, [v_Payment].SESSID, [v_Payment].SessionStartDate, [v_Payment].SYSTEMID, [v_Payment].[SAREAID], v_Kagent.EnterpriseId").ToList();
+
+
+                foreach (var item in ka_payment_out)
+                {
+                    try
+                    {
+
+                        var _pd = sp_base.PayDoc.Add(new PayDoc
+                        {
+                            Id = Guid.NewGuid(),
+                            Checked = 1,
+                            DocNum = sp_base.GetDocNum("pay_doc").FirstOrDefault(),
+                            OnDate = DateTime.Now,
+                            Total = item.TotalCash,
+                            CTypeId = 1,// За товар
+                            WithNDS = 1,// З НДС
+                            PTypeId = 1,// Наличкой
+                            CashId = item.CashId,// Каса по умолчанию
+                            CurrId = 2,
+                            OnValue = 1,//Курс валютиhttps://decorshop.ua/dekor-potolka/gladkie-karnizy/p-892-2.44m-7039781/
+                                        //  MPersonId = DBHelper.CurrentUser.KaId,
+                            DocType = 11,//Коригування залишку
+                                         //    UpdatedBy = DBHelper.CurrentUser.UserId,
+                            EntId = item.EnterpriseId,
+                            OperId = Guid.NewGuid(),
+                            Reason = $"Початок змніни: {item.SessionStartDate}, Номер каси: {item.SYSTEMID}",
+                            Notes = $"Продажі товарів за зміну по касі {item.SYSTEMID}",
+                        });
+
+                        sp_base.SaveChanges();
+                        using (var tr_os_db = new Tranzit_OSEntities())
+                        {
+                            tr_os_db.SESS_PAYMENT_EXPORT.Add(new SESS_PAYMENT_EXPORT { SAREAID = item.SAREAID, SESSID = item.SESSID, SYSTEMID = item.SYSTEMID, CREATED_AT = DateTime.Now });
+                            tr_os_db.SaveChanges();
+                        }
+
+                    }
+                    catch (Exception ex)
+                    {
+                        _log.LogException(ex, $"Помилка зарахування коштів згідно продаж | area_id:{item.SAREAID} |");
+
+                        rezult = false;
+                    }
+                }
+
+            }
+
+
+            return rezult;
+        }
+
+        public class PaymentList
+        {
+            public decimal TotalCash { get; set; }
+            public int SESSID { get; set; }
+            public int CashId { get; set; }
+            public DateTime SessionStartDate { get; set; }
+            public int SYSTEMID { get; set; }
+            public int SAREAID { get; set; }
+            public int? EnterpriseId { get; set; }
+        }
+
+
         public bool ImportKagentSales(Guid? id)
         {
             if (!id.HasValue)
@@ -437,13 +521,13 @@ GROUP BY v_ReturnSales.SESSID, v_ReturnSales.SAREAID, ARTID, ARTCODE, ARTNAME, S
 
             ImportKagentReturns(ka.KaId, ka.OpenStoreAreaId.Value, ka.LastInventoryDate.Value, ka.WId.Value);
             var result = ImportKagentSales(ka.KaId, ka.OpenStoreAreaId.Value, ka.LastInventoryDate.Value, ka.WId.Value);
-            
+
             return result;
         }
 
         public bool ImportCurrentKagentSales(Guid? id, DateTime InventoryDate)
         {
-            if(!id.HasValue)
+            if (!id.HasValue)
             {
                 return false;
             }
@@ -470,5 +554,27 @@ GROUP BY v_ReturnSales.SESSID, v_ReturnSales.SAREAID, ARTID, ARTCODE, ARTNAME, S
 
             return db.Database.SqlQuery<OpenStoreAreaList>(sql).ToList();
         }
+
+        public object GetTotalCashInCurrentSesion(Guid? ka_id)
+        {
+         
+            var dd = db.Database.SqlQuery<decimal>(@"
+   SELECT sum([Price]) TotalCash
+  FROM [BK_OS].[Tranzit_OS].[dbo].[v_Payment]
+  inner join CashDesks on CashDesks.KaId = v_Payment.SAREAID
+  inner join v_Kagent on v_Kagent.KaId =  CashDesks.KaId 
+  left outer join   [BK_OS].[Tranzit_OS].[dbo].SESS_PAYMENT_EXPORT on SESS_PAYMENT_EXPORT.SESSID = [v_Payment].SESSID and SESS_PAYMENT_EXPORT.SYSTEMID = [v_Payment].SYSTEMID and SESS_PAYMENT_EXPORT.SAREAID = [v_Payment].SAREAID
+  where [SESSEND] is null and SALESTYPE in (0,4) and SessionStartDate > GETDATE() -2 and  SESS_PAYMENT_EXPORT.SYSTEMID is null 
+         and v_Kagent.[OpenStoreAreaId] is not null and v_Kagent.WId is not null and v_Kagent.PTypeId is not null and v_Kagent.KType = 4
+		 and v_Kagent.Id = {0}", ka_id).FirstOrDefault();
+
+            return dd;
+        }
+
+        public class CashInCurrentSesionView
+        {
+            decimal TotalCash { get; set; }
+        }
+
     }
 }
