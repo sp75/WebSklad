@@ -255,7 +255,7 @@ namespace WebApi.Controllers
         [HttpGet, Route("{mat_id}/pos-remain")]
         public IHttpActionResult GetPosRemain(int mat_id)
         {
-            DateTime start_date = DateTime.Now.Date.AddDays(-30);
+            DateTime start_date = DateTime.Now.Date.AddDays(-90);
 
             using (var sp_base = SPDatabase.SPBase())
             {

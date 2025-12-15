@@ -21,5 +21,6 @@ namespace WebApi.Api.CustomerPayments
         public string Reason { get; set; }
 
         public string Notes { get; set; }
+        public string KaName { get; set; }
     }
 }

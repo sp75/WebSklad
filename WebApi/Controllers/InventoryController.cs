@@ -124,51 +124,59 @@ namespace WebApi.Controllers
                 }
                 sp_base.SaveChanges();
 
-                if (sp_base.WaybillDet.Where(w => w.WbillId == new_inventory_wb.WbillId).Any(a => ((a.Discount ?? 0) - a.Amount) > 0))
+                try
                 {
-                    var create_write_on = SPDatabase.SPBase().ExecuteWayBill(new_inventory_wb.WbillId, 5, null).ToList().FirstOrDefault();
-
-                    if (create_write_on != null && create_write_on.NewDocId.HasValue)
+                    if (sp_base.WaybillDet.Where(w => w.WbillId == new_inventory_wb.WbillId).Any(a => ((a.Discount ?? 0) - a.Amount) > 0))
                     {
-                        var wb_write_on = sp_base.WaybillList.FirstOrDefault(w => w.Id == create_write_on.NewDocId);
-                        SPDatabase.SPBase().ExecuteWayBill(wb_write_on.WbillId, null, null).ToList().FirstOrDefault();
-                    }
-                    else
-                    {
-                        log_msg = $"Невдалося створити акт на введення залишків по акту інвентаризації WbillId:{new_inventory_wb.WbillId}";
-                        result_exe = true;
-                    }
-                }
+                        var create_write_on = SPDatabase.SPBase().ExecuteWayBill(new_inventory_wb.WbillId, 5, null).ToList().FirstOrDefault();
 
-                if (sp_base.WaybillDet.Where(w => w.WbillId == new_inventory_wb.WbillId).Any(a => ((a.Discount ?? 0) - a.Amount) < 0))
-                {
-                    var create_write_off = SPDatabase.SPBase().ExecuteWayBill(new_inventory_wb.WbillId, -5, null).ToList().FirstOrDefault();
-
-                    if (create_write_off != null && create_write_off.NewDocId.HasValue)
-                    {
-                        var wb_write_off = sp_base.WaybillList.FirstOrDefault(w => w.Id == create_write_off.NewDocId);
-
-                   //     new ExecuteWayBill().CorrectDocument(wb_write_off.WbillId, $"Корегування товрів по акту інвентаризації #{ new_inventory_wb.Num}", true);
-
-                        var list = new InventoryRepository().ReservedAllosition(wb_write_off.WbillId, true);
-
-                        if (list.Any())
+                        if (create_write_on != null && create_write_on.NewDocId.HasValue)
                         {
-                            log_msg = $"Помилка резервування в акті на списання товарів по акту інвернтризації | WbillId:{wb_write_off.WbillId} | Номенклатура {string.Join(",", list)}";
-
+                            var wb_write_on = sp_base.WaybillList.FirstOrDefault(w => w.Id == create_write_on.NewDocId);
+                            SPDatabase.SPBase().ExecuteWayBill(wb_write_on.WbillId, null, null).ToList().FirstOrDefault();
+                        }
+                        else
+                        {
+                            log_msg = $"Невдалося створити акт на введення залишків по акту інвентаризації WbillId:{new_inventory_wb.WbillId}";
                             result_exe = false;
                         }
                     }
-                    else
-                    {
-                        log_msg = $"Невдалося створити акт списання залишків по акту інвентаризації WbillId:{new_inventory_wb.WbillId}";
-                        result_exe = false;
-                    }
-                }
 
-                if (!result_exe)
+                    if (sp_base.WaybillDet.Where(w => w.WbillId == new_inventory_wb.WbillId).Any(a => ((a.Discount ?? 0) - a.Amount) < 0))
+                    {
+                        var create_write_off = SPDatabase.SPBase().ExecuteWayBill(new_inventory_wb.WbillId, -5, null).ToList().FirstOrDefault();
+
+                        if (create_write_off != null && create_write_off.NewDocId.HasValue)
+                        {
+                            var wb_write_off = sp_base.WaybillList.FirstOrDefault(w => w.Id == create_write_off.NewDocId);
+
+                            //     new ExecuteWayBill().CorrectDocument(wb_write_off.WbillId, $"Корегування товрів по акту інвентаризації #{ new_inventory_wb.Num}", true);
+
+                            var list = new InventoryRepository().ReservedAllosition(wb_write_off.WbillId, true);
+
+                            if (list.Any())
+                            {
+                                log_msg = $"Помилка резервування в акті на списання товарів по акту інвернтризації | WbillId:{wb_write_off.WbillId} | Номенклатура {string.Join(",", list)}";
+
+                                result_exe = false;
+                            }
+                        }
+                        else
+                        {
+                            log_msg = $"Невдалося створити акт списання залишків по акту інвентаризації WbillId:{new_inventory_wb.WbillId}";
+                            result_exe = false;
+                        }
+                    }
+                    if (!result_exe)
+                    {
+                        _log.LogInfo(log_msg);
+                    }
+
+                }
+                catch (Exception ex)
                 {
-                    _log.LogInfo(log_msg);
+                    _log.LogException(ex, $"Невдалося створити документи по акту інвентаризації WbillId:{new_inventory_wb.WbillId}");
+                    result_exe = false;
                 }
 
                 return true; // продовжуемо якщо і були помилки 

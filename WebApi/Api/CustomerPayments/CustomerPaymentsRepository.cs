@@ -31,7 +31,8 @@ namespace WebApi.Api.CustomerPayments
                     PersonName = s.PersonName,
                     ChargeName = s.ChargeName,
                     SourceType = s.SourceType,
-                    PayTypeName = s.PayTypeName
+                    PayTypeName = s.PayTypeName,
+                    KaName = s.KaName
                 }).ToList();
 
         }
@@ -51,7 +52,8 @@ namespace WebApi.Api.CustomerPayments
                     PersonName = s.PersonName,
                     ChargeName = s.ChargeName,
                     SourceType = s.SourceType,
-                    PayTypeName = s.PayTypeName
+                    PayTypeName = s.PayTypeName,
+                    KaName = s.KaName
                 }).FirstOrDefault();
         }
 
@@ -93,7 +95,7 @@ namespace WebApi.Api.CustomerPayments
                     //   UpdatedBy = DBHelper.CurrentUser.UserId,
                     EntId = ka.EnterpriseId,
                     OperId = oper_id,
-                    Reason = $"Інкасація списання коштів ",
+                    Reason = $"Інкасація списання коштів",
                     Notes = $"Переміщення через віддалений робочий стіл касира"
                 });
 
@@ -115,7 +117,7 @@ namespace WebApi.Api.CustomerPayments
                     //      UpdatedBy = DBHelper.CurrentUser.UserId,
                     EntId = ka.EnterpriseId,
                     OperId = oper_id,
-                    Reason = $"Інкасація, зарахування коштів",
+                    Reason = $"Інкасація списання коштів",
                     Notes = $"Переміщення через віддалений робочий стіл касира"
                 });
 
