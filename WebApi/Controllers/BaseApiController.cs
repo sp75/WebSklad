@@ -3,6 +3,7 @@ using SP.Base.Models;
 using System;
 using System.Web.Http;
 using WebApi.Core;
+using System.Linq;
 
 namespace WebApi.Controllers
 {
@@ -15,5 +16,7 @@ namespace WebApi.Controllers
         }
 
         public SPBaseModel db => SPDatabase.SPBase();
+
+        public Kagent ka => SPDatabase.SPBase().Kagent.FirstOrDefault(w => w.Id == Context.Token);
     }
 }

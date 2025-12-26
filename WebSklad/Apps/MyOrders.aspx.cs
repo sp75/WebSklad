@@ -133,7 +133,7 @@ namespace WebSklad.Apps
         {
             var mat_id = Convert.ToInt32(e.NewValues["MatId"]);
             var Amount = Convert.ToDecimal(e.NewValues["Amount"]);
-            var price_mat_det = _db.PriceList.FirstOrDefault(w => w.Kagent.Any(a => a.KaId == _ka_id)).PriceListDet.Where(w => w.MatId == mat_id).FirstOrDefault();
+            var price_mat_det = _db.PriceList.FirstOrDefault(w => w.PriceListKagent.Any(a => a.KagentId == _ka_id)).PriceListDet.Where(w => w.MatId == mat_id).FirstOrDefault();
             var _wb = _db.WaybillList.FirstOrDefault(w => w.WbillId == _wbill_id);
 
             if (_wb.Checked == 0)

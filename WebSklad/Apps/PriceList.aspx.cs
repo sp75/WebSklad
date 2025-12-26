@@ -20,7 +20,7 @@ namespace WebSklad.Apps
 
         protected void PriceListDetDS_Selecting(object sender, DevExpress.Data.Linq.LinqServerModeDataSourceSelectEventArgs e)
         {
-            var pl = _db.PriceList.Where(w => w.Kagent.Any(a => a.KaId == _ka_id)).FirstOrDefault();
+            var pl = _db.PriceList.Where(w => w.PriceListKagent.Any(a => a.KagentId == _ka_id)).FirstOrDefault();
             var pl_id = pl != null ? pl.PlId : 0;
             var date = DateTime.Now.Date;
 

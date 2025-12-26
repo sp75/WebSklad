@@ -178,6 +178,7 @@
     <Compile Include="Api\CustomerReturns\GetPosOutView.cs" />
     <Compile Include="Api\CustomerReturns\ReturnetPosInView.cs" />
     <Compile Include="Api\CustomerSales\CustomerSalesRepository.cs" />
+    <Compile Include="Api\CustomerEncashment\EncashmentRepository.cs" />
     <Compile Include="Api\OpenStore\OpenStoreAreaList.cs" />
     <Compile Include="Api\OpenStore\OpenStoreRepository.cs" />
     <Compile Include="Api\OpenStore\SalesList.cs" />
@@ -214,6 +215,7 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Controllers\CustomerOrdersController.cs" />
+    <Compile Include="Controllers\EncashmentController.cs" />
     <Compile Include="Controllers\InventoryController.cs" />
     <Compile Include="Controllers\KagentController.cs" />
     <Compile Include="Controllers\MaterialsController.cs" />
