@@ -27,7 +27,7 @@ namespace WebApi.Api.CustomerEncashment
             using (var sp_base = SPDatabase.SPBase())
             {
                 var r = sp_base.RouteListOrders.FirstOrDefault(w => w.KaId == ka_id && w.RouteList.Checked == 0);
-                if (r != null && !sp_base.Encashment.Any(a => a.RouteId == r.RouteListId))
+                if (r != null && !sp_base.Encashment.Any(a => a.RouteId == r.RouteListId && a.KaId == ka_id))
                 {
                     sp_base.Encashment.Add(new Encashment
                     {
@@ -70,6 +70,21 @@ namespace WebApi.Api.CustomerEncashment
                     return false;
                 }
             }
+        }
+
+        public RouteView GetActiveRoute(int ka_id)
+        {
+            return db.RouteListOrders.Where(w => w.KaId == ka_id && w.RouteList.Checked == 0).Select(s => new RouteView
+            {
+                Uid = s.Uid,
+                Name = s.RouteList.RouteName,
+                StartDate = s.StartDate,
+                EndDate = s.EndDate,
+                Num = s.Num,
+                DriverName = s.RouteList.Kagent.Name,
+                DriverPhone = s.RouteList.Kagent.Phone,
+
+            }).FirstOrDefault();
         }
     }
 }

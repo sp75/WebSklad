@@ -165,6 +165,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Api\CustomerEncashment\RouteView.cs" />
     <Compile Include="Api\CustomerInventory\InventoryActDet.cs" />
     <Compile Include="Api\CustomerInventory\InventoryRepository.cs" />
     <Compile Include="Api\CustomerMove\AddItemRequest.cs" />
@@ -182,6 +183,7 @@
     <Compile Include="Api\OpenStore\OpenStoreAreaList.cs" />
     <Compile Include="Api\OpenStore\OpenStoreRepository.cs" />
     <Compile Include="Api\OpenStore\SalesList.cs" />
+    <Compile Include="Api\OpenStore\SalesSummaryView.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
@@ -216,6 +218,7 @@
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Controllers\CustomerOrdersController.cs" />
     <Compile Include="Controllers\EncashmentController.cs" />
+    <Compile Include="Controllers\FilterWb.cs" />
     <Compile Include="Controllers\InventoryController.cs" />
     <Compile Include="Controllers\KagentController.cs" />
     <Compile Include="Controllers\MaterialsController.cs" />

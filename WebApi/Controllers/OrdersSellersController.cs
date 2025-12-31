@@ -36,6 +36,15 @@ namespace WebApi.Controllers
             return Ok(ka_sales_out);
         }
 
+        [ApiTokenAuthorize]
+        [HttpPost, Route("sales-summary")]
+        public IHttpActionResult GetSalesSummary(FilterWb req)
+        {
+            var ka_sales_out = new CustomerSalesRepository().GetSalesSummary(Context.Token.Value, req.start_date, req.end_date);
+            return Ok(ka_sales_out);
+        }
+
+
 
         [ApiTokenAuthorize]
         [HttpGet, Route("current-orders")]

@@ -41,5 +41,12 @@ namespace WebApi.Controllers
 
             return rep.DelEncashment(id);
         }
+
+        [HttpGet, Route("route")]
+        public IHttpActionResult GetActiveRoute()
+        {
+            return Ok(new EncashmentRepository().GetActiveRoute(ka.KaId));
+        }
+      
     }
 }

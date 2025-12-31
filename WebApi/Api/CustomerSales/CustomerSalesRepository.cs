@@ -35,6 +35,46 @@ GROUP BY [v_Sales].SESSID,v_Sales.SAREAID, ARTID, ARTCODE, ARTNAME,SessionStartD
             return ka_sales;
         }
 
+        public List<SalesSummaryView> GetSalesSummary(Guid ka_id, DateTime s_date , DateTime e_date)
+        {
+            var start_date = s_date.ToString("yyyyMMddHHmmss");
+            var end_date = e_date.ToString("yyyyMMddHHmmss");
+
+            var sql = @"SELECT [SAREANAME]
+      ,v_Sales.[SAREAID]
+      ,avg([PRICE]) Price
+      ,sum([AMOUNT]) Amount
+      ,sum([TOTAL] ) Total
+      ,sum(case when FiscalReceipt = 0 then [TOTAL] else 0 end) NoFiscalSales
+	  ,sum(case when FiscalReceipt = 1 then [TOTAL] else 0 end) FiscalSales
+      ,[UNITNAME]
+      ,[ARTNAME]
+      ,[ARTID]
+      ,[ARTCODE]
+      ,[GRPID]
+      ,v_Sales.[GRPNAME]
+      ,SAREAADDR
+      ,[ARTSNAME]
+      ,SAREA_ADDITION.[GRPNAME] AREAGRPNAME
+  FROM [BK_OS].[Tranzit_OS].[dbo].[v_Sales]
+  inner join v_Kagent ka on ka.OpenStoreAreaId = v_Sales.SAREAID
+  left outer join [BK_OS].[Tranzit_OS].[dbo].[SAREA_ADDITION] on SAREA_ADDITION.SAREAID = v_Sales.SAREAID
+  where  ka.Id = '{0}' and [SALESTIME]  between '{1}' and '{2}'
+  group by [SAREANAME]
+      ,v_Sales.[SAREAID]
+      ,[UNITNAME]
+      ,[ARTNAME]
+      ,[ARTID]
+      ,[ARTCODE]
+      ,[GRPID]
+      ,v_Sales.[GRPNAME]
+      ,SAREAADDR
+      ,[ARTSNAME]
+      ,SAREA_ADDITION.[GRPNAME]";
+
+            return  db.Database.SqlQuery<SalesSummaryView>(string.Format(sql, ka_id, start_date, end_date)).ToList();
+        }
+
         public List<SalesList> GetCurrentReturns(Guid ka_id)
         {
             var ka_sales = db.Database.SqlQuery<SalesList>(@"SELECT 

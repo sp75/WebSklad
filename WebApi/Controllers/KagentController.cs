@@ -65,7 +65,7 @@ namespace WebApi.Controllers
         {
             using (var sp_base = SPDatabase.SPBase())
             {
-                return Ok(sp_base.v_Kagent.Where(w => (w.KaKind == 5 || w.KaKind == 0) && w.Archived == 0 && w.Id != Context.Token).Join(sp_base.EnterpriseWorker.Where(eww => eww.EnterpriseId == 2605 /*ТОВ ТД БК*/), pd => pd.KaId, ew => ew.WorkerId, (pd, ew) => pd).OrderBy(o => o.Name).Select(s => new
+                return Ok(sp_base.v_Kagent.Where(w => (w.KaKind == 5 || w.KaKind == 0) && w.Archived == 0).Join(sp_base.EnterpriseWorker.Where(eww => eww.EnterpriseId == 2605 /*ТОВ ТД БК*/), pd => pd.KaId, ew => ew.WorkerId, (pd, ew) => pd).OrderBy(o => o.Name).Select(s => new
                 {
                     s.KaId,
                     s.Id,

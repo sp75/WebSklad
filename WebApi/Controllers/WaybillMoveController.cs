@@ -18,13 +18,6 @@ namespace WebApi.Controllers
     [ApiTokenAuthorize]
     public class WaybillMoveController : BaseApiController
     {
-
-        public class FilterWb
-        {
-            public DateTime start_date { get; set; }
-            public DateTime end_date { get; set; }
-        }
-
         [HttpPost, Route("list")]
         public IHttpActionResult GetWaybill(FilterWb req)
         {
