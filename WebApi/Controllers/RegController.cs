@@ -13,7 +13,7 @@ namespace WebApi.Controllers
         [HttpGet, Route("version")]
         public string GetVersion()
         {
-            return "1.0.0.1";
+            return "1.0.1.0";
         }
 
         [HttpGet, Route("kay-gen/{kay_id}")]

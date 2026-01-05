@@ -17,7 +17,7 @@ namespace WebApi.Api.CustomerPayments
 
             var ka = db.Kagent.FirstOrDefault(w => w.Id == customer_id);
 
-            return db.v_PayDoc.Where(w => w.DocType == doc_type && (w.KagentId == customer_id || w.CashDeskKaId == ka.KaId) && w.OnDate >= from_dt && w.OnDate < to_dt)
+            return db.v_PayDoc.Where(w => w.DocType == doc_type && ((w.CashDeskKaId == ka.KaId && w.DocType != -1 && w.DocType != 1) || (w.KagentId == customer_id && (w.DocType == -1 || w.DocType == 1))) && w.OnDate >= from_dt && w.OnDate < to_dt)
                 .OrderByDescending(o => o.OnDate)
                 .Select(s => new PayDocView
                 {

@@ -555,10 +555,10 @@ GROUP BY v_ReturnSales.SESSID, v_ReturnSales.SAREAID, ARTID, ARTCODE, ARTNAME, S
             return db.Database.SqlQuery<OpenStoreAreaList>(sql).ToList();
         }
 
-        public object GetTotalCashInCurrentSesion(Guid? ka_id)
+        public decimal? GetTotalCashInCurrentSesion(Guid? ka_id)
         {
          
-            var dd = db.Database.SqlQuery<decimal>(@"
+            var dd = db.Database.SqlQuery<decimal?>(@"
    SELECT sum([Price]) TotalCash
   FROM [BK_OS].[Tranzit_OS].[dbo].[v_Payment]
   inner join CashDesks on CashDesks.KaId = v_Payment.SAREAID
