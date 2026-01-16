@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SP.Base;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -15,6 +16,16 @@ namespace WebApi.Controllers
         {
             return "1.0.1.0";
         }
+
+        [HttpGet, Route("doc-num")]
+        public string GeDocNum(string doc_name)
+        {
+            using (var sp_base = SPDatabase.SPBase())
+            {
+                return sp_base.GetDocNum(doc_name).FirstOrDefault();
+            }
+        }
+
 
         [HttpGet, Route("kay-gen/{kay_id}")]
         public string Coding(String kay_id)

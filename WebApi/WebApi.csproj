@@ -180,6 +180,8 @@
     <Compile Include="Api\CustomerReturns\ReturnetPosInView.cs" />
     <Compile Include="Api\CustomerSales\CustomerSalesRepository.cs" />
     <Compile Include="Api\CustomerEncashment\EncashmentRepository.cs" />
+    <Compile Include="Api\CustomerWriteOf\CreateDocumentRequest.cs" />
+    <Compile Include="Api\CustomerWriteOf\WriteOfItem.cs" />
     <Compile Include="Api\OpenStore\OpenStoreAreaList.cs" />
     <Compile Include="Api\OpenStore\OpenStoreRepository.cs" />
     <Compile Include="Api\OpenStore\SalesList.cs" />
@@ -231,6 +233,7 @@
     <Compile Include="Controllers\PayDocController.cs" />
     <Compile Include="Controllers\RegController.cs" />
     <Compile Include="Controllers\WarehouseController.cs" />
+    <Compile Include="Controllers\WaybillWriteOfController.cs" />
     <Compile Include="Controllers\WaybillMoveController.cs" />
     <Compile Include="Controllers\WaybillOutController.cs" />
     <Compile Include="Controllers\WaybillInController.cs" />

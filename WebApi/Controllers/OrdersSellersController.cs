@@ -117,6 +117,7 @@ namespace WebApi.Controllers
                     pos.Notes = In.Notes;
 
                     pos.WaybillList.UpdatedAt = pos_date;
+                    pos.WaybillList.UpdatedBy = null;
                     sp_base.SaveChanges();
 
                     sp_base.RemoteCustomerOrders.Add(new SP.Base.Models.RemoteCustomerOrders
