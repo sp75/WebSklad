@@ -196,5 +196,46 @@ namespace WebApi.Controllers
                 return result_exe;
             }
         }
+
+        [HttpGet, Route("{wbill_id}")]
+        public IHttpActionResult GetWaybill(int wbill_id)
+        {
+            using (var sp_base = SPDatabase.SPBase())
+            {
+                var wb = sp_base.v_WaybillWriteOff.Where(w => w.WbillId == wbill_id).Select(s => new
+                {
+                    s.WbillId,
+                    s.Num,
+                    s.OnDate,
+                    s.SummInCurr,
+                    s.FromWh,
+                    s.EntName,
+                    s.Checked,
+                    s.Id,
+                    s.Notes,
+                    s.Reason,
+                    Details = sp_base.v_WayBillOutDet.Where(w => w.WbillId == s.WbillId).Select(s1 => new
+                    {
+                        s1.PosId,
+                        s1.Num,
+                        s1.OnDate,
+                        s1.MatName,
+                        s1.MatId,
+                        s1.MsrName,
+                        s1.Amount,
+                        s1.BasePrice,
+                        s1.Price,
+                        s1.Discount,
+                        s1.Artikul,
+                        s1.GroupName,
+                        s1.Notes,
+                        s1.WhName,
+                        s1.Total
+                    })
+                }).FirstOrDefault();
+
+                return Ok(wb);
+            }
+        }
     }
 }

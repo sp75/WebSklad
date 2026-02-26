@@ -26,10 +26,10 @@ namespace WebApi.Api.CustomerEncashment
         {
             using (var sp_base = SPDatabase.SPBase())
             {
-                var r = sp_base.RouteListOrders.FirstOrDefault(w => w.KaId == ka_id && w.RouteList.Checked == 0);
-                if (r != null && !sp_base.Encashment.Any(a => a.RouteId == r.RouteListId && a.KaId == ka_id))
+                var routeData = sp_base.RouteListOrders.FirstOrDefault(w => w.KaId == ka_id && w.RouteList.Checked == 0);
+                if (routeData != null && !sp_base.Encashment.Any(a => a.RouteId == routeData.RouteListId && a.KaId == ka_id))
                 {
-                    sp_base.Encashment.Add(new Encashment
+                    var encashment =  sp_base.Encashment.Add(new Encashment
                     {
                         AmountMoney = new_item.AmountMoney,
                         Checked = 0,
@@ -39,10 +39,12 @@ namespace WebApi.Api.CustomerEncashment
                         KaId = ka_id,
                         Notes = new_item.Notes,
                         Num = db.GetDocNum("encashment").FirstOrDefault(),
-                        RouteId = r.RouteListId
+                        RouteId = routeData.RouteListId
                     });
 
                     sp_base.SaveChanges();
+
+                    sp_base.DocRels.Add(new DocRels { OriginatorId = routeData.RouteList.Id, RelOriginatorId = encashment.Id });
 
                     return true;
                 }
