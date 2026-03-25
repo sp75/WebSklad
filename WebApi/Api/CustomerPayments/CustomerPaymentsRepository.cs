@@ -127,7 +127,7 @@ namespace WebApi.Api.CustomerPayments
             return true;
         }
 
-        public bool NewPayDoc(Guid? customer_id, decimal total, int ctypeid, int? ka_id, string notes)
+        public bool NewAdditionalCosts(Guid? customer_id, decimal total, int ctypeid, int? ka_id, string notes)
         {
             var on_date = DateTime.Now;
             var ka = db.v_Kagent.FirstOrDefault(w => w.Id == customer_id);
@@ -167,5 +167,44 @@ namespace WebApi.Api.CustomerPayments
             return true;
         }
 
+        public PayDoc NewPayDocOut(Guid? customer_id, decimal total, int ctypeid, int? ka_id, string notes)
+        {
+            var on_date = DateTime.Now;
+            var ka = db.v_Kagent.FirstOrDefault(w => w.Id == customer_id);
+            var CashId = db.CashDesks.FirstOrDefault(w => w.KaId == ka.KaId)?.CashId;
+            if (!CashId.HasValue)
+            {
+                return null;
+            }
+
+            using (var sp_base = SPDatabase.SPBase())
+            {
+                var _pd = sp_base.PayDoc.Add(new PayDoc
+                {
+                    Id = Guid.NewGuid(),
+                    Checked = 1,
+                    DocNum = db.GetDocNum("pay_doc").FirstOrDefault(),
+                    OnDate = on_date,
+                    Total = total,
+                    CTypeId = ctypeid,// За товар
+                    WithNDS = 1,// З НДС
+                    PTypeId = 1,// Наличкой
+                    CashId = CashId,// Каса по умолчанию
+                    CurrId = 2, //Валюта по умолчанию
+                    OnValue = 1,//Курс валюти
+                    MPersonId = ka.KaId,
+                    DocType = -1,
+                    //         UpdatedBy = UserSession.UserId,
+                    KaId = ka_id,
+                    EntId = ka.EnterpriseId,
+                    ReportingDate = on_date,
+                    Notes = notes
+                });
+
+                sp_base.SaveChanges();
+
+                return _pd;
+            }
+        }
     }
 }

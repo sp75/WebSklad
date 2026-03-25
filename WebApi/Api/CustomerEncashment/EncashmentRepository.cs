@@ -42,9 +42,8 @@ namespace WebApi.Api.CustomerEncashment
                         RouteId = routeData.RouteListId
                     });
 
-                    sp_base.SaveChanges();
-
                     sp_base.DocRels.Add(new DocRels { OriginatorId = routeData.RouteList.Id, RelOriginatorId = encashment.Id });
+                    sp_base.SaveChanges();
 
                     return true;
                 }

@@ -55,7 +55,7 @@ namespace WebApi.Controllers
         {
             var rep = new CustomerPaymentsRepository();
 
-            return Ok(rep.NewPayDoc(Context.Token, req.Total, req.ctypeid, req.ka_id, req.notes));
+            return Ok(rep.NewAdditionalCosts(Context.Token, req.Total, req.ctypeid, req.ka_id, req.notes));
         }
 
 

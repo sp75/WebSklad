@@ -180,6 +180,8 @@
     <Compile Include="Api\CustomerReturns\ReturnetPosInView.cs" />
     <Compile Include="Api\CustomerSales\CustomerSalesRepository.cs" />
     <Compile Include="Api\CustomerEncashment\EncashmentRepository.cs" />
+    <Compile Include="Api\CustomerWayBillIn\CreateWayBillInRequest.cs" />
+    <Compile Include="Api\CustomerWayBillIn\WayBillInItem.cs" />
     <Compile Include="Api\CustomerWriteOf\CreateDocumentRequest.cs" />
     <Compile Include="Api\CustomerWriteOf\WriteOfItem.cs" />
     <Compile Include="Api\OpenStore\OpenStoreAreaList.cs" />
