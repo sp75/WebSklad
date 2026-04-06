@@ -37,7 +37,8 @@ namespace WebApi.Controllers
                     s.Id,
                     s.Notes,
                     s.Reason,
-                    s.WType
+                    s.WType,
+                    s.SummPay
                 }).ToList();
 
                 return Ok(wb);
