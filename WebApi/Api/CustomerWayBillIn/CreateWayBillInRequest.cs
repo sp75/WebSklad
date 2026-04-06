@@ -7,6 +7,7 @@ namespace WebApi.Api.CustomerWayBillIn
 {
     public class CreateWayBillInRequest
     {
+        public int? WbillId { get; set; }
         public string Num { get; set; }
         public DateTime OnDate { get; set; }
 

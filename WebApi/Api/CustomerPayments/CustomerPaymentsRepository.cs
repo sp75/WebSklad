@@ -17,7 +17,7 @@ namespace WebApi.Api.CustomerPayments
 
             var ka = db.Kagent.FirstOrDefault(w => w.Id == customer_id);
 
-            return db.v_PayDoc.Where(w => w.DocType == doc_type && ((w.CashDeskKaId == ka.KaId && w.DocType != -1 && w.DocType != 1) || (w.KagentId == customer_id && (w.DocType == -1 || w.DocType == 1))) && w.OnDate >= from_dt && w.OnDate < to_dt)
+            return db.v_PayDoc.Where(w => w.DocType == doc_type && ((w.CashDeskKaId == ka.KaId /*&& w.DocType != -1 && w.DocType != 1*/)/* || (w.KagentId == customer_id && (w.DocType == -1 || w.DocType == 1))*/) && w.OnDate >= from_dt && w.OnDate < to_dt)
                 .OrderByDescending(o => o.OnDate)
                 .Select(s => new PayDocView
                 {
@@ -183,7 +183,7 @@ namespace WebApi.Api.CustomerPayments
                 {
                     Id = Guid.NewGuid(),
                     Checked = 1,
-                    DocNum = db.GetDocNum("pay_doc").FirstOrDefault(),
+                    DocNum = db.GetDocNum("pay_doc_out").FirstOrDefault(),
                     OnDate = on_date,
                     Total = total,
                     CTypeId = ctypeid,// За товар
