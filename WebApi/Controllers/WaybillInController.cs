@@ -195,7 +195,7 @@ namespace WebApi.Controllers
 
                         // Якщо все пройшло успішно — фіксуємо зміни в БД
                         dbTransaction.Commit();
-                        return Ok(true);
+                        return Ok(wb_in.WbillId);
                     }
                     catch (Exception ex)
                     {
