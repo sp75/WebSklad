@@ -343,6 +343,7 @@ where waybilldet.WbillId = {0} and remaain.TotalRemain < waybilldet.Amount", wb_
  ,v_ReturnSales.SYSTEMID
  ,v_ReturnSales.SessionStartDate
  ,m.MatId
+ ,MAX(v_ReturnSales.OnDate) OnDate
  ,SUM(v_ReturnSales.AMOUNT) Amount
  ,SUM(v_ReturnSales.TOTAL) Total
 FROM [BK_OS].[Tranzit_OS].[dbo].v_ReturnSales
@@ -358,7 +359,7 @@ GROUP BY v_ReturnSales.SESSID, v_ReturnSales.SAREAID, ARTID, ARTCODE, ARTNAME, S
                         Id = Guid.NewGuid(),
                         WType = 5,
                         DefNum = 0,
-                        OnDate = DateTime.Now.AddSeconds(-1),
+                        OnDate = mat_sales_item.Min(d=> d.OnDate), // DateTime.Now.AddMinutes(-1),
                         Num = sp_base.GetDocNum("wb_write_on").FirstOrDefault(),
                         CurrId = 2,
                         OnValue = 1,

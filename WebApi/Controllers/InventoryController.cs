@@ -150,8 +150,6 @@ namespace WebApi.Controllers
                         {
                             var wb_write_off = sp_base.WaybillList.FirstOrDefault(w => w.Id == create_write_off.NewDocId);
 
-                            //     new ExecuteWayBill().CorrectDocument(wb_write_off.WbillId, $"Корегування товрів по акту інвентаризації #{ new_inventory_wb.Num}", true);
-
                             var list = new InventoryRepository().ReservedAllosition(wb_write_off.WbillId, true);
 
                             if (list.Any())

@@ -20,5 +20,6 @@ namespace WebApi.Api.OpenStore
         public string GrpName { get; set; }
         public string UNITNAME { get; set; }
         public decimal Price { get; set; }
+        public DateTime OnDate { get; set; }
     }
 }
