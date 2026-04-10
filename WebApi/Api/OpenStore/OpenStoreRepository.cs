@@ -427,7 +427,7 @@ GROUP BY v_ReturnSales.SESSID, v_ReturnSales.SAREAID, ARTID, ARTCODE, ARTNAME, S
             }
         }
 
-        public bool ImportKagentPayment()
+        public bool ImportKagentPayment_old()
         {
             bool rezult = true;
 
@@ -498,6 +498,97 @@ GROUP BY v_ReturnSales.SESSID, v_ReturnSales.SAREAID, ARTID, ARTCODE, ARTNAME, S
 
             return rezult;
         }
+
+
+        public bool ImportKagentPayment()
+        {
+            bool rezult = true;
+
+            using (var sp_base = SPDatabase.SPBase())
+            {
+                var ka_payment_out = sp_base.Database.SqlQuery<PaymentList>(@"
+            SELECT sum([Price]) TotalCash, 
+                   CashDesks.CashId, 
+                   [v_Payment].SESSID, 
+                   [v_Payment].SessionStartDate, 
+                   [v_Payment].SYSTEMID,
+                   [v_Payment].[SAREAID],
+                   v_Kagent.EnterpriseId
+            FROM [BK_OS].[Tranzit_OS].[dbo].[v_Payment]
+            inner join CashDesks on CashDesks.KaId = v_Payment.SAREAID
+            inner join v_Kagent on v_Kagent.KaId =  CashDesks.KaId 
+            left outer join [BK_OS].[Tranzit_OS].[dbo].SESS_PAYMENT_EXPORT on SESS_PAYMENT_EXPORT.SESSID = [v_Payment].SESSID and SESS_PAYMENT_EXPORT.SYSTEMID = [v_Payment].SYSTEMID and SESS_PAYMENT_EXPORT.SAREAID = [v_Payment].SAREAID
+            where [SESSEND] is not null and SALESTYPE in (0,4) and SessionStartDate > GETDATE() -2 and SESS_PAYMENT_EXPORT.SYSTEMID is null 
+                   and v_Kagent.[OpenStoreAreaId] is not null and v_Kagent.WId is not null and v_Kagent.PTypeId is not null and v_Kagent.KType = 4
+            group by CashDesks.CashId, [v_Payment].SESSID, [v_Payment].SessionStartDate, [v_Payment].SYSTEMID, [v_Payment].[SAREAID], v_Kagent.EnterpriseId").ToList();
+
+                foreach (var item in ka_payment_out)
+                {
+                    // Відкриваємо транзакцію для кожної ітерації (кожного платежу)
+                    using (var transaction = sp_base.Database.BeginTransaction())
+                    {
+                        try
+                        {
+                            // 1. Створюємо запис у першій базі
+                            var _pd = sp_base.PayDoc.Add(new PayDoc
+                            {
+                                Id = Guid.NewGuid(),
+                                Checked = 1,
+                                DocNum = sp_base.GetDocNum("pay_doc").FirstOrDefault(),
+                                OnDate = DateTime.Now,
+                                Total = item.TotalCash,
+                                CTypeId = 1,// За товар
+                                WithNDS = 1,// З НДС
+                                PTypeId = 1,// Наличкой
+                                CashId = item.CashId,// Каса по умолчанию
+                                CurrId = 2,
+                                OnValue = 1,//Курс валюти
+                                            //  MPersonId = DBHelper.CurrentUser.KaId,
+                                DocType = 11,//Коригування залишку
+                                             //    UpdatedBy = DBHelper.CurrentUser.UserId,
+                                EntId = item.EnterpriseId,
+                                OperId = Guid.NewGuid(),
+                                Reason = $"Початок змніни: {item.SessionStartDate}, Номер каси: {item.SYSTEMID}",
+                                Notes = $"Продажі товарів за зміну по касі {item.SYSTEMID}",
+                            });
+
+                            sp_base.SaveChanges();
+
+                            // 2. Спробуємо зберегти в іншу базу
+                            using (var tr_os_db = new Tranzit_OSEntities())
+                            {
+                                tr_os_db.SESS_PAYMENT_EXPORT.Add(new SESS_PAYMENT_EXPORT
+                                {
+                                    SAREAID = item.SAREAID,
+                                    SESSID = item.SESSID,
+                                    SYSTEMID = item.SYSTEMID,
+                                    CREATED_AT = DateTime.Now
+                                });
+                                tr_os_db.SaveChanges();
+                            }
+
+                            // Якщо дойшли сюди — помилок немає, фіксуємо зміни в sp_base
+                            transaction.Commit();
+                            // ОПТИМІЗАЦІЯ: Від'єднуємо об'єкт від контексту після успішного збереження.
+                            // Це звільняє пам'ять і пришвидшує наступні ітерації.
+                            sp_base.Entry(_pd).State = System.Data.Entity.EntityState.Detached;
+                        }
+                        catch (Exception ex)
+                        {
+                            // Якщо сталася будь-яка помилка (включаючи конект до другої бази)
+                            // відкочуємо зміни в sp_base
+                            transaction.Rollback();
+
+                            _log.LogException(ex, $"Помилка транзакції | відміна збереження в SPBase | area_id:{item.SAREAID} |");
+                            rezult = false;
+                        }
+                    }
+                }
+            }
+
+            return rezult;
+        }
+
 
         public class PaymentList
         {
