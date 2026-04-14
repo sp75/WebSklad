@@ -136,9 +136,16 @@ namespace WebApi.Controllers
         public IHttpActionResult CreateReturned()
         {
             var wb_list = new CustomerReturnsRepository().GreateReturnToSupplier(Context.Token.Value);
-
+            
             using (var sp_base = SPDatabase.SPBase())
             {
+
+                if (!wb_list.Any() && !sp_base.RemoteCustomerReturned.Where(w => w.CustomerId == Context.Token.Value && w.WbillId == null && w.OutPosId == null).Any())
+                {
+                    return Ok(false);
+                }
+
+
                 var ka = sp_base.v_Kagent.FirstOrDefault(w => w.Id == Context.Token.Value);
 
                 var _wb = sp_base.WaybillList.Add(new WaybillList()
