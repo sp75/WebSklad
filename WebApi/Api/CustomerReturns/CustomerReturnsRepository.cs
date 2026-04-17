@@ -105,13 +105,13 @@ namespace WebApi.Api.CustomerReturns
 
                     if (list.Any())
                     {
-                        if(cor_doc.HasValue)
+                        sp_base.DeleteWhere<WaybillList>(w => w.WbillId == _wb.WbillId);
+
+                        if (cor_doc.HasValue)
                         {
                             sp_base.StornoWayBill(cor_doc);
                             sp_base.DeleteWhere<WaybillList>(w => w.WbillId == cor_doc);
                         }
-                        sp_base.DeleteWhere<WaybillList>(w => w.WbillId == _wb.WbillId);
-
 
                         var message = $"Склад: {ka.WId} |  Віддалене повернення товарів №{_wb.Num } | Не всі товари зарезервовані в документі | WbillId: {_wb.WbillId} | Номенклатура | {string.Join(",", list)} | Error";
                         _log.LogInfo(message);
