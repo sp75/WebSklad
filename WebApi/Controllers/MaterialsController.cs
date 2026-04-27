@@ -28,7 +28,12 @@ namespace WebApi.Controllers
         {
             using (var sp_base = SPDatabase.SPBase())
             {
-                return Ok(sp_base.SettingMaterialPricesDet.Where(w => w.MatId == mat_id).OrderByDescending(o=> o.CreatedAt).Select(s => new { s.MatId, s.ProcurementPrice}).FirstOrDefault());
+                var dt = DateTime.Now;
+
+                return Ok(sp_base.SettingMaterialPricesDet.Where(w => w.MatId == mat_id && w.SettingMaterialPrices.Checked == 1 && w.SettingMaterialPrices.OnDate <= dt)
+                    .OrderByDescending(o=> o.CreatedAt)
+                    .Select(s => new { s.MatId, s.ProcurementPrice})
+                    .FirstOrDefault());
             }
         }
     }
