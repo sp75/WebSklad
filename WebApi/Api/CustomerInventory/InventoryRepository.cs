@@ -61,5 +61,22 @@ namespace WebApi.Api.CustomerInventory
             return list;
         }
       
+
+        public bool IsClosedCashierShift( int? AreaId)
+        {
+
+            using (var db = new Tranzit_OSEntities())
+            {
+                string dateThreshold = DateTime.Now.AddDays(-10).ToString("yyyyMMddHHmmss");
+
+                var sessions = db.v_SESS
+                    .Where(s => s.SAREAID == AreaId
+                             && s.SESSEND == null
+                             && s.SESSSTART.CompareTo(dateThreshold) >= 0) // SQL: SESSSTART >= '20260327...'
+                    .Any();
+
+                return !sessions;
+            }
+        }
     }
 }

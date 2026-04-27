@@ -52,32 +52,42 @@ namespace WebApi.Controllers
             }
         }
 
+
+
         [HttpPost, Route("execute")]
         public bool Execute(List<InventoryActDet> req)
         {
+            var _kagent = ka;
+
             if (!req.Any())
             {
                 return false;
             }
+
+            if(!new InventoryRepository().IsClosedCashierShift(_kagent.OpenStoreAreaId))
+            {
+                return false;
+            }
+
             var on_date = DateTime.Now; //  req.Min(m => m.CreatedAt);
-
-            if (!new OpenStoreRepository().ImportKagentSales(Context.Token))
+            
+            if (!new OpenStoreRepository().ImportKagentSales(Context.Token)) //Якщо невдалося зарезервувати списання згідно продаж то інвентаризацію не створюємо .
             {
                 return false;
             }
 
-            if (!new OpenStoreRepository().ImportCurrentKagentSales(Context.Token, on_date))
+         /*   if (!new OpenStoreRepository().ImportCurrentKagentSales(Context.Token, on_date)) // Вигружаем незакриту зміну 
             {
                 return false;
-            }
+            }*/
 
             bool result_exe = true;
             string log_msg="";
 
             using (var sp_base = SPDatabase.SPBase())
             {
-                var ka = sp_base.Kagent.FirstOrDefault(w => w.Id == Context.Token);
-                var _enterprise = sp_base.Kagent.FirstOrDefault(w => w.KType == 3 && w.Deleted == 0 && (w.Archived == null || w.Archived == 0) && w.EnterpriseWorker.Any(a => a.WorkerId == ka.KaId));
+            //    var ka = sp_base.Kagent.FirstOrDefault(w => w.Id == Context.Token);
+                var _enterprise = sp_base.Kagent.FirstOrDefault(w => w.KType == 3 && w.Deleted == 0 && (w.Archived == null || w.Archived == 0) && w.EnterpriseWorker.Any(a => a.WorkerId == _kagent.KaId));
                 var new_inventory_wb = sp_base.WaybillList.Add(new WaybillList()
                 {
                     Id = Guid.NewGuid(),

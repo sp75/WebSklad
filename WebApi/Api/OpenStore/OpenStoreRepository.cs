@@ -100,7 +100,6 @@ GROUP BY [v_Sales].SESSID,v_Sales.SAREAID, ARTID, ARTCODE, ARTNAME,SessionStartD
                             }
                         }
 
-                        // CorrectDocument(wb, wid, $"Корегування продажу товрів по касі { mat_sales_item.Key.SYSTEMID}");
                         new ExecuteWayBill().CorrectDocument(wb.WbillId, $"Корегування продажу товрів по касі { mat_sales_item.Key.SYSTEMID}", true);
 
                         var list = new InventoryRepository().ReservedAllosition(wb.WbillId, true);
