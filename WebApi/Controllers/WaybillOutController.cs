@@ -48,6 +48,42 @@ namespace WebApi.Controllers
                 return Ok(wb);
             }
         }
+        [HttpGet, Route("{wbill_id}/det")]
+        public IHttpActionResult GetWaybillDet(int wbill_id)
+        {
+            using (var sp_base = SPDatabase.SPBase())
+            {
+                var det = (from s1 in sp_base.v_WayBillInDet
+                           join m in sp_base.Materials on s1.MatId equals m.MatId
+                           join w in sp_base.v_WayBillBase on s1.WbillId equals w.WbillId
+                           join p in sp_base.v_KagentMaterilPrices
+                                on new { MatId = (int)s1.MatId, KaId = (int)w.KaId }
+                                equals new { MatId = (int)p.MatId, KaId = (int)p.KaId } into prices
+                           from p in prices.DefaultIfEmpty()
+                           where s1.WbillId == wbill_id
+                           select new
+                           {
+                               s1.PosId,
+                               s1.Num,
+                               s1.OnDate,
+                               s1.MatName,
+                               s1.MatId,
+                               s1.MsrName,
+                               s1.Amount,
+                               s1.BasePrice,
+                               s1.Price,
+                               s1.Discount,
+                               s1.Artikul,
+                               s1.Notes,
+                               s1.WhName,
+                               s1.Total,
+                               m.LabelDescr,
+                               SalePrice = (decimal?)p.Price
+                           }).ToList();
+
+                return Ok(det);
+            }
+        }
 
 
         [HttpGet, Route("{wbill_id}")]

@@ -95,23 +95,6 @@ namespace WebApi.Controllers
         {
             using (var sp_base = SPDatabase.SPBase())
             {
-                /* var det = sp_base.v_WayBillInDet.Where(w => w.WbillId == wbill_id).Select(s1 => new
-                 {
-                     s1.PosId,
-                     s1.Num,
-                     s1.OnDate,
-                     s1.MatName,
-                     s1.MatId,
-                     s1.MsrName,
-                     s1.Amount,
-                     s1.BasePrice,
-                     s1.Price,
-                     s1.Discount,
-                     s1.Artikul,
-                     s1.Notes,
-                     s1.WhName,
-                     s1.Total,
-                 }).ToList();*/
                 var det = (from s1 in sp_base.v_WayBillInDet
                            join m in sp_base.Materials on s1.MatId equals m.MatId
                            join w in sp_base.v_WayBillIn on s1.WbillId equals w.WbillId
@@ -138,7 +121,7 @@ namespace WebApi.Controllers
                                s1.WhName,
                                s1.Total,
                                m.LabelDescr,
-                               SalePrice = (decimal?)p.Price // Приведення до nullable, бо це Left Join
+                               SalePrice = (decimal?)p.Price 
                            }).ToList();
 
                 return Ok(det);
