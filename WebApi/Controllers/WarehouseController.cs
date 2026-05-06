@@ -197,7 +197,8 @@ namespace WebApi.Controllers
                         EntId = 2605,
                         PTypeId = 2,
                         Notes = item.WhName,
-                        Reason = $"Оприбуткування на склад {item.WhName} згідно видаткової накладної №{item.Num}"
+                        Reason = $"Оприбуткування на склад {item.WhName} згідно видаткової накладної №{item.Num}",
+                        WaybillMove = new WaybillMove {  SourceWid = item.WId.Value , DestWId = item.WId }
                     });
 
                     db.SaveChanges();

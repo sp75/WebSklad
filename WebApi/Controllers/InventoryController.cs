@@ -96,9 +96,10 @@ namespace WebApi.Controllers
                     Num = sp_base.GetDocNum("wb_inventory").FirstOrDefault(),
                     CurrId = 2,
                     OnValue = 1,
-                    // PersonId = DBHelper.CurrentUser.KaId,
+                    PersonId = _kagent.KaId,
                     WaybillMove = new WaybillMove { SourceWid = ka.WId.Value },
-                    //    UpdatedBy = DBHelper.CurrentUser.UserId,
+                    UpdatedBy = system_user_id,
+                    UpdatedAt = DateTime.Now,
                     EntId = _enterprise?.KaId,
                     Checked = 1,
                     Notes = "Віддалена інвентаризація торгової точки"

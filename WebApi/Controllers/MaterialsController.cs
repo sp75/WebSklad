@@ -31,7 +31,7 @@ namespace WebApi.Controllers
                 var dt = DateTime.Now;
 
                 return Ok(sp_base.SettingMaterialPricesDet.Where(w => w.MatId == mat_id && w.SettingMaterialPrices.Checked == 1 && w.SettingMaterialPrices.OnDate <= dt)
-                    .OrderByDescending(o=> o.CreatedAt)
+                    .OrderByDescending(o=> o.SettingMaterialPrices.OnDate)
                     .Select(s => new { s.MatId, s.ProcurementPrice})
                     .FirstOrDefault());
             }

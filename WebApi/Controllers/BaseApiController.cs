@@ -18,5 +18,6 @@ namespace WebApi.Controllers
         public SPBaseModel db => SPDatabase.SPBase();
 
         public Kagent ka => SPDatabase.SPBase().Kagent.FirstOrDefault(w => w.Id == Context.Token);
+        public int system_user_id => 1320;
     }
 }
