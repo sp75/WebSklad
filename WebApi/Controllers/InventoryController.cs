@@ -133,6 +133,10 @@ namespace WebApi.Controllers
                         }); 
                     }
                 }
+
+                sp_base.SaveChanges();
+
+                new_inventory_wb.UpdatedAt = DateTime.Now;
                 sp_base.SaveChanges();
 
                 try

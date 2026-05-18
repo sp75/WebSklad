@@ -55,12 +55,14 @@ namespace WebApi.Controllers
         [HttpGet, Route("is-session-end")]
         public bool IsSessionEnd()
         {
-            var ka = db.Kagent.FirstOrDefault(w => w.Id == Context.Token);
+            /* var ka = db.Kagent.FirstOrDefault(w => w.Id == Context.Token);
 
-            using (var tr_os_db = new Tranzit_OSEntities())
-            {
-                return !tr_os_db.v_SESS.Where(w=> w.SAREAID == ka.OpenStoreAreaId).OrderByDescending(o=> o.SESSSTART).Take(10).Any(a => a.SESSEND == null);
-            }
+             using (var tr_os_db = new Tranzit_OSEntities())
+             {
+                 return !tr_os_db.v_SESS.Where(w=> w.SAREAID == ka.OpenStoreAreaId).OrderByDescending(o=> o.SESSSTART).Take(10).Any(a => a.SESSEND == null);
+             }*/
+
+            return new InventoryRepository().IsClosedCashierShift(ka.OpenStoreAreaId);
         }
 
       

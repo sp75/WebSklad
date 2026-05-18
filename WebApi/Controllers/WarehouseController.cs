@@ -190,13 +190,13 @@ namespace WebApi.Controllers
                         Num = db.GetDocNum("wb_in").FirstOrDefault(),
                         CurrId = 2,
                         OnValue = 1,
-                        // PersonId = wb_out.PersonId,
+                     //   PersonId = ,
                         Nds = 0,
-                        //    UpdatedBy = wb_out.UpdatedBy,
+                        UpdatedBy = system_user_id,
                         UpdatedAt = DateTime.Now,
                         EntId = 2605,
                         PTypeId = 2,
-                        Notes = item.WhName,
+                        Notes = $"№{item.Num}",
                         Reason = $"Оприбуткування на склад {item.WhName} згідно видаткової накладної №{item.Num}",
                         WaybillMove = new WaybillMove {  SourceWid = item.WId.Value , DestWId = item.WId }
                     });
