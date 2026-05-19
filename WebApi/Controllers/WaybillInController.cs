@@ -159,6 +159,7 @@ namespace WebApi.Controllers
                                 Notes = req.Notes,
                                 PersonId = ka.KaId,
                                 UpdatedAt = DateTime.Now,
+                                UpdatedBy = system_user_id,
                                 KaId = req.KaId,
                                 PTypeId = 1
                             };
@@ -201,8 +202,9 @@ namespace WebApi.Controllers
                                 CurrId = wb_in.CurrId
                             });
                         }
-                        sp_base.SaveChanges();
+                //        sp_base.SaveChanges();
                         wb_in.UpdatedAt = DateTime.Now;
+                        wb_in.UpdatedBy = system_user_id;
                         sp_base.SaveChanges();
 
                         // Якщо все пройшло успішно — фіксуємо зміни в БД
