@@ -36,17 +36,28 @@ namespace WebApi.Controllers
 
         [ApiTokenAuthorize]
         [HttpGet, Route("remain")]
-        public IHttpActionResult GetRemainInWh()
+        public IHttpActionResult GetRemainInWh([FromUri] DateTime? on_date = null, [FromUri] DateTime? price_on_date = null)
         {
+            if (on_date == null) on_date = DateTime.Now;
+            
+            if (price_on_date == null)
+            {
+                price_on_date = DateTime.Now;
+            }
+            else
+            {
+                price_on_date = price_on_date.Value.Date.AddDays(1);
+            }
+
             using (var sp_base = SPDatabase.SPBase())
             {
                 var ka = sp_base.Kagent.FirstOrDefault(w => w.Id == Context.Token);
 
                 var ka_sales_out = new CustomerSalesRepository().GetCurrentSales(Context.Token.Value);
                 var ka_return_sales = new CustomerSalesRepository().GetCurrentReturns(Context.Token.Value);
-                var ka_price = sp_base.v_KagentMaterilPrices.Where(w => w.KaId == ka.KaId).Select(s=> new { s.MatId, s.Price}).ToList();
+                var ka_price = sp_base.GetActualMatPricesByDate(price_on_date, -1, ka.KaId).Select(s => new { s.MatId, s.Price }).ToList();
 
-                var mat_remain = new MaterialRemain(0).GetMaterialsOnWh(ka.WId.Value).Where(w => w.TypeId != null).Select(s => new MaterialsOnWh
+                var mat_remain = new MaterialRemain(0).GetMaterialsOnWh(ka.WId.Value, on_date.Value).Where(w => w.TypeId != null).Select(s => new MaterialsOnWh
                 {
                     Artikul = s.Artikul,
                     AvgPrice = ka_price.Where(w => w.MatId == s.MatId).Select(sp => sp.Price).FirstOrDefault(), //s.AvgPrice,
