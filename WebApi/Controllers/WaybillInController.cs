@@ -175,7 +175,7 @@ namespace WebApi.Controllers
 
                             var oldItems = sp_base.WaybillDet.Where(w => w.WbillId == req.WbillId.Value);
                             sp_base.WaybillDet.RemoveRange(oldItems);
-                            sp_base.SaveChanges();
+                   //         sp_base.SaveChanges();
 
                             // Оновлюємо шапку
                             wb_in.OnDate = req.OnDate;
@@ -202,9 +202,12 @@ namespace WebApi.Controllers
                                 CurrId = wb_in.CurrId
                             });
                         }
-                //        sp_base.SaveChanges();
+                        sp_base.SaveChanges();
+
                         wb_in.UpdatedAt = DateTime.Now;
                         wb_in.UpdatedBy = system_user_id;
+
+                        sp_base.Entry(wb_in).State = System.Data.Entity.EntityState.Modified;
                         sp_base.SaveChanges();
 
                         // Якщо все пройшло успішно — фіксуємо зміни в БД
