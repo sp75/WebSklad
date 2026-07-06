@@ -184,6 +184,8 @@
     <Compile Include="Api\CustomerWayBillIn\WayBillInItem.cs" />
     <Compile Include="Api\CustomerWriteOf\CreateDocumentRequest.cs" />
     <Compile Include="Api\CustomerWriteOf\WriteOfItem.cs" />
+    <Compile Include="Api\Manufacture\ManufactureProductRequest.cs" />
+    <Compile Include="Api\Manufacture\ManufactureRepository.cs" />
     <Compile Include="Api\OpenStore\OpenStoreAreaList.cs" />
     <Compile Include="Api\OpenStore\OpenStoreRepository.cs" />
     <Compile Include="Api\OpenStore\SalesList.cs" />
@@ -239,6 +241,7 @@
     <Compile Include="Controllers\WaybillMoveController.cs" />
     <Compile Include="Controllers\WaybillOutController.cs" />
     <Compile Include="Controllers\WaybillInController.cs" />
+    <Compile Include="Controllers\WBManufactureController.cs" />
     <Compile Include="Core\ApiKeyAttribute.cs" />
     <Compile Include="Controllers\WayBillImportController.cs" />
     <Compile Include="Core\BaseRepository.cs" />

@@ -32,7 +32,7 @@ namespace WebApi.Controllers
                     var dt_to = DateTime.Now.Date.AddDays(1);
 
                     var wb_det = sp_base.WaybillDet
-                        .Where(w => w.WaybillList.Checked == 1 && w.OnDate >= dt_from && w.OnDate < dt_to && kg_list.Contains(w.WaybillList.KaId.Value) && w.WaybillList.WType == -1 && prod_list.Contains(w.MatId))
+                        .Where(w => w.WaybillList.Checked == 1 && w.OnDate >= dt_from && w.OnDate < dt_to && kg_list.Contains(w.WaybillList.KaId.Value) && w.WaybillList.WType == -1 && prod_list.Contains(w.MatId) && w.WaybillList.EntId == 4355 )
                         .Select(s => new ProductView
                         {
                             PosId = s.PosId,
@@ -125,7 +125,7 @@ namespace WebApi.Controllers
         {
             using (var sp_base = SPDatabase.SPBase())
             {
-                var company_list = sp_base.Kagent.Where(w => w.KType == 3).ToList();
+                var company_list = sp_base.Kagent.Where(w => w.KType == 3 && w.KaId == 4355).ToList();
                 using (var db = new Tranzit_Waybills_OSEntities())
                 {
                     foreach (var item in company_list)
