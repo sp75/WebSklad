@@ -45,6 +45,22 @@ GROUP BY [v_Sales].SESSID,v_Sales.SAREAID, ARTID, ARTCODE, ARTNAME,SessionStartD
 
                     foreach (var mat_sales_item in ka_sales_out.GroupBy(g => new { g.SESSID, g.SYSTEMID, g.SessionStartDate, g.SAREAID }).ToList())
                     {
+                        // КРИТИЧНО #1: Подвійна перевірка (Double-check) перед початком створення накладної.
+                        // Якщо за той час, поки виконувався перший великий SQL-запит, інший потік вже закрив цю сесію — пропускаємо її.
+                        using (var tr_os_db_check = new Tranzit_OSEntities())
+                        {
+                            bool alreadyExported = tr_os_db_check.SESS_EXPORT.Any(e =>
+                                e.SESSID == mat_sales_item.Key.SESSID &&
+                                e.SYSTEMID == mat_sales_item.Key.SYSTEMID &&
+                                e.SAREAID == mat_sales_item.Key.SAREAID);
+
+                            if (alreadyExported)
+                            {
+                                _log.LogInfo($"Сесія SESSID:{mat_sales_item.Key.SESSID} вже була імпортована іншим потоком. Пропускаємо.");
+                                continue;
+                            }
+                        }
+
 
                         var wb = sp_base.WaybillList.Add(new WaybillList()
                         {
@@ -84,19 +100,48 @@ GROUP BY [v_Sales].SESSID,v_Sales.SAREAID, ARTID, ARTCODE, ARTNAME,SessionStartD
                                 BasePrice = item.Price
                             });
                         }
-
                         sp_base.SaveChanges();
 
                         wb.UpdatedAt = DateTime.Now;
-
                         sp_base.SaveChanges();
 
                         if (sp_base.WaybillDet.Any(a => a.WbillId == wb.WbillId))
                         {
-                            using (var tr_os_db = new Tranzit_OSEntities())
+                            try
                             {
-                                tr_os_db.SESS_EXPORT.Add(new SESS_EXPORT { SAREAID = mat_sales_item.Key.SAREAID, SESSID = mat_sales_item.Key.SESSID, SYSTEMID = mat_sales_item.Key.SYSTEMID, CREATED_AT = DateTime.Now });
-                                tr_os_db.SaveChanges();
+                                using (var tr_os_db = new Tranzit_OSEntities())
+                                {
+                                    tr_os_db.SESS_EXPORT.Add(new SESS_EXPORT
+                                    {
+                                        SAREAID = mat_sales_item.Key.SAREAID,
+                                        SESSID = mat_sales_item.Key.SESSID,
+                                        SYSTEMID = mat_sales_item.Key.SYSTEMID,
+                                        CREATED_AT = DateTime.Now
+                                    });
+                                    tr_os_db.SaveChanges();
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                // Перевіряємо, чи це саме помилка дубліката Primary Key (код 2627 або текст "PK_")
+                                bool isDuplicate = ex.ToString().Contains("PK_SESS_EXPOTR") || ex.ToString().Contains("2627");
+
+                                if (isDuplicate)
+                                {
+                                    sp_base.WaybillList.Remove(wb);
+                                    sp_base.SaveChanges();
+
+                                    _log.LogInfo($"Увага: Сесія {mat_sales_item.Key.SESSID} вже була імпортована раніше. Створену накладну {wb.WbillId} видалено.");
+
+                                    continue; // Спокійно переходимо до наступної каси
+                                }
+                                else
+                                {
+                                    // Якщо база просто "лежить" — не видаляємо накладну, а прокидаємо помилку наверх, 
+                                    // щоб весь імпорт зупинився і зафіксував Error у логах.
+                                    _log.LogException(ex, $"Критична помилка доступу до бази Tranzit_OS на сесії {mat_sales_item.Key.SESSID}");
+                                    throw;
+                                }
                             }
                         }
 

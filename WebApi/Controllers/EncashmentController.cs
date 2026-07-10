@@ -17,7 +17,7 @@ namespace WebApi.Controllers
         [HttpGet, Route("list")]
         public IHttpActionResult GetEncashmentList()
         {
-            return Ok(new EncashmentRepository().GetEncashment(ka.KaId));
+            return Ok(new EncashmentRepository().GetEncashment(context_ka.KaId));
         }
 
         [HttpGet, Route("{id}")]
@@ -31,7 +31,7 @@ namespace WebApi.Controllers
         {
             var rep = new EncashmentRepository();
 
-            return rep.SetEncashment(ka.KaId, req);
+            return rep.SetEncashment(context_ka.KaId, req);
         }
 
         [HttpPost, Route("{id}/del")]
@@ -45,7 +45,7 @@ namespace WebApi.Controllers
         [HttpGet, Route("route")]
         public IHttpActionResult GetActiveRoute()
         {
-            return Ok(new EncashmentRepository().GetActiveRoute(ka.KaId));
+            return Ok(new EncashmentRepository().GetActiveRoute(context_ka.KaId));
         }
       
     }

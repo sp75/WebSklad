@@ -248,6 +248,7 @@
     <Compile Include="Core\HttpRequestContext.cs" />
     <Compile Include="Core\ApiTokenContext.cs" />
     <Compile Include="Core\Log4netLogger.cs" />
+    <Compile Include="Core\OperationResult.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>

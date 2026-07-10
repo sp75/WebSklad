@@ -26,7 +26,7 @@ namespace WebApi.Controllers
             {
                // var ka = sp_base.Kagent.FirstOrDefault(w => w.Id == Context.Token);
 
-                var wb = sp_base.v_WaybillWriteOff.Where(w => w.OnDate >= req.start_date && w.OnDate < req.end_date && w.FromWId == ka.WId ).Select(s => new
+                var wb = sp_base.v_WaybillWriteOff.Where(w => w.OnDate >= req.start_date && w.OnDate < req.end_date && w.FromWId == context_ka.WId ).Select(s => new
                 {
                     s.WbillId,
                     s.Num,
@@ -39,7 +39,7 @@ namespace WebApi.Controllers
                     s.Notes,
                     s.Reason,
                     s.WType,
-                    IsExecuteDocument = (s.FromWId != ka.WId)
+                    IsExecuteDocument = (s.FromWId != context_ka.WId)
                 }).ToList();
 
                 return Ok(wb);

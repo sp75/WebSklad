@@ -26,7 +26,7 @@ namespace WebApi.Controllers
         {
             using (var sp_base = SPDatabase.SPBase())
             {
-                var wb = sp_base.v_ManufacturingProducts.Where(w => w.OnDate >= req.start_date && w.OnDate < req.end_date && w.WType == -20 && w.SourceWId == ka.WId.Value).Select(s => new
+                var wb = sp_base.v_ManufacturingProducts.Where(w => w.OnDate >= req.start_date && w.OnDate < req.end_date && w.WType == -20 && w.SourceWId == context_ka.WId.Value).Select(s => new
                 {
                     s.WbillId,
                     s.Num,
@@ -72,7 +72,7 @@ namespace WebApi.Controllers
         [HttpGet, Route("recipe-list")]
         public IHttpActionResult GetMatRecipe()
         {
-            var det = db.KagentMatRecipe.Where(w => w.KaId == ka.KaId).Select(s => new
+            var det = db.KagentMatRecipe.Where(w => w.KaId == context_ka.KaId).Select(s => new
             {
                 s.RecId,
                 s.MatRecipe.Materials.Name,
@@ -86,9 +86,9 @@ namespace WebApi.Controllers
         public IHttpActionResult ManufactureProduct(ManufactureProductRequest req)
         {
             var rep = new ManufactureRepository();
-            var result = rep.ManufactureProduct(req.RecId, ka.KaId, ka.WId.Value, req.Amount, req.Notes, system_user_id);
+            var result = rep.ManufactureProduct(req.RecId, context_ka.KaId, context_ka.WId.Value, req.Amount, req.Notes, system_user_id);
 
-            return Ok(result);
+            return Ok(result); // Тепер у JSON повернеться { success: true/false, message: "..." }
         }
     }
 }

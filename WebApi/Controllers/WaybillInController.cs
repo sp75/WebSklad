@@ -24,7 +24,7 @@ namespace WebApi.Controllers
         {
             using (var sp_base = SPDatabase.SPBase())
             {
-                var wb = sp_base.v_WayBillIn.Where(w => w.OnDate >= req.start_date && w.OnDate < req.end_date && w.ToWId == ka.WId && w.WType == 1).Select(s => new
+                var wb = sp_base.v_WayBillIn.Where(w => w.OnDate >= req.start_date && w.OnDate < req.end_date && w.ToWId == context_ka.WId && w.WType == 1).Select(s => new
                 {
                     s.WbillId,
                     s.Num,
@@ -98,12 +98,12 @@ namespace WebApi.Controllers
                 var det = (from s1 in sp_base.v_WayBillInDet
                            join m in sp_base.Materials on s1.MatId equals m.MatId
                            join w in sp_base.v_WayBillIn on s1.WbillId equals w.WbillId
-                           join ka in sp_base.Kagent on w.ToWId equals ka.WId
+                           //join ka_wh in sp_base.Kagent on w.ToWId equals ka_wh.WId
                            join p in sp_base.v_KagentMaterilPrices
-                                on new { MatId = (int)s1.MatId, KaId = (int)ka.KaId }
+                                on new { MatId = (int)s1.MatId, KaId = (int)context_ka.KaId }
                                 equals new { MatId = (int)p.MatId, KaId = (int)p.KaId } into prices
                            from p in prices.DefaultIfEmpty()
-                           where s1.WbillId == wbill_id
+                           where s1.WbillId == wbill_id //&& ka_wh.Id == ka.Id
                            select new
                            {
                                s1.PosId,
@@ -143,7 +143,7 @@ namespace WebApi.Controllers
                         if (!req.WbillId.HasValue)
                         {
                             // Логіка створення нової накладної
-                            var _enterprise = sp_base.Kagent.FirstOrDefault(w => w.KType == 3 && w.Deleted == 0 && (w.Archived == null || w.Archived == 0) && w.EnterpriseWorker.Any(a => a.WorkerId == ka.KaId));
+                            var _enterprise = sp_base.Kagent.FirstOrDefault(w => w.KType == 3 && w.Deleted == 0 && (w.Archived == null || w.Archived == 0) && w.EnterpriseWorker.Any(a => a.WorkerId == context_ka.KaId));
 
                             wb_in = new WaybillList()
                             {
@@ -153,11 +153,11 @@ namespace WebApi.Controllers
                                 Num = req.Num,
                                 CurrId = 2,
                                 OnValue = 1,
-                                WaybillMove = new WaybillMove { SourceWid = ka.WId.Value, DestWId = ka.WId.Value },
+                                WaybillMove = new WaybillMove { SourceWid = context_ka.WId.Value, DestWId = context_ka.WId.Value },
                                 EntId = _enterprise?.KaId,
                                 Checked = 0,
                                 Notes = req.Notes,
-                                PersonId = ka.KaId,
+                                PersonId = context_ka.KaId,
                                 UpdatedAt = DateTime.Now,
                                 UpdatedBy = system_user_id,
                                 KaId = req.KaId,
@@ -194,7 +194,7 @@ namespace WebApi.Controllers
                                 Num = positionCounter++,
                                 Amount = item.Amount,
                                 OnValue = wb_in.OnValue,
-                                WId = ka.WId,
+                                WId = context_ka.WId,
                                 MatId = item.MatId,
                                 Price = item.Price,
                                 BasePrice = item.Price,
@@ -277,7 +277,7 @@ namespace WebApi.Controllers
 
             using (var sp_base = SPDatabase.SPBase())
             {
-                var _enterprise = sp_base.Kagent.FirstOrDefault(w => w.KType == 3 && w.Deleted == 0 && (w.Archived == null || w.Archived == 0) && w.EnterpriseWorker.Any(a => a.WorkerId == ka.KaId));
+                var _enterprise = sp_base.Kagent.FirstOrDefault(w => w.KType == 3 && w.Deleted == 0 && (w.Archived == null || w.Archived == 0) && w.EnterpriseWorker.Any(a => a.WorkerId == context_ka.KaId));
                 var wb_in = sp_base.WaybillList.Add(new WaybillList()
                 {
                     Id = Guid.NewGuid(),
@@ -286,12 +286,12 @@ namespace WebApi.Controllers
                     Num = req.Num,
                     CurrId = 2,
                     OnValue = 1,
-                    WaybillMove = new WaybillMove { SourceWid = ka.WId.Value,  DestWId = ka.WId.Value },
+                    WaybillMove = new WaybillMove { SourceWid = context_ka.WId.Value,  DestWId = context_ka.WId.Value },
                     EntId = _enterprise?.KaId,
                     Checked = 0,
                     Nds = 0,
                     Notes = req.Notes,
-                    PersonId = ka.KaId,
+                    PersonId = context_ka.KaId,
                     UpdatedAt = DateTime.Now,
                     KaId = req.KaId,
                     PTypeId = 1
@@ -309,7 +309,7 @@ namespace WebApi.Controllers
                             Num = wb_in.WaybillDet.Count() + 1,
                             Amount = item.Amount,
                             OnValue = wb_in.OnValue,
-                            WId = ka.WId,
+                            WId = context_ka.WId,
                             Nds = wb_in.Nds,
                             CurrId = wb_in.CurrId,
                             OnDate = wb_in.OnDate,

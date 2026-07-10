@@ -57,7 +57,7 @@ namespace WebApi.Controllers
         [HttpPost, Route("execute")]
         public bool Execute(List<InventoryActDet> req)
         {
-            var _kagent = ka;
+            var _kagent = context_ka;
 
             if (!req.Any())
             {
@@ -97,7 +97,7 @@ namespace WebApi.Controllers
                     CurrId = 2,
                     OnValue = 1,
                     PersonId = _kagent.KaId,
-                    WaybillMove = new WaybillMove { SourceWid = ka.WId.Value },
+                    WaybillMove = new WaybillMove { SourceWid = context_ka.WId.Value },
                     UpdatedBy = system_user_id,
                     UpdatedAt = DateTime.Now,
                     EntId = _enterprise?.KaId,
@@ -107,7 +107,7 @@ namespace WebApi.Controllers
 
                 sp_base.SaveChanges();
 
-                var wh = new MaterialRemain(0).GetMaterialsOnWh(ka.WId.Value, on_date.Date);
+                var wh = new MaterialRemain(0).GetMaterialsOnWh(context_ka.WId.Value, on_date.Date);
 
                 int num = 0;
                 foreach (var item in req)
