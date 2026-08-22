@@ -76,7 +76,7 @@ namespace WebApi.Controllers
                 return false;
             }
 
-         /*   if (!new OpenStoreRepository().ImportCurrentKagentSales(Context.Token, on_date)) // Вигружаем незакриту зміну 
+         /*   if (!new OpenStoreRepository().ImportCurrentKagentSales(Context.Token, on_date)) // Вигружаем не закриту зміну 
             {
                 return false;
             }*/
@@ -86,6 +86,13 @@ namespace WebApi.Controllers
 
             using (var sp_base = SPDatabase.SPBase())
             {
+                var InventoryActId = req.FirstOrDefault().InventoryActId;
+
+                if (sp_base.RemoteInventory.Where(w=> w.RemoteInventoryId == InventoryActId).Any()) // перевіряем чи вже створювалясь інвентаризація.
+                {
+                    return true;
+                }
+
             //    var ka = sp_base.Kagent.FirstOrDefault(w => w.Id == Context.Token);
                 var _enterprise = sp_base.Kagent.FirstOrDefault(w => w.KType == 3 && w.Deleted == 0 && (w.Archived == null || w.Archived == 0) && w.EnterpriseWorker.Any(a => a.WorkerId == _kagent.KaId));
                 var new_inventory_wb = sp_base.WaybillList.Add(new WaybillList()
@@ -105,6 +112,9 @@ namespace WebApi.Controllers
                     Notes = "Віддалена інвентаризація торгової точки"
                 });
 
+                sp_base.SaveChanges();
+
+                sp_base.RemoteInventory.Add(new RemoteInventory { WbillId = new_inventory_wb.WbillId, RemoteInventoryId = Guid.NewGuid() });
                 sp_base.SaveChanges();
 
                 var wh = new MaterialRemain(0).GetMaterialsOnWh(context_ka.WId.Value, on_date.Date);
