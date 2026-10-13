@@ -61,7 +61,7 @@ namespace WebApi.Controllers
 
             try
             {
-                var ka_list = db.Database.SqlQuery<OpenStoreAreaList>(@"SELECT [KaId]
+                var ka_list = _db.Database.SqlQuery<OpenStoreAreaList>(@"SELECT [KaId]
   ,[Name]
   ,[Id]
   ,[OpenStoreAreaId]

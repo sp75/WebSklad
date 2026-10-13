@@ -130,7 +130,7 @@ namespace WebApi.Controllers
         [HttpGet, Route("auto-move-material-to-store-wh")]
         public IHttpActionResult MoveToStoreService()
         {
-            var wb_out_list = db.Database.SqlQuery<MoveToStoreWarehouseWbList>(@"
+            var wb_out_list = _db.Database.SqlQuery<MoveToStoreWarehouseWbList>(@"
             SELECT wb.WbillId, wb.ShipmentDate
             FROM v_WayBillOut wb
             inner join[dbo].v_Kagent on wb.KaId = v_Kagent.KaId
@@ -149,7 +149,7 @@ namespace WebApi.Controllers
         [HttpGet, Route("auto-insert-external-waybill-to-store-wh")]
         public IHttpActionResult MoveExternalWbOutToStoreService()
         {
-            var wb_out_list = db.Database.SqlQuery<ExtWaybillList>(@"SELECT wb_s.[Id]
+            var wb_out_list = _db.Database.SqlQuery<ExtWaybillList>(@"SELECT wb_s.[Id]
       ,wb_s.[WbillId]
       ,wb_s.[Num]
       ,wb_s.[OnDate]

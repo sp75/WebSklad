@@ -5,6 +5,15 @@
     <!-- SSDL content -->
     <edmx:StorageModels>
     <Schema Namespace="Tranzit_OSModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Cashiers">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="NAME" Type="nvarchar" MaxLength="50" />
+          <Property Name="SAREAID" Type="int" />
+          <Property Name="IS_ACTIVE" Type="bit" />
+        </EntityType>
         <EntityType Name="SESS_EXPORT">
           <Key>
             <PropertyRef Name="SESSID" />
@@ -38,8 +47,24 @@
           <Property Name="SAREAID" Type="int" Nullable="false" />
           <Property Name="CREATED_AT" Type="datetime" />
         </EntityType>
-        <!--Errors Found During Generation:
-warning 6002: The table/view 'Tranzit_OS.dbo.v_Payment' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="ShiftCashiers">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="SHIFTID" Type="int" />
+          <Property Name="CASHIERID" Type="int" />
+        </EntityType>
+        <EntityType Name="Shifts">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="SAREAID" Type="int" />
+          <Property Name="WORKDAYSTART" Type="varchar" MaxLength="14" />
+        </EntityType>
+        <!--Ошибки, обнаруженные при создании:
+предупреждение 6002: В таблице или представлении "Tranzit_OS.dbo.v_Payment" не определен первичный ключ. Ключ был выведен, а определение таблицы или представления было создано в режиме только для чтения.-->
         <EntityType Name="v_Payment">
           <Key>
             <PropertyRef Name="SAREANAME" />
@@ -74,8 +99,8 @@ warning 6002: The table/view 'Tranzit_OS.dbo.v_Payment' does not have a primary 
           <Property Name="SAREAADDR" Type="nvarchar" MaxLength="100" />
           <Property Name="SessionStartDate" Type="datetime" />
         </EntityType>
-        <!--Errors Found During Generation:
-warning 6002: The table/view 'Tranzit_OS.dbo.v_ReturnSales' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <!--Ошибки, обнаруженные при создании:
+предупреждение 6002: В таблице или представлении "Tranzit_OS.dbo.v_ReturnSales" не определен первичный ключ. Ключ был выведен, а определение таблицы или представления было создано в режиме только для чтения.-->
         <EntityType Name="v_ReturnSales">
           <Key>
             <PropertyRef Name="SAREANAME" />
@@ -117,8 +142,8 @@ warning 6002: The table/view 'Tranzit_OS.dbo.v_ReturnSales' does not have a prim
           <Property Name="FiscalReceipt" Type="int" Nullable="false" />
           <Property Name="SALESTYPE" Type="int" />
         </EntityType>
-        <!--Errors Found During Generation:
-warning 6002: The table/view 'Tranzit_OS.dbo.v_Sales' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <!--Ошибки, обнаруженные при создании:
+предупреждение 6002: В таблице или представлении "Tranzit_OS.dbo.v_Sales" не определен первичный ключ. Ключ был выведен, а определение таблицы или представления было создано в режиме только для чтения.-->
         <EntityType Name="v_Sales">
           <Key>
             <PropertyRef Name="SAREANAME" />
@@ -164,8 +189,8 @@ warning 6002: The table/view 'Tranzit_OS.dbo.v_Sales' does not have a primary ke
           <Property Name="ARTSNAME" Type="nvarchar" MaxLength="50" />
           <Property Name="SALESTAG" Type="int" Nullable="false" />
         </EntityType>
-        <!--Errors Found During Generation:
-warning 6002: The table/view 'Tranzit_OS.dbo.v_SESS' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <!--Ошибки, обнаруженные при создании:
+предупреждение 6002: В таблице или представлении "Tranzit_OS.dbo.v_SESS" не определен первичный ключ. Ключ был выведен, а определение таблицы или представления было создано в режиме только для чтения.-->
         <EntityType Name="v_SESS">
           <Key>
             <PropertyRef Name="SESSID" />
@@ -179,10 +204,37 @@ warning 6002: The table/view 'Tranzit_OS.dbo.v_SESS' does not have a primary key
           <Property Name="SESSSTART" Type="varchar" MaxLength="14" Nullable="false" />
           <Property Name="SESSEND" Type="varchar" MaxLength="14" />
         </EntityType>
+        <Association Name="FK_ShiftCashiers_Cashiers">
+          <End Role="Cashiers" Type="Self.Cashiers" Multiplicity="0..1" />
+          <End Role="ShiftCashiers" Type="Self.ShiftCashiers" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Cashiers">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="ShiftCashiers">
+              <PropertyRef Name="CASHIERID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ShiftCashiers_Shifts">
+          <End Role="Shifts" Type="Self.Shifts" Multiplicity="0..1" />
+          <End Role="ShiftCashiers" Type="Self.ShiftCashiers" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Shifts">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="ShiftCashiers">
+              <PropertyRef Name="SHIFTID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <EntityContainer Name="Tranzit_OSModelStoreContainer">
+          <EntitySet Name="Cashiers" EntityType="Self.Cashiers" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="SESS_EXPORT" EntityType="Self.SESS_EXPORT" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="SESS_PAYMENT_EXPORT" EntityType="Self.SESS_PAYMENT_EXPORT" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="SESS_RETURN_EXPORT" EntityType="Self.SESS_RETURN_EXPORT" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ShiftCashiers" EntityType="Self.ShiftCashiers" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Shifts" EntityType="Self.Shifts" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="v_Payment" EntityType="Self.v_Payment" store:Type="Views" store:Schema="dbo">
             <DefiningQuery>SELECT 
     [v_Payment].[SAREANAME] AS [SAREANAME], 
@@ -276,6 +328,14 @@ warning 6002: The table/view 'Tranzit_OS.dbo.v_SESS' does not have a primary key
     [v_SESS].[SESSEND] AS [SESSEND]
     FROM [dbo].[v_SESS] AS [v_SESS]</DefiningQuery>
           </EntitySet>
+          <AssociationSet Name="FK_ShiftCashiers_Cashiers" Association="Self.FK_ShiftCashiers_Cashiers">
+            <End Role="Cashiers" EntitySet="Cashiers" />
+            <End Role="ShiftCashiers" EntitySet="ShiftCashiers" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ShiftCashiers_Shifts" Association="Self.FK_ShiftCashiers_Shifts">
+            <End Role="Shifts" EntitySet="Shifts" />
+            <End Role="ShiftCashiers" EntitySet="ShiftCashiers" />
+          </AssociationSet>
         </EntityContainer>
       </Schema></edmx:StorageModels>
     <!-- CSDL content -->
@@ -289,6 +349,17 @@ warning 6002: The table/view 'Tranzit_OS.dbo.v_SESS' does not have a primary key
           <EntitySet Name="v_ReturnSales" EntityType="Tranzit_OSModel.v_ReturnSales" />
           <EntitySet Name="v_Sales" EntityType="Tranzit_OSModel.v_Sales" />
           <EntitySet Name="SESS_PAYMENT_EXPORT" EntityType="Tranzit_OSModel.SESS_PAYMENT_EXPORT" />
+          <EntitySet Name="Cashiers" EntityType="Tranzit_OSModel.Cashiers" />
+          <EntitySet Name="ShiftCashiers" EntityType="Tranzit_OSModel.ShiftCashiers" />
+          <EntitySet Name="Shifts" EntityType="Tranzit_OSModel.Shifts" />
+          <AssociationSet Name="FK_ShiftCashiers_Cashiers" Association="Tranzit_OSModel.FK_ShiftCashiers_Cashiers">
+            <End Role="Cashiers" EntitySet="Cashiers" />
+            <End Role="ShiftCashiers" EntitySet="ShiftCashiers" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ShiftCashiers_Shifts" Association="Tranzit_OSModel.FK_ShiftCashiers_Shifts">
+            <End Role="Shifts" EntitySet="Shifts" />
+            <End Role="ShiftCashiers" EntitySet="ShiftCashiers" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="v_SESS">
           <Key>
@@ -456,6 +527,59 @@ warning 6002: The table/view 'Tranzit_OS.dbo.v_SESS' does not have a primary key
           <Property Name="SAREAID" Type="Int32" Nullable="false" />
           <Property Name="CREATED_AT" Type="DateTime" Precision="3" />
         </EntityType>
+        <EntityType Name="Cashiers">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="NAME" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="SAREAID" Type="Int32" />
+          <Property Name="IS_ACTIVE" Type="Boolean" />
+          <NavigationProperty Name="ShiftCashiers" Relationship="Tranzit_OSModel.FK_ShiftCashiers_Cashiers" FromRole="Cashiers" ToRole="ShiftCashiers" />
+        </EntityType>
+        <EntityType Name="ShiftCashiers">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="SHIFTID" Type="Int32" />
+          <Property Name="CASHIERID" Type="Int32" />
+          <NavigationProperty Name="Cashiers" Relationship="Tranzit_OSModel.FK_ShiftCashiers_Cashiers" FromRole="ShiftCashiers" ToRole="Cashiers" />
+          <NavigationProperty Name="Shifts" Relationship="Tranzit_OSModel.FK_ShiftCashiers_Shifts" FromRole="ShiftCashiers" ToRole="Shifts" />
+        </EntityType>
+        <EntityType Name="Shifts">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="SAREAID" Type="Int32" />
+          <Property Name="WORKDAYSTART" Type="String" MaxLength="14" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="ShiftCashiers" Relationship="Tranzit_OSModel.FK_ShiftCashiers_Shifts" FromRole="Shifts" ToRole="ShiftCashiers" />
+        </EntityType>
+        <Association Name="FK_ShiftCashiers_Cashiers">
+          <End Type="Tranzit_OSModel.Cashiers" Role="Cashiers" Multiplicity="0..1" />
+          <End Type="Tranzit_OSModel.ShiftCashiers" Role="ShiftCashiers" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Cashiers">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="ShiftCashiers">
+              <PropertyRef Name="CASHIERID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ShiftCashiers_Shifts">
+          <End Type="Tranzit_OSModel.Shifts" Role="Shifts" Multiplicity="0..1" />
+          <End Type="Tranzit_OSModel.ShiftCashiers" Role="ShiftCashiers" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Shifts">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="ShiftCashiers">
+              <PropertyRef Name="SHIFTID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -590,6 +714,34 @@ warning 6002: The table/view 'Tranzit_OS.dbo.v_SESS' does not have a primary key
                 <ScalarProperty Name="SAREAID" ColumnName="SAREAID" />
                 <ScalarProperty Name="SYSTEMID" ColumnName="SYSTEMID" />
                 <ScalarProperty Name="SESSID" ColumnName="SESSID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Cashiers">
+            <EntityTypeMapping TypeName="Tranzit_OSModel.Cashiers">
+              <MappingFragment StoreEntitySet="Cashiers">
+                <ScalarProperty Name="IS_ACTIVE" ColumnName="IS_ACTIVE" />
+                <ScalarProperty Name="SAREAID" ColumnName="SAREAID" />
+                <ScalarProperty Name="NAME" ColumnName="NAME" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ShiftCashiers">
+            <EntityTypeMapping TypeName="Tranzit_OSModel.ShiftCashiers">
+              <MappingFragment StoreEntitySet="ShiftCashiers">
+                <ScalarProperty Name="CASHIERID" ColumnName="CASHIERID" />
+                <ScalarProperty Name="SHIFTID" ColumnName="SHIFTID" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Shifts">
+            <EntityTypeMapping TypeName="Tranzit_OSModel.Shifts">
+              <MappingFragment StoreEntitySet="Shifts">
+                <ScalarProperty Name="WORKDAYSTART" ColumnName="WORKDAYSTART" />
+                <ScalarProperty Name="SAREAID" ColumnName="SAREAID" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

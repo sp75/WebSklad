@@ -222,6 +222,7 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\SampleDirection.cs" />
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
+    <Compile Include="Controllers\ShiftCashiersController.cs" />
     <Compile Include="Controllers\CustomerOrdersController.cs" />
     <Compile Include="Controllers\EncashmentController.cs" />
     <Compile Include="Controllers\FilterWb.cs" />

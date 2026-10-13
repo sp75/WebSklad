@@ -49,7 +49,7 @@ namespace WebApi.Controllers
         [HttpGet, Route("{wbill_id}/det")]
         public IHttpActionResult GetWaybillDet(int wbill_id)
         {
-            var det = db.v_ManufacturingProductsDet.Where(w => w.WbillId == wbill_id).Select(s1 => new
+            var det = _db.v_ManufacturingProductsDet.Where(w => w.WbillId == wbill_id).Select(s1 => new
             {
                 s1.PosId,
                 s1.Num,
@@ -72,7 +72,7 @@ namespace WebApi.Controllers
         [HttpGet, Route("recipe-list")]
         public IHttpActionResult GetMatRecipe()
         {
-            var det = db.KagentMatRecipe.Where(w => w.KaId == context_ka.KaId).Select(s => new
+            var det = _db.KagentMatRecipe.Where(w => w.KaId == context_ka.KaId).Select(s => new
             {
                 s.RecId,
                 s.MatRecipe.Materials.Name,

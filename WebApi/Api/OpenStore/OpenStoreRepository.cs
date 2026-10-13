@@ -71,10 +71,10 @@ GROUP BY [v_Sales].SESSID,v_Sales.SAREAID, ARTID, ARTCODE, ARTNAME,SessionStartD
                             Num = sp_base.GetDocNum("wb_write_off").FirstOrDefault(),
                             CurrId = 2,
                             OnValue = 1,
-                            //   PersonId = DBHelper.CurrentUser.KaId,
+                            PersonId = ka_id,
                             WaybillMove = new WaybillMove { SourceWid = wid },
                             Nds = 0,
-                            //       UpdatedBy = DBHelper.CurrentUser.UserId,
+                            UpdatedBy = system_user_id,
                             EntId = _enterprise?.KaId,
                             AdditionalDocTypeId = 2, //Продажі
                             Reason = $"Початок змніни: {mat_sales_item.Key.SessionStartDate}, Номер каси: {mat_sales_item.Key.SYSTEMID}",
@@ -211,7 +211,7 @@ GROUP BY [v_Sales].SESSID,v_Sales.SAREAID, ARTID, ARTCODE, ARTNAME,SessionStartD
                             //   PersonId = DBHelper.CurrentUser.KaId,
                             WaybillMove = new WaybillMove { SourceWid = wid },
                             Nds = 0,
-                            //       UpdatedBy = DBHelper.CurrentUser.UserId,
+                            UpdatedBy = system_user_id,
                             EntId = _enterprise?.KaId,
                             AdditionalDocTypeId = 2, //Продажі
                             Reason = $"Початок змніни: {mat_sales_item.Key.SessionStartDate}, Номер каси: {mat_sales_item.Key.SYSTEMID}",
@@ -317,7 +317,7 @@ where waybilldet.WbillId = {0} and remaain.TotalRemain < waybilldet.Amount", wb_
                         //   PersonId = DBHelper.CurrentUser.KaId,
                         WaybillMove = new WaybillMove { SourceWid = wid, DestWId = wid },
                         Nds = 0,
-                        //       UpdatedBy = DBHelper.CurrentUser.UserId,
+                        UpdatedBy = system_user_id,
                         EntId = wb_write_off.EntId,
                         AdditionalDocTypeId = 4, //Корегування
                         Reason = $"Документ на списання {wb_write_off.Num}",
@@ -410,7 +410,7 @@ GROUP BY v_ReturnSales.SESSID, v_ReturnSales.SAREAID, ARTID, ARTCODE, ARTNAME, S
                         //   PersonId = DBHelper.CurrentUser.KaId,
                         WaybillMove = new WaybillMove { SourceWid = wid, DestWId = wid },
                         Nds = 0,
-                        //       UpdatedBy = DBHelper.CurrentUser.UserId,
+                        UpdatedBy = system_user_id,
                         EntId = _enterprise?.KaId,
                         AdditionalDocTypeId = 3, //Повернення
                         Reason = $"Початок змніни: {mat_sales_item.Key.SessionStartDate}, Номер каси: {mat_sales_item.Key.SYSTEMID}",
@@ -514,7 +514,7 @@ GROUP BY v_ReturnSales.SESSID, v_ReturnSales.SAREAID, ARTID, ARTCODE, ARTNAME, S
                             OnValue = 1,//Курс валютиhttps://decorshop.ua/dekor-potolka/gladkie-karnizy/p-892-2.44m-7039781/
                                         //  MPersonId = DBHelper.CurrentUser.KaId,
                             DocType = 11,//Коригування залишку
-                                         //    UpdatedBy = DBHelper.CurrentUser.UserId,
+                            UpdatedBy = system_user_id,
                             EntId = item.EnterpriseId,
                             OperId = Guid.NewGuid(),
                             Reason = $"Початок змніни: {item.SessionStartDate}, Номер каси: {item.SYSTEMID}",
@@ -589,7 +589,7 @@ GROUP BY v_ReturnSales.SESSID, v_ReturnSales.SAREAID, ARTID, ARTCODE, ARTNAME, S
                                 OnValue = 1,//Курс валюти
                                             //  MPersonId = DBHelper.CurrentUser.KaId,
                                 DocType = 11,//Коригування залишку
-                                             //    UpdatedBy = DBHelper.CurrentUser.UserId,
+                                UpdatedBy = system_user_id,
                                 EntId = item.EnterpriseId,
                                 OperId = Guid.NewGuid(),
                                 Reason = $"Початок змніни: {item.SessionStartDate}, Номер каси: {item.SYSTEMID}",

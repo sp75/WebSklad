@@ -219,7 +219,7 @@ namespace WebApi.Controllers
         [HttpGet, Route("{wbill_id}/execute")]
         public IHttpActionResult ExecuteWbMove(int wbill_id)
         {
-            var wb = db.WaybillList.Find(wbill_id);
+            var wb = _db.WaybillList.Find(wbill_id);
 
             if (wb.Checked == 0)
             {

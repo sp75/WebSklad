@@ -28,7 +28,7 @@ namespace WebApi.Controllers
         {
             try
             {
-                var ka = db.Kagent.FirstOrDefault(w => w.Id == Context.Token);
+                var ka = _db.Kagent.FirstOrDefault(w => w.Id == Context.Token);
                 var art_list = req.Select(s => s.ARTID).ToList();
 
                 var wh = new MaterialRemain(0).GetMaterialsOnWh(ka.WId.Value).Where(w => (w.TypeId == 1 || w.TypeId == 5 || w.TypeId == 6) ).ToList();

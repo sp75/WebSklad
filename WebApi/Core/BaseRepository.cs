@@ -10,5 +10,6 @@ namespace WebApi.Core
     public class BaseRepository
     {
         public SPBaseModel db => SPDatabase.SPBase();
+        public int system_user_id => 1320;
     }
 }
